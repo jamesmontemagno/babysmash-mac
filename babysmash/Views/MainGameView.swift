@@ -46,7 +46,7 @@ struct MainGameView: View {
                 viewModel.handleTap(at: location, in: geometry.size)
             }
             .onAppear {
-                viewModel.screenSize = geometry.size
+                viewModel.setScreenSize(geometry.size)
                 viewModel.startKeyboardMonitoring()
                 viewModel.playStartupSound()
             }

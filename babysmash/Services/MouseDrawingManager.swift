@@ -53,7 +53,7 @@ class MouseDrawingManager: ObservableObject {
     }
     
     private func startFadeTimer() {
-        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
             self?.fadeOldTrails()
         }
     }

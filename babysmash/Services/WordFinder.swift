@@ -36,7 +36,9 @@ class WordFinder {
     }
     
     func addLetter(_ letter: Character) -> String? {
-        typedLetters.append(letter.lowercased().first ?? letter)
+        if let lowercased = letter.lowercased().first {
+            typedLetters.append(lowercased)
+        }
         
         // Keep history limited
         if typedLetters.count > maxLetterHistory {

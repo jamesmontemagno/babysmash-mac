@@ -29,7 +29,7 @@ class GameViewModel: ObservableObject {
     }
     
     // MARK: - Internal State
-    var screenSize: CGSize = .zero
+    private(set) var screenSize: CGSize = .zero
     
     private let keyboardMonitor = KeyboardMonitor()
     private let mouseDrawingManager = MouseDrawingManager()
@@ -64,6 +64,10 @@ class GameViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
+    
+    func setScreenSize(_ size: CGSize) {
+        screenSize = size
+    }
     
     func startKeyboardMonitoring() {
         keyboardMonitor.startMonitoring()
