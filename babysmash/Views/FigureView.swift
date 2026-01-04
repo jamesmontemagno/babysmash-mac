@@ -102,7 +102,7 @@ struct FigureView: View {
         case .snap:
             return AnyViewModifier(SnapEffect())
         case .none:
-            return AnyViewModifier(EmptyModifier())
+            return AnyViewModifier(NoAnimationModifier())
         }
     }
 }
@@ -166,5 +166,12 @@ struct SnapEffect: ViewModifier {
     
     struct AnimationValues {
         var scale: Double = 1.0
+    }
+}
+
+// No animation modifier for .none case
+struct NoAnimationModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
     }
 }
