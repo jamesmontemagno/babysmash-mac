@@ -24,11 +24,6 @@ class GameViewModel: ObservableObject {
     @AppStorage("forceUppercase") var forceUppercase: Bool = true
     @AppStorage("maxFigures") var maxFigures: Int = 50
     @AppStorage("cursorType") var cursorType: CursorType = .hand
-    @AppStorage("fontFamily") var fontFamily: String = "SF Pro Rounded"
-    @AppStorage("backgroundColor") var backgroundColor: String = "black"
-    @AppStorage("customBackgroundRed") var customBackgroundRed: Double = 0.0
-    @AppStorage("customBackgroundGreen") var customBackgroundGreen: Double = 0.0
-    @AppStorage("customBackgroundBlue") var customBackgroundBlue: Double = 0.0
     @AppStorage("blockSystemKeys") var blockSystemKeys: Bool = false
     @AppStorage("displayMode") var displayMode: String = "all"
     @AppStorage("selectedDisplayIndex") var selectedDisplayIndex: Int = 0
@@ -45,43 +40,6 @@ class GameViewModel: ObservableObject {
         case none = "Hidden"
     }
     
-    enum BackgroundColor: String, CaseIterable {
-        case black = "black"
-        case darkGray = "darkGray"
-        case navy = "navy"
-        case darkGreen = "darkGreen"
-        case purple = "purple"
-        case brown = "brown"
-        case white = "white"
-        case custom = "custom"
-        
-        var displayName: String {
-            switch self {
-            case .black: return "Black"
-            case .darkGray: return "Dark Gray"
-            case .navy: return "Navy"
-            case .darkGreen: return "Dark Green"
-            case .purple: return "Purple"
-            case .brown: return "Brown"
-            case .white: return "White"
-            case .custom: return "Custom..."
-            }
-        }
-        
-        var color: Color? {
-            switch self {
-            case .black: return .black
-            case .darkGray: return Color(white: 0.15)
-            case .navy: return Color(red: 0.0, green: 0.0, blue: 0.3)
-            case .darkGreen: return Color(red: 0.0, green: 0.2, blue: 0.0)
-            case .purple: return Color(red: 0.2, green: 0.0, blue: 0.3)
-            case .brown: return Color(red: 0.2, green: 0.1, blue: 0.05)
-            case .white: return .white
-            case .custom: return nil // Custom uses separate RGB values
-            }
-        }
-    }
-    
     // MARK: - Internal State
     
     /// Screen sizes keyed by screen index.
@@ -93,6 +51,7 @@ class GameViewModel: ObservableObject {
     private let keyboardMonitor = KeyboardMonitor()
     private let mouseDrawingManager = MouseDrawingManager()
     private let multiMonitorManager = MultiMonitorManager.shared
+    private let themeManager = ThemeManager.shared
     private var cancellables = Set<AnyCancellable>()
     private var fadeTimer: Timer?
     
@@ -116,7 +75,8 @@ class GameViewModel: ObservableObject {
     }
     
     private func startFadeTimer() {
-        fadeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        // Use longer interval to reduce UI updates - fade is gradual anyway
+        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             guard let self else { return }
             Task { @MainActor [weak self] in
                 self?.fadeOldFigures()
@@ -262,19 +222,20 @@ class GameViewModel: ObservableObject {
     }
     
     private func addLetterFigure(_ character: Character, at position: CGPoint, screenIndex: Int = 0) {
+        let theme = themeManager.currentTheme
         let figure = Figure(
             shapeType: nil,
             character: character,
-            color: Color.randomBabySmash,
+            color: theme.randomColor(),
             position: position,
-            size: CGFloat.random(in: 150...300),
+            size: theme.randomSize(),
             createdAt: Date(),
             scale: 1.0,
             rotation: .zero,
             opacity: 1.0,
             showFace: false,
             animationStyle: .random,
-            fontFamily: fontFamily,
+            fontFamily: theme.fontName,
             screenIndex: screenIndex
         )
         
@@ -282,22 +243,32 @@ class GameViewModel: ObservableObject {
     }
     
     private func addRandomShape(at position: CGPoint, screenIndex: Int = 0) {
-        let shapeType = ShapeType.random
-        let color = Color.randomBabySmash
+        let theme = themeManager.currentTheme
+        let shapeType = theme.randomEnabledShape()
+        let color = theme.randomColor()
+        
+        // Determine if face should be shown based on theme and settings
+        let shouldShowFace: Bool
+        switch theme.faceStyle {
+        case .none:
+            shouldShowFace = false
+        case .simple, .kawaii:
+            shouldShowFace = showFaces
+        }
         
         let figure = Figure(
             shapeType: shapeType,
             character: nil,
             color: color,
             position: position,
-            size: CGFloat.random(in: 150...300),
+            size: theme.randomSize(),
             createdAt: Date(),
             scale: 1.0,
             rotation: .zero,
             opacity: 1.0,
-            showFace: showFaces,
+            showFace: shouldShowFace,
             animationStyle: .random,
-            fontFamily: fontFamily,
+            fontFamily: theme.fontName,
             screenIndex: screenIndex
         )
         
@@ -348,15 +319,34 @@ class GameViewModel: ObservableObject {
         guard fadeEnabled else { return }
         
         let now = Date()
+        let fadeDuration = 1.0 // Faster fade duration (was 2.0)
+        
+        // Only update if there are figures to process
+        guard !figures.isEmpty else { return }
+        
+        // Check if any figures need updating before modifying array
+        var needsUpdate = false
+        for figure in figures {
+            let age = now.timeIntervalSince(figure.createdAt)
+            if age > fadeAfter {
+                needsUpdate = true
+                break
+            }
+        }
+        
+        guard needsUpdate else { return }
+        
+        // Batch update - only create new array when needed
         figures = figures.compactMap { figure in
             let age = now.timeIntervalSince(figure.createdAt)
-            if age > fadeAfter + 2.0 { return nil } // Remove after fade
+            if age > fadeAfter + fadeDuration { return nil } // Remove after fade
             
-            var updated = figure
             if age > fadeAfter {
-                updated.opacity = max(0, 1.0 - (age - fadeAfter) / 2.0)
+                var updated = figure
+                updated.opacity = max(0, 1.0 - (age - fadeAfter) / fadeDuration)
+                return updated
             }
-            return updated
+            return figure
         }
     }
     

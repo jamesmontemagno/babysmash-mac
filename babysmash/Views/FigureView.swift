@@ -10,6 +10,11 @@ import SwiftUI
 struct FigureView: View {
     let figure: Figure
     @State private var animationPhase: CGFloat = 0
+    @ObservedObject private var themeManager = ThemeManager.shared
+    
+    private var theme: BabySmashTheme {
+        themeManager.currentTheme
+    }
     
     var body: some View {
         ZStack {
@@ -25,26 +30,72 @@ struct FigureView: View {
         .opacity(figure.opacity)
         .position(figure.position)
         .modifier(animationModifier)
+        .drawingGroup() // Rasterize for better performance
     }
     
     @ViewBuilder
     private func letterView(_ character: Character) -> some View {
+        let useGradient = theme.shapeStyle == .gradient
+        
         Text(String(character))
             .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
-            .foregroundStyle(figure.color.gradient)
-            .shadow(color: figure.color.opacity(0.5), radius: 10, x: 5, y: 5)
+            .foregroundStyle(useGradient ? AnyShapeStyle(figure.color.gradient) : AnyShapeStyle(figure.color))
+            .shadow(
+                color: theme.shadowEnabled ? figure.color.opacity(theme.shadowOpacity) : .clear,
+                radius: theme.shadowRadius,
+                x: 5,
+                y: 5
+            )
+            .overlay {
+                if theme.glowEnabled {
+                    Text(String(character))
+                        .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
+                        .foregroundStyle(figure.color)
+                        .blur(radius: theme.glowRadius / 2)
+                }
+            }
+            .modifier(FloatEffect())
     }
     
     @ViewBuilder
     private func shapeView(_ type: ShapeType) -> some View {
         ZStack {
             shapeContent(type)
-                .fill(figure.color.gradient)
-                .shadow(color: figure.color.opacity(0.5), radius: 15, x: 5, y: 5)
+                .fill(getShapeFillStyle())
+                .overlay {
+                    if theme.shapeStyle == .outlined || theme.shapeStyle == .filledWithOutline {
+                        shapeContent(type)
+                            .stroke(figure.color, lineWidth: 3)
+                    }
+                }
+                .shadow(
+                    color: theme.shadowEnabled ? figure.color.opacity(theme.shadowOpacity) : .clear,
+                    radius: theme.shadowRadius,
+                    x: 5,
+                    y: 5
+                )
+                .overlay {
+                    if theme.glowEnabled {
+                        shapeContent(type)
+                            .stroke(figure.color, lineWidth: 2)
+                            .blur(radius: theme.glowRadius / 2)
+                    }
+                }
             
             if figure.showFace {
                 faceOverlay
             }
+        }
+    }
+    
+    private func getShapeFillStyle() -> AnyShapeStyle {
+        switch theme.shapeStyle {
+        case .gradient:
+            return AnyShapeStyle(figure.color.gradient)
+        case .filled, .filledWithOutline:
+            return AnyShapeStyle(figure.color)
+        case .outlined:
+            return AnyShapeStyle(figure.color.opacity(0.2))
         }
     }
     
@@ -72,6 +123,19 @@ struct FigureView: View {
     }
     
     private var faceOverlay: some View {
+        Group {
+            switch theme.faceStyle {
+            case .none:
+                EmptyView()
+            case .simple:
+                simpleFace
+            case .kawaii:
+                kawaiiFace
+            }
+        }
+    }
+    
+    private var simpleFace: some View {
         VStack(spacing: figure.size * 0.05) {
             // Eyes
             HStack(spacing: figure.size * 0.2) {
@@ -86,6 +150,48 @@ struct FigureView: View {
             Arc(startAngle: .degrees(0), endAngle: .degrees(180), clockwise: false)
                 .stroke(.black, lineWidth: 3)
                 .frame(width: figure.size * 0.3, height: figure.size * 0.15)
+        }
+        .offset(y: -figure.size * 0.05)
+    }
+    
+    private var kawaiiFace: some View {
+        VStack(spacing: figure.size * 0.03) {
+            // Eyes - bigger and more expressive
+            HStack(spacing: figure.size * 0.15) {
+                // Left eye
+                ZStack {
+                    Ellipse()
+                        .fill(.black)
+                        .frame(width: figure.size * 0.12, height: figure.size * 0.15)
+                    Circle()
+                        .fill(.white)
+                        .frame(width: figure.size * 0.04, height: figure.size * 0.04)
+                        .offset(x: -figure.size * 0.02, y: -figure.size * 0.03)
+                }
+                // Right eye
+                ZStack {
+                    Ellipse()
+                        .fill(.black)
+                        .frame(width: figure.size * 0.12, height: figure.size * 0.15)
+                    Circle()
+                        .fill(.white)
+                        .frame(width: figure.size * 0.04, height: figure.size * 0.04)
+                        .offset(x: -figure.size * 0.02, y: -figure.size * 0.03)
+                }
+            }
+            // Blush marks
+            HStack(spacing: figure.size * 0.25) {
+                Ellipse()
+                    .fill(Color.pink.opacity(0.4))
+                    .frame(width: figure.size * 0.08, height: figure.size * 0.05)
+                Ellipse()
+                    .fill(Color.pink.opacity(0.4))
+                    .frame(width: figure.size * 0.08, height: figure.size * 0.05)
+            }
+            // Small cute smile
+            Arc(startAngle: .degrees(0), endAngle: .degrees(180), clockwise: false)
+                .stroke(.black, lineWidth: 2)
+                .frame(width: figure.size * 0.15, height: figure.size * 0.08)
         }
         .offset(y: -figure.size * 0.05)
     }

@@ -19,51 +19,24 @@ struct SettingsView: View {
     @AppStorage("forceUppercase") private var forceUppercase: Bool = true
     @AppStorage("maxFigures") private var maxFigures: Int = 50
     @AppStorage("cursorType") private var cursorType: GameViewModel.CursorType = .hand
-    @AppStorage("fontFamily") private var fontFamily: String = "SF Pro Rounded"
-    @AppStorage("backgroundColor") private var backgroundColor: String = "black"
-    @AppStorage("customBackgroundRed") private var customBackgroundRed: Double = 0.0
-    @AppStorage("customBackgroundGreen") private var customBackgroundGreen: Double = 0.0
-    @AppStorage("customBackgroundBlue") private var customBackgroundBlue: Double = 0.0
     @AppStorage("blockSystemKeys") private var blockSystemKeys: Bool = false
     @AppStorage("displayMode") private var displayMode: String = "all"
     @AppStorage("selectedDisplayIndex") private var selectedDisplayIndex: Int = 0
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     
     // State for accessibility permission alert
     @State private var showAccessibilityAlert: Bool = false
+    @State private var showResetConfirmation: Bool = false
+    
+    // Theme editor state
+    @State private var showThemeEditor = false
+    @State private var editingTheme: BabySmashTheme = .classic
     
     // Observe multi-monitor manager for screen changes
     @ObservedObject private var multiMonitorManager = MultiMonitorManager.shared
     
-    // Computed property for custom color binding
-    private var customColor: Binding<Color> {
-        Binding(
-            get: {
-                Color(red: customBackgroundRed, green: customBackgroundGreen, blue: customBackgroundBlue)
-            },
-            set: { newColor in
-                if let components = NSColor(newColor).usingColorSpace(.deviceRGB) {
-                    customBackgroundRed = Double(components.redComponent)
-                    customBackgroundGreen = Double(components.greenComponent)
-                    customBackgroundBlue = Double(components.blueComponent)
-                }
-            }
-        )
-    }
-    
-    // Available system fonts for letter display
-    private let availableFonts = [
-        "SF Pro Rounded",
-        "SF Pro",
-        "Helvetica Neue",
-        "Arial Rounded MT Bold",
-        "Comic Sans MS",
-        "Marker Felt",
-        "Chalkboard SE",
-        "Papyrus",
-        "American Typewriter",
-        "Noteworthy",
-        "Futura"
-    ]
+    // Theme manager for theme selection
+    @ObservedObject private var themeManager = ThemeManager.shared
     
     var body: some View {
         VStack(spacing: 0) {
@@ -123,37 +96,9 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
                 
+                themeSection
+                
                 Section("Appearance") {
-                    Picker("Background Color", selection: $backgroundColor) {
-                        ForEach(GameViewModel.BackgroundColor.allCases, id: \.rawValue) { bg in
-                            HStack {
-                                if bg == .custom {
-                                    Image(systemName: "paintpalette")
-                                        .frame(width: 16, height: 16)
-                                } else {
-                                    Circle()
-                                        .fill(bg.color ?? .clear)
-                                        .frame(width: 16, height: 16)
-                                        .overlay(Circle().stroke(Color.gray, lineWidth: 1))
-                                }
-                                Text(bg.displayName)
-                            }
-                            .tag(bg.rawValue)
-                        }
-                    }
-                    
-                    if backgroundColor == "custom" {
-                        ColorPicker("Custom Color", selection: customColor, supportsOpacity: false)
-                    }
-                    
-                    Picker("Font", selection: $fontFamily) {
-                        ForEach(availableFonts, id: \.self) { font in
-                            Text(font)
-                                .font(.custom(font, size: 14))
-                                .tag(font)
-                        }
-                    }
-                    
                     Picker("Cursor", selection: $cursorType) {
                         ForEach(GameViewModel.CursorType.allCases, id: \.self) { cursor in
                             Text(cursor.rawValue).tag(cursor)
@@ -242,6 +187,23 @@ struct SettingsView: View {
                          destination: URL(string: "https://github.com/shanselman/babysmash")!)
                         .font(.caption)
                 }
+                
+                Section {
+                    Button(role: .destructive) {
+                        showResetConfirmation = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise")
+                            Text("Reset to Defaults")
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                } header: {
+                    Text("Reset")
+                } footer: {
+                    Text("Resets all settings to default values and restarts onboarding on next launch.")
+                        .font(.caption)
+                }
             }
             .formStyle(.grouped)
         }
@@ -253,6 +215,106 @@ struct SettingsView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("BabySmash needs Accessibility permission to block system keyboard shortcuts, preventing babies from accidentally switching apps or triggering system functions.\n\n1. Open System Settings\n2. Find BabySmash in the list\n3. Enable the checkbox\n4. Toggle this setting again")
+        }
+        .alert("Reset to Defaults?", isPresented: $showResetConfirmation) {
+            Button("Reset", role: .destructive) {
+                resetToDefaults()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This will reset all settings to their default values and restart the onboarding experience on next launch. The app will quit after resetting.")
+        }
+        .sheet(isPresented: $showThemeEditor) {
+            ThemeEditorView(theme: $editingTheme)
+        }
+    }
+    
+    // MARK: - Reset to Defaults
+    
+    private func resetToDefaults() {
+        // Reset all AppStorage values to defaults
+        soundMode = .laughter
+        fadeEnabled = true
+        fadeAfter = 10.0
+        showFaces = true
+        mouseDrawEnabled = true
+        clicklessMouseDraw = false
+        forceUppercase = true
+        maxFigures = 50
+        cursorType = .hand
+        blockSystemKeys = false
+        displayMode = "all"
+        selectedDisplayIndex = 0
+        hasCompletedOnboarding = false
+        
+        // Stop system key blocking if it was enabled
+        SystemKeyBlocker.shared.stopBlocking()
+        
+        // Clear theme manager custom themes
+        ThemeManager.shared.resetToDefault()
+        
+        // Quit the app so user can restart and see onboarding
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NSApplication.shared.terminate(nil)
+        }
+    }
+    
+    // MARK: - Theme Section
+    
+    private var themeSection: some View {
+        Section("Theme") {
+            Picker("Theme", selection: Binding(
+                get: { themeManager.currentTheme },
+                set: { themeManager.selectTheme($0) }
+            )) {
+                Section("Built-in") {
+                    ForEach(BabySmashTheme.allBuiltIn) { theme in
+                        Text(theme.name).tag(theme)
+                    }
+                }
+                
+                if !themeManager.customThemes.isEmpty {
+                    Section("Custom") {
+                        ForEach(themeManager.customThemes) { theme in
+                            Text(theme.name).tag(theme)
+                        }
+                    }
+                }
+            }
+            
+            // Theme preview
+            ThemePreviewView(theme: themeManager.currentTheme)
+                .frame(height: 100)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            Button("Edit Theme...") {
+                if themeManager.currentTheme.isBuiltIn {
+                    // Duplicate for editing
+                    var copy = themeManager.currentTheme
+                    copy.id = UUID()
+                    copy.name = "\(themeManager.currentTheme.name) Copy"
+                    copy.isBuiltIn = false
+                    editingTheme = copy
+                } else {
+                    editingTheme = themeManager.currentTheme
+                }
+                showThemeEditor = true
+            }
+            
+            Button("Create New Theme...") {
+                var newTheme = BabySmashTheme.classic
+                newTheme.id = UUID()
+                newTheme.name = "New Theme"
+                newTheme.isBuiltIn = false
+                editingTheme = newTheme
+                showThemeEditor = true
+            }
+            
+            if !themeManager.currentTheme.isBuiltIn {
+                Button("Delete Theme", role: .destructive) {
+                    themeManager.deleteCustomTheme(themeManager.currentTheme)
+                }
+            }
         }
     }
 }
