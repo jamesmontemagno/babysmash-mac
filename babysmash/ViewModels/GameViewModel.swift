@@ -335,8 +335,10 @@ class GameViewModel: ObservableObject {
     
     private func randomPosition(in size: CGSize) -> CGPoint {
         let padding: CGFloat = 150
-        let effectiveWidth = max(padding * 2 + 1, size.width)
-        let effectiveHeight = max(padding * 2 + 1, size.height)
+        // Ensure minimum valid range by requiring at least padding on each side plus 1 point
+        let minValidDimension = padding * 2 + 1
+        let effectiveWidth = max(minValidDimension, size.width)
+        let effectiveHeight = max(minValidDimension, size.height)
         let x = CGFloat.random(in: padding...(effectiveWidth - padding))
         let y = CGFloat.random(in: padding...(effectiveHeight - padding))
         return CGPoint(x: x, y: y)

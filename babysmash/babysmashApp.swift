@@ -116,11 +116,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.setFrame(screen.frame, display: true)
         window.makeKeyAndOrderFront(nil)
         
-        // Enter full screen mode
-        if !window.styleMask.contains(.fullScreen) {
-            window.toggleFullScreen(nil)
-        }
-        
         return window
     }
     

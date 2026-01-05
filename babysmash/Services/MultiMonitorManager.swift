@@ -147,6 +147,10 @@ class MultiMonitorManager: ObservableObject {
     func randomPositionOnActiveScreens(mode: DisplayMode, selectedIndex: Int = 0) -> CGPoint {
         let activeScreens = screensForMode(mode, selectedIndex: selectedIndex)
         guard let screen = activeScreens.randomElement() else {
+            // Fallback to center of primary screen or a reasonable default
+            if let primaryScreen = NSScreen.main {
+                return CGPoint(x: primaryScreen.frame.midX, y: primaryScreen.frame.midY)
+            }
             return CGPoint(x: 400, y: 400)
         }
         
