@@ -4,7 +4,9 @@ BabySmash has an optional feature to block system keyboard shortcuts, preventing
 
 ## Why Accessibility Access is Needed
 
-When the "Block System Keys" setting is enabled, BabySmash uses macOS Accessibility APIs to intercept and block certain keyboard shortcuts:
+When the "Block System Keys" setting is enabled, BabySmash uses macOS Accessibility APIs to intercept and block a comprehensive set of keyboard shortcuts and special keys:
+
+### Command Key Shortcuts (⌘+key)
 
 | Blocked Shortcut | Normal Function |
 |------------------|-----------------|
@@ -13,15 +15,76 @@ When the "Block System Keys" setting is enabled, BabySmash uses macOS Accessibil
 | ⌘+W | Close window |
 | ⌘+H | Hide application |
 | ⌘+M | Minimize window |
+| ⌘+Space | Spotlight search |
+| ⌘+` | Switch windows |
+| ⌘+N | New window |
+| ⌘+T | New tab |
+| ⌘+O | Open file |
+| ⌘+S | Save |
+| ⌘+P | Print |
+| ⌘+Z | Undo |
+| ⌘+X/C/V | Cut/Copy/Paste |
+| ⌘+A | Select all |
+| ⌘+F | Find |
+| ⌘+Delete | Delete file |
+| ⌘+[/] | Indent/Outdent |
+| ⌘+-/=/0 | Zoom controls |
+
+### Control Key Shortcuts (Ctrl+key)
+
+| Blocked Shortcut | Normal Function |
+|------------------|-----------------|
 | Ctrl+↑ | Mission Control |
 | Ctrl+↓ | App Exposé |
 | Ctrl+←/→ | Switch Spaces |
+| Ctrl+1-9 | Switch to Desktop 1-9 |
+
+### Function & Media Keys
+
+| Blocked Key | Normal Function |
+|-------------|-----------------|
+| F1 | Help / Brightness down |
+| F2 | Brightness up |
 | F3 | Mission Control |
-| F11 | Show Desktop |
+| F4 | Launchpad |
+| F5/F6 | Keyboard brightness |
+| F7/F8/F9 | Media controls (Previous/Play/Next) |
+| F10 | Mute |
+| F11 | Show Desktop / Volume down |
+| F12 | Volume up |
+| F13-F20 | Various functions |
+
+### Media & Special Keys
+
+| Blocked Key | Normal Function |
+|-------------|-----------------|
+| Play/Pause | Media playback |
+| Previous/Next Track | Media navigation |
+| Volume Up/Down/Mute | Audio control |
+| Brightness Up/Down | Display brightness |
+| Keyboard Backlight | Keyboard brightness |
+| Eject | Eject disc |
+| Launchpad key | Open Launchpad |
+| Mission Control key | Open Mission Control |
+
+### Other Blocked Keys
+
+| Blocked Key | Normal Function |
+|-------------|-----------------|
+| Escape | Cancel/Close |
+| Home/End | Navigation |
+| Page Up/Down | Scrolling |
+| Forward Delete | Delete forward |
+| Help/Insert | Help system |
+
+### Modifier Combinations
+
+- All **⌘+Shift** combinations are blocked
+- All **⌘+Option** combinations are blocked (except the emergency exit)
 
 ### Emergency Exit
 
-Even with system key blocking enabled, you can always:
+Even with comprehensive key blocking enabled, you can always:
 - Press **⌥⌘+Esc** (Option+Command+Escape) to open the Force Quit dialog
 - Press **⌥+S** (Option+S) to open BabySmash settings
 
