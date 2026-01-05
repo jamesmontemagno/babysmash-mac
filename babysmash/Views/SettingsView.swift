@@ -163,7 +163,7 @@ struct SettingsView: View {
                         }
                     
                     if blockSystemKeys {
-                        Text("Blocks Cmd+Tab, Cmd+Q, Mission Control, and other system shortcuts")
+                        Text("Blocks Cmd+Tab, Cmd+Q, Cmd+Space (Spotlight), Mission Control, and other system shortcuts")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         
