@@ -43,14 +43,14 @@ struct AccessibilitySettingsView: View {
     // MARK: - Visual Section
     
     private var visualSection: some View {
-        Section("Visual") {
-            Toggle("High Contrast Mode", isOn: $accessibilityManager.settings.highContrastMode)
+        Section(L10n.Accessibility.Visual.sectionTitle) {
+            Toggle(L10n.Accessibility.Visual.highContrastMode, isOn: $accessibilityManager.settings.highContrastMode)
             
-            Toggle("Large Elements", isOn: $accessibilityManager.settings.largeElementsMode)
+            Toggle(L10n.Accessibility.Visual.largeElements, isOn: $accessibilityManager.settings.largeElementsMode)
             
             if accessibilityManager.settings.largeElementsMode {
                 HStack {
-                    Text("Minimum Size: \(Int(accessibilityManager.settings.minimumShapeSize))")
+                    Text(L10n.Accessibility.Visual.minimumSize(Int(accessibilityManager.settings.minimumShapeSize)))
                     Spacer()
                     Slider(
                         value: $accessibilityManager.settings.minimumShapeSize,
@@ -61,16 +61,16 @@ struct AccessibilitySettingsView: View {
                 }
             }
             
-            Picker("Color Blindness Mode", selection: $accessibilityManager.settings.colorBlindnessMode) {
+            Picker(L10n.Accessibility.Visual.colorBlindnessMode, selection: $accessibilityManager.settings.colorBlindnessMode) {
                 ForEach(AccessibilitySettings.ColorBlindnessMode.allCases) { mode in
-                    Text(mode.displayName).tag(mode)
+                    Text(mode.localizedName).tag(mode)
                 }
             }
             
             if accessibilityManager.settings.colorBlindnessMode != .none {
-                Toggle("Show Patterns on Shapes", isOn: $accessibilityManager.settings.showPatterns)
+                Toggle(L10n.Accessibility.Visual.showPatternsOnShapes, isOn: $accessibilityManager.settings.showPatterns)
                 
-                Text("Patterns help distinguish shapes beyond color alone.")
+                Text(L10n.Accessibility.Visual.patternsDescription)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -80,24 +80,24 @@ struct AccessibilitySettingsView: View {
     // MARK: - Motion Section
     
     private var motionSection: some View {
-        Section("Motion") {
-            Toggle("Reduce Motion", isOn: $accessibilityManager.settings.reduceMotion)
+        Section(L10n.Accessibility.Motion.sectionTitle) {
+            Toggle(L10n.Accessibility.Motion.reduceMotion, isOn: $accessibilityManager.settings.reduceMotion)
             
             if !accessibilityManager.settings.reduceMotion {
-                Picker("Animation Speed", selection: $accessibilityManager.settings.animationSpeed) {
+                Picker(L10n.Accessibility.Motion.animationSpeed, selection: $accessibilityManager.settings.animationSpeed) {
                     ForEach(AccessibilitySettings.AnimationSpeed.allCases) { speed in
-                        Text(speed.rawValue).tag(speed)
+                        Text(speed.localizedName).tag(speed)
                     }
                 }
                 
-                Toggle("Disable Rotation Effects", isOn: $accessibilityManager.settings.disableRotation)
+                Toggle(L10n.Accessibility.Motion.disableRotationEffects, isOn: $accessibilityManager.settings.disableRotation)
             }
             
             if accessibilityManager.systemReduceMotion {
                 HStack {
                     Image(systemName: "info.circle")
                         .foregroundStyle(.blue)
-                    Text("System Reduce Motion is enabled")
+                    Text(L10n.Accessibility.Motion.systemReduceMotionEnabled)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -108,32 +108,32 @@ struct AccessibilitySettingsView: View {
     // MARK: - Audio Section
     
     private var audioSection: some View {
-        Section("Audio") {
-            Toggle("Visual Sound Indicators", isOn: $accessibilityManager.settings.visualSoundIndicators)
+        Section(L10n.Accessibility.Audio.sectionTitle) {
+            Toggle(L10n.Accessibility.Audio.visualSoundIndicators, isOn: $accessibilityManager.settings.visualSoundIndicators)
             
-            Text("Flashes the screen border when sounds play.")
+            Text(L10n.Accessibility.Audio.flashesDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             
-            Toggle("Show Captions", isOn: $accessibilityManager.settings.showCaptions)
+            Toggle(L10n.Accessibility.Audio.showCaptions, isOn: $accessibilityManager.settings.showCaptions)
             
-            Text("Shows text describing sounds and speech.")
+            Text(L10n.Accessibility.Audio.captionsDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             
-            Toggle("Volume Boost", isOn: $accessibilityManager.settings.volumeBoost)
+            Toggle(L10n.Accessibility.Audio.volumeBoost, isOn: $accessibilityManager.settings.volumeBoost)
         }
     }
     
     // MARK: - Motor Section
     
     private var motorSection: some View {
-        Section("Motor") {
-            Toggle("Auto-Play Mode", isOn: $accessibilityManager.settings.autoPlayMode)
+        Section(L10n.Accessibility.Motor.sectionTitle) {
+            Toggle(L10n.Accessibility.Motor.autoPlayMode, isOn: $accessibilityManager.settings.autoPlayMode)
             
             if accessibilityManager.settings.autoPlayMode {
                 HStack {
-                    Text("Interval: \(Int(accessibilityManager.settings.autoPlayInterval))s")
+                    Text(L10n.Accessibility.Motor.interval(Int(accessibilityManager.settings.autoPlayInterval)))
                     Spacer()
                     Slider(
                         value: $accessibilityManager.settings.autoPlayInterval,
@@ -143,14 +143,14 @@ struct AccessibilitySettingsView: View {
                     .frame(width: 200)
                 }
                 
-                Text("Shapes appear automatically at this interval.")
+                Text(L10n.Accessibility.Motor.autoPlayDescription)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             
-            Toggle("Switch Control Mode", isOn: $accessibilityManager.settings.switchControlEnabled)
+            Toggle(L10n.Accessibility.Motor.switchControlMode, isOn: $accessibilityManager.settings.switchControlEnabled)
             
-            Text("Enables scanning through actions for single-switch input.")
+            Text(L10n.Accessibility.Motor.switchControlDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -159,12 +159,12 @@ struct AccessibilitySettingsView: View {
     // MARK: - Cognitive Section
     
     private var cognitiveSection: some View {
-        Section("Cognitive") {
-            Toggle("Simplified Mode", isOn: $accessibilityManager.settings.simplifiedMode)
+        Section(L10n.Accessibility.Cognitive.sectionTitle) {
+            Toggle(L10n.Accessibility.Cognitive.simplifiedMode, isOn: $accessibilityManager.settings.simplifiedMode)
             
             if accessibilityManager.settings.simplifiedMode {
                 HStack {
-                    Text("Max Shapes: \(accessibilityManager.settings.maxSimultaneousShapes)")
+                    Text(L10n.Accessibility.Cognitive.maxShapes(accessibilityManager.settings.maxSimultaneousShapes))
                     Spacer()
                     Slider(
                         value: Binding(
@@ -177,24 +177,24 @@ struct AccessibilitySettingsView: View {
                     .frame(width: 200)
                 }
                 
-                Text("Limits the number of shapes on screen for reduced complexity.")
+                Text(L10n.Accessibility.Cognitive.maxShapesDescription)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             
-            Toggle("Predictable Mode", isOn: $accessibilityManager.settings.predictableMode)
+            Toggle(L10n.Accessibility.Cognitive.predictableMode, isOn: $accessibilityManager.settings.predictableMode)
             
-            Text("Shapes appear in consistent positions rather than randomly.")
+            Text(L10n.Accessibility.Cognitive.predictableModeDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             
-            Picker("Focus", selection: $accessibilityManager.settings.focusMode) {
+            Picker(L10n.Accessibility.Cognitive.focus, selection: $accessibilityManager.settings.focusMode) {
                 ForEach(AccessibilitySettings.FocusMode.allCases) { mode in
-                    Text(mode.displayName).tag(mode)
+                    Text(mode.localizedName).tag(mode)
                 }
             }
             
-            Text("Limits content to specific types.")
+            Text(L10n.Accessibility.Cognitive.focusDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -203,10 +203,10 @@ struct AccessibilitySettingsView: View {
     // MARK: - Photosensitivity Section
     
     private var photosensitivitySection: some View {
-        Section("Photosensitivity") {
-            Toggle("Safe Mode (No Flashing)", isOn: $accessibilityManager.settings.photosensitivitySafeMode)
+        Section(L10n.Accessibility.Photosensitivity.sectionTitle) {
+            Toggle(L10n.Accessibility.Photosensitivity.safeMode, isOn: $accessibilityManager.settings.photosensitivitySafeMode)
             
-            Text("Disables all rapid visual changes, flashing effects, and ensures gentle transitions only. Recommended for users with photosensitive epilepsy.")
+            Text(L10n.Accessibility.Photosensitivity.safeModeDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -215,29 +215,29 @@ struct AccessibilitySettingsView: View {
     // MARK: - System Info Section
     
     private var systemInfoSection: some View {
-        Section("System") {
+        Section(L10n.Accessibility.System.sectionTitle) {
             HStack {
-                Text("VoiceOver")
+                Text(L10n.Accessibility.System.voiceOver)
                 Spacer()
-                Text(accessibilityManager.isVoiceOverRunning ? "Running" : "Off")
+                Text(accessibilityManager.isVoiceOverRunning ? L10n.Common.running : L10n.Common.off)
                     .foregroundStyle(.secondary)
             }
             
             HStack {
-                Text("System Reduce Motion")
+                Text(L10n.Accessibility.System.systemReduceMotion)
                 Spacer()
-                Text(accessibilityManager.systemReduceMotion ? "On" : "Off")
+                Text(accessibilityManager.systemReduceMotion ? L10n.Common.on : L10n.Common.off)
                     .foregroundStyle(.secondary)
             }
             
             HStack {
-                Text("System Increase Contrast")
+                Text(L10n.Accessibility.System.systemIncreaseContrast)
                 Spacer()
-                Text(accessibilityManager.systemIncreaseContrast ? "On" : "Off")
+                Text(accessibilityManager.systemIncreaseContrast ? L10n.Common.on : L10n.Common.off)
                     .foregroundStyle(.secondary)
             }
             
-            Button("Reset Accessibility Settings") {
+            Button(L10n.Accessibility.System.resetAccessibilitySettings) {
                 accessibilityManager.resetToDefaults()
             }
         }

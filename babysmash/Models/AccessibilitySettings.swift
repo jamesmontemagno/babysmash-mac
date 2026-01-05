@@ -104,6 +104,16 @@ struct AccessibilitySettings: Codable, Equatable {
             case .monochromacy: return "Monochromacy (Grayscale)"
             }
         }
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .none: return L10n.ColorBlindnessModeNames.none
+            case .deuteranopia: return L10n.ColorBlindnessModeNames.deuteranopia
+            case .protanopia: return L10n.ColorBlindnessModeNames.protanopia
+            case .tritanopia: return L10n.ColorBlindnessModeNames.tritanopia
+            case .monochromacy: return L10n.ColorBlindnessModeNames.monochromacy
+            }
+        }
     }
     
     enum AnimationSpeed: String, Codable, CaseIterable, Identifiable {
@@ -122,6 +132,15 @@ struct AccessibilitySettings: Codable, Equatable {
             case .none: return 0        // No animation
             }
         }
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .slow: return L10n.AnimationSpeedNames.slow
+            case .normal: return L10n.AnimationSpeedNames.normal
+            case .fast: return L10n.AnimationSpeedNames.fast
+            case .none: return L10n.AnimationSpeedNames.none
+            }
+        }
     }
     
     enum FocusMode: String, Codable, CaseIterable, Identifiable {
@@ -133,5 +152,14 @@ struct AccessibilitySettings: Codable, Equatable {
         var id: String { rawValue }
         
         var displayName: String { rawValue }
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .all: return L10n.FocusModeNames.all
+            case .lettersOnly: return L10n.FocusModeNames.lettersOnly
+            case .numbersOnly: return L10n.FocusModeNames.numbersOnly
+            case .shapesOnly: return L10n.FocusModeNames.shapesOnly
+            }
+        }
     }
 }
