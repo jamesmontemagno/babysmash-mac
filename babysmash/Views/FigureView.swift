@@ -37,13 +37,12 @@ struct FigureView: View {
     @ViewBuilder
     private func letterView(_ character: Character) -> some View {
         let useGradient = theme.shapeStyle == .gradient && !accessibilityManager.settings.highContrastMode
-        let effectiveColor = effectiveColorForDisplay
         
         Text(String(character))
             .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
-            .foregroundStyle(useGradient ? AnyShapeStyle(effectiveColor.gradient) : AnyShapeStyle(effectiveColor))
+            .foregroundStyle(useGradient ? AnyShapeStyle(figure.color.gradient) : AnyShapeStyle(figure.color))
             .shadow(
-                color: theme.shadowEnabled ? effectiveColor.opacity(theme.shadowOpacity) : .clear,
+                color: theme.shadowEnabled ? figure.color.opacity(theme.shadowOpacity) : .clear,
                 radius: theme.shadowRadius,
                 x: 5,
                 y: 5
@@ -52,7 +51,7 @@ struct FigureView: View {
                 if theme.glowEnabled && !accessibilityManager.settings.photosensitivitySafeMode {
                     Text(String(character))
                         .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
-                        .foregroundStyle(effectiveColor)
+                        .foregroundStyle(figure.color)
                         .blur(radius: theme.glowRadius / 2)
                 }
             }
@@ -61,13 +60,12 @@ struct FigureView: View {
     
     @ViewBuilder
     private func shapeView(_ type: ShapeType) -> some View {
-        let effectiveColor = effectiveColorForDisplay
         let showPattern = accessibilityManager.settings.showPatterns && 
                           accessibilityManager.settings.colorBlindnessMode != .none
         
         ZStack {
             shapeContent(type)
-                .fill(getShapeFillStyle(effectiveColor))
+                .fill(getShapeFillStyle(figure.color))
                 .overlay {
                     // Pattern overlay for color blindness support
                     if showPattern {
@@ -78,11 +76,11 @@ struct FigureView: View {
                 .overlay {
                     if theme.shapeStyle == .outlined || theme.shapeStyle == .filledWithOutline || accessibilityManager.settings.highContrastMode {
                         shapeContent(type)
-                            .stroke(effectiveColor, lineWidth: accessibilityManager.settings.highContrastMode ? 5 : 3)
+                            .stroke(figure.color, lineWidth: accessibilityManager.settings.highContrastMode ? 5 : 3)
                     }
                 }
                 .shadow(
-                    color: theme.shadowEnabled ? effectiveColor.opacity(theme.shadowOpacity) : .clear,
+                    color: theme.shadowEnabled ? figure.color.opacity(theme.shadowOpacity) : .clear,
                     radius: theme.shadowRadius,
                     x: 5,
                     y: 5
@@ -90,7 +88,7 @@ struct FigureView: View {
                 .overlay {
                     if theme.glowEnabled && !accessibilityManager.settings.photosensitivitySafeMode {
                         shapeContent(type)
-                            .stroke(effectiveColor, lineWidth: 2)
+                            .stroke(figure.color, lineWidth: 2)
                             .blur(radius: theme.glowRadius / 2)
                     }
                 }
@@ -99,13 +97,6 @@ struct FigureView: View {
                 faceOverlay
             }
         }
-    }
-    
-    /// Returns the effective color considering accessibility settings
-    private var effectiveColorForDisplay: Color {
-        // The color should already be set correctly in GameViewModel based on accessibility settings
-        // This property is mainly for future extensibility
-        figure.color
     }
     
     private func getShapeFillStyle(_ color: Color) -> AnyShapeStyle {

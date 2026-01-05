@@ -144,8 +144,16 @@ class AccessibilitySettingsManager: ObservableObject {
 
 extension NSWorkspace {
     /// Returns true if VoiceOver is currently running
+    /// Uses a more reliable method by checking for the VoiceOver process
     var isVoiceOverEnabled: Bool {
-        // Check if VoiceOver is running by looking at accessibility settings
-        return accessibilityDisplayShouldDifferentiateWithoutColor
+        // VoiceOver is running if the VoiceOver process exists
+        // We can check this via the accessibility API's voiceOverEnabled flag
+        // or by checking if the com.apple.VoiceOver bundle is loaded
+        
+        // For macOS 10.15+, we can use the accessibility API
+        // This is a simplified check - VoiceOver running typically means
+        // accessibility features are actively being used
+        let runningApps = NSWorkspace.shared.runningApplications
+        return runningApps.contains { $0.bundleIdentifier == "com.apple.VoiceOver" }
     }
 }
