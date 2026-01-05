@@ -24,11 +24,6 @@ class GameViewModel: ObservableObject {
     @AppStorage("forceUppercase") var forceUppercase: Bool = true
     @AppStorage("maxFigures") var maxFigures: Int = 50
     @AppStorage("cursorType") var cursorType: CursorType = .hand
-    @AppStorage("fontFamily") var fontFamily: String = "SF Pro Rounded"
-    @AppStorage("backgroundColor") var backgroundColor: String = "black"
-    @AppStorage("customBackgroundRed") var customBackgroundRed: Double = 0.0
-    @AppStorage("customBackgroundGreen") var customBackgroundGreen: Double = 0.0
-    @AppStorage("customBackgroundBlue") var customBackgroundBlue: Double = 0.0
     @AppStorage("blockSystemKeys") var blockSystemKeys: Bool = false
     @AppStorage("displayMode") var displayMode: String = "all"
     @AppStorage("selectedDisplayIndex") var selectedDisplayIndex: Int = 0
@@ -43,43 +38,6 @@ class GameViewModel: ObservableObject {
         case hand = "Hand"
         case arrow = "Arrow"
         case none = "Hidden"
-    }
-    
-    enum BackgroundColor: String, CaseIterable {
-        case black = "black"
-        case darkGray = "darkGray"
-        case navy = "navy"
-        case darkGreen = "darkGreen"
-        case purple = "purple"
-        case brown = "brown"
-        case white = "white"
-        case custom = "custom"
-        
-        var displayName: String {
-            switch self {
-            case .black: return "Black"
-            case .darkGray: return "Dark Gray"
-            case .navy: return "Navy"
-            case .darkGreen: return "Dark Green"
-            case .purple: return "Purple"
-            case .brown: return "Brown"
-            case .white: return "White"
-            case .custom: return "Custom..."
-            }
-        }
-        
-        var color: Color? {
-            switch self {
-            case .black: return .black
-            case .darkGray: return Color(white: 0.15)
-            case .navy: return Color(red: 0.0, green: 0.0, blue: 0.3)
-            case .darkGreen: return Color(red: 0.0, green: 0.2, blue: 0.0)
-            case .purple: return Color(red: 0.2, green: 0.0, blue: 0.3)
-            case .brown: return Color(red: 0.2, green: 0.1, blue: 0.05)
-            case .white: return .white
-            case .custom: return nil // Custom uses separate RGB values
-            }
-        }
     }
     
     // MARK: - Internal State
