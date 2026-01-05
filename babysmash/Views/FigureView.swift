@@ -30,7 +30,7 @@ struct FigureView: View {
     @ViewBuilder
     private func letterView(_ character: Character) -> some View {
         Text(String(character))
-            .font(.system(size: figure.size * 0.8, weight: .heavy, design: .rounded))
+            .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
             .foregroundStyle(figure.color.gradient)
             .shadow(color: figure.color.opacity(0.5), radius: 10, x: 5, y: 5)
     }

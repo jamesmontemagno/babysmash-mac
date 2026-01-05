@@ -24,6 +24,7 @@ struct Figure: Identifiable {
     // Configuration
     let showFace: Bool
     let animationStyle: AnimationStyle
+    let fontFamily: String
     
     enum AnimationStyle: CaseIterable {
         case jiggle
@@ -35,5 +36,33 @@ struct Figure: Identifiable {
         static var random: AnimationStyle {
             allCases.randomElement()!
         }
+    }
+    
+    init(
+        shapeType: ShapeType?,
+        character: Character?,
+        color: Color,
+        position: CGPoint,
+        size: CGFloat,
+        createdAt: Date,
+        scale: CGFloat = 0.0,
+        rotation: Angle = .zero,
+        opacity: Double = 1.0,
+        showFace: Bool,
+        animationStyle: AnimationStyle,
+        fontFamily: String = "SF Pro Rounded"
+    ) {
+        self.shapeType = shapeType
+        self.character = character
+        self.color = color
+        self.position = position
+        self.size = size
+        self.createdAt = createdAt
+        self.scale = scale
+        self.rotation = rotation
+        self.opacity = opacity
+        self.showFace = showFace
+        self.animationStyle = animationStyle
+        self.fontFamily = fontFamily
     }
 }

@@ -16,16 +16,67 @@ class GameViewModel: ObservableObject {
     
     // MARK: - Settings
     @AppStorage("soundMode") var soundMode: SoundMode = .laughter
+    @AppStorage("fadeEnabled") var fadeEnabled: Bool = true
     @AppStorage("fadeAfter") var fadeAfter: Double = 10.0
     @AppStorage("showFaces") var showFaces: Bool = true
     @AppStorage("mouseDrawEnabled") var mouseDrawEnabled: Bool = true
+    @AppStorage("clicklessMouseDraw") var clicklessMouseDraw: Bool = false
     @AppStorage("forceUppercase") var forceUppercase: Bool = true
     @AppStorage("maxFigures") var maxFigures: Int = 50
+    @AppStorage("cursorType") var cursorType: CursorType = .hand
+    @AppStorage("fontFamily") var fontFamily: String = "SF Pro Rounded"
+    @AppStorage("backgroundColor") var backgroundColor: String = "black"
+    @AppStorage("customBackgroundRed") var customBackgroundRed: Double = 0.0
+    @AppStorage("customBackgroundGreen") var customBackgroundGreen: Double = 0.0
+    @AppStorage("customBackgroundBlue") var customBackgroundBlue: Double = 0.0
     
     enum SoundMode: String, CaseIterable {
         case laughter = "Laughter"
         case speech = "Speech"
         case off = "Off"
+    }
+    
+    enum CursorType: String, CaseIterable {
+        case hand = "Hand"
+        case arrow = "Arrow"
+        case none = "Hidden"
+    }
+    
+    enum BackgroundColor: String, CaseIterable {
+        case black = "black"
+        case darkGray = "darkGray"
+        case navy = "navy"
+        case darkGreen = "darkGreen"
+        case purple = "purple"
+        case brown = "brown"
+        case white = "white"
+        case custom = "custom"
+        
+        var displayName: String {
+            switch self {
+            case .black: return "Black"
+            case .darkGray: return "Dark Gray"
+            case .navy: return "Navy"
+            case .darkGreen: return "Dark Green"
+            case .purple: return "Purple"
+            case .brown: return "Brown"
+            case .white: return "White"
+            case .custom: return "Custom..."
+            }
+        }
+        
+        var color: Color? {
+            switch self {
+            case .black: return .black
+            case .darkGray: return Color(white: 0.15)
+            case .navy: return Color(red: 0.0, green: 0.0, blue: 0.3)
+            case .darkGreen: return Color(red: 0.0, green: 0.2, blue: 0.0)
+            case .purple: return Color(red: 0.2, green: 0.0, blue: 0.3)
+            case .brown: return Color(red: 0.2, green: 0.1, blue: 0.05)
+            case .white: return .white
+            case .custom: return nil // Custom uses separate RGB values
+            }
+        }
     }
     
     // MARK: - Internal State
@@ -86,8 +137,16 @@ class GameViewModel: ObservableObject {
         addRandomShape(at: location)
     }
     
-    func handleMouseDrag(at location: CGPoint, in size: CGSize) {
+    func handleMouseDrag(at location: CGPoint, in size: CGSize, isDragging: Bool) {
         guard mouseDrawEnabled else { return }
+        // Only draw if clickless mode is on OR we're actively dragging (mouse button down)
+        guard clicklessMouseDraw || isDragging else { return }
+        screenSize = size
+        mouseDrawingManager.addPoint(at: location)
+    }
+    
+    func handleMouseMove(at location: CGPoint, in size: CGSize) {
+        guard mouseDrawEnabled && clicklessMouseDraw else { return }
         screenSize = size
         mouseDrawingManager.addPoint(at: location)
     }
@@ -141,7 +200,8 @@ class GameViewModel: ObservableObject {
             rotation: .zero,
             opacity: 1.0,
             showFace: false,
-            animationStyle: .random
+            animationStyle: .random,
+            fontFamily: fontFamily
         )
         
         addFigure(figure)
@@ -162,7 +222,8 @@ class GameViewModel: ObservableObject {
             rotation: .zero,
             opacity: 1.0,
             showFace: showFaces,
-            animationStyle: .random
+            animationStyle: .random,
+            fontFamily: fontFamily
         )
         
         addFigure(figure)
@@ -205,6 +266,8 @@ class GameViewModel: ObservableObject {
     }
     
     private func fadeOldFigures() {
+        guard fadeEnabled else { return }
+        
         let now = Date()
         figures = figures.compactMap { figure in
             let age = now.timeIntervalSince(figure.createdAt)
