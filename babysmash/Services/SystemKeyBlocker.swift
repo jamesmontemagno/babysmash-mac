@@ -18,17 +18,25 @@ class SystemKeyBlocker: ObservableObject {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     
-    // Key codes for blocked keys
-    private static let blockedKeyCodes: Set<Int64> = [
+    // Key codes for blocked Cmd+key combinations
+    private static let blockedCmdKeyCodes: Set<Int64> = [
         48,  // Tab (Cmd+Tab)
         12,  // Q (Cmd+Q)
         13,  // W (Cmd+W)
         4,   // H (Cmd+H)
         46,  // M (Cmd+M)
+    ]
+    
+    // Key codes for Ctrl+arrow combinations (Mission Control / Spaces)
+    private static let blockedCtrlArrowKeyCodes: Set<Int64> = [
         126, // Up Arrow (Ctrl+Up for Mission Control)
         125, // Down Arrow (Ctrl+Down for App Exposé)
         123, // Left Arrow (Ctrl+Left for Switch Spaces)
         124, // Right Arrow (Ctrl+Right for Switch Spaces)
+    ]
+    
+    // Function key codes to block (no modifier required)
+    private static let blockedFunctionKeyCodes: Set<Int64> = [
         99,  // F3 (Mission Control)
         103, // F11 (Show Desktop)
     ]
@@ -138,25 +146,17 @@ class SystemKeyBlocker: ObservableObject {
         }
         
         // BLOCK: Cmd+key combinations (Tab, Q, W, H, M)
-        if flags.contains(.maskCommand) {
-            if keyCode == 48 ||  // Tab (Cmd+Tab)
-               keyCode == 12 ||  // Q (Cmd+Q)
-               keyCode == 13 ||  // W (Cmd+W)
-               keyCode == 4 ||   // H (Cmd+H)
-               keyCode == 46 {   // M (Cmd+M)
-                return nil // Block the event
-            }
+        if flags.contains(.maskCommand) && blockedCmdKeyCodes.contains(keyCode) {
+            return nil // Block the event
         }
         
         // BLOCK: Ctrl+arrow combinations (Mission Control / Spaces)
-        if flags.contains(.maskControl) {
-            if keyCode >= 123 && keyCode <= 126 { // Arrow keys
-                return nil // Block the event
-            }
+        if flags.contains(.maskControl) && blockedCtrlArrowKeyCodes.contains(keyCode) {
+            return nil // Block the event
         }
         
         // BLOCK: F3 (Mission Control) and F11 (Show Desktop)
-        if keyCode == 99 || keyCode == 103 {
+        if blockedFunctionKeyCodes.contains(keyCode) {
             return nil // Block the event
         }
         
