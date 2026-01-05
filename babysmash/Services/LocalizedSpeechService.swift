@@ -118,7 +118,14 @@ class LocalizedSpeechService {
         if let special = pronunciations[language]?[letter] {
             return special
         }
-        return String(letter)
+        
+        // For basic Latin letters, use lowercase to avoid "Capital A" pronunciation
+        let letterString = String(letter)
+        if letter.isLetter && letter.isASCII {
+            return letterString.lowercased()
+        }
+        
+        return letterString
     }
     
     private func numberPronunciation(_ number: Character, in language: String) -> String {
