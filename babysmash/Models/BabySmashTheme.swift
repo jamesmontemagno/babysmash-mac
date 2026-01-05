@@ -56,6 +56,16 @@ struct BabySmashTheme: Codable, Identifiable, Equatable, Hashable {
             case .starfield: return "Starfield"
             }
         }
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .solid: return L10n.BackgroundStyleNames.solidColor
+            case .linearGradient: return L10n.BackgroundStyleNames.linearGradient
+            case .radialGradient: return L10n.BackgroundStyleNames.radialGradient
+            case .animatedGradient: return L10n.BackgroundStyleNames.animatedGradient
+            case .starfield: return L10n.BackgroundStyleNames.starfield
+            }
+        }
     }
     
     enum ShapeStyle: String, Codable, CaseIterable {
@@ -72,6 +82,15 @@ struct BabySmashTheme: Codable, Identifiable, Equatable, Hashable {
             case .gradient: return "Gradient"
             }
         }
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .filled: return L10n.ShapeStyleNames.filled
+            case .outlined: return L10n.ShapeStyleNames.outlined
+            case .filledWithOutline: return L10n.ShapeStyleNames.filledWithOutline
+            case .gradient: return L10n.ShapeStyleNames.gradient
+            }
+        }
     }
     
     enum FaceStyle: String, Codable, CaseIterable {
@@ -84,6 +103,14 @@ struct BabySmashTheme: Codable, Identifiable, Equatable, Hashable {
             case .none: return "None"
             case .simple: return "Simple"
             case .kawaii: return "Kawaii"
+            }
+        }
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .none: return L10n.FaceStyleNames.none
+            case .simple: return L10n.FaceStyleNames.simple
+            case .kawaii: return L10n.FaceStyleNames.kawaii
             }
         }
     }

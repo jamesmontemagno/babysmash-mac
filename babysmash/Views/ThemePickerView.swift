@@ -41,7 +41,7 @@ struct ThemePickerView: View {
                     Text("🎨")
                         .font(.system(size: 50))
                     
-                    Text("Choose Your Theme")
+                    Text(L10n.ThemePicker.title)
                         .font(.system(size: 42, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
@@ -51,7 +51,7 @@ struct ThemePickerView: View {
                             )
                         )
                     
-                    Text("Pick a look for your BabySmash adventure!")
+                    Text(L10n.ThemePicker.subtitle)
                         .font(.system(size: 18, weight: .medium, design: .rounded))
                         .foregroundStyle(.white.opacity(0.7))
                 }
@@ -84,7 +84,7 @@ struct ThemePickerView: View {
                     onThemeSelected(selectedTheme)
                 }) {
                     HStack(spacing: 12) {
-                        Text("Start with \(selectedTheme.name)")
+                        Text(L10n.ThemePicker.startWith(selectedTheme.name))
                             .font(.system(size: 20, weight: .semibold, design: .rounded))
                         Image(systemName: "arrow.right.circle.fill")
                             .font(.system(size: 22))

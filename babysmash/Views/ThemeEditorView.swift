@@ -20,15 +20,15 @@ struct ThemeEditorView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text(theme.isBuiltIn ? "Duplicate Theme" : "Edit Theme")
+                Text(theme.isBuiltIn ? L10n.ThemeEditor.duplicateTheme : L10n.ThemeEditor.editTheme)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 Spacer()
-                Button("Cancel") {
+                Button(L10n.Common.cancel) {
                     dismiss()
                 }
                 .buttonStyle(.bordered)
-                Button("Save") {
+                Button(L10n.Common.save) {
                     saveTheme()
                 }
                 .buttonStyle(.borderedProminent)
@@ -38,20 +38,20 @@ struct ThemeEditorView: View {
             
             // Scrollable form content
             Form {
-                Section("Basic") {
-                    TextField("Theme Name", text: $theme.name)
+                Section(L10n.ThemeEditor.Basic.sectionTitle) {
+                    TextField(L10n.ThemeEditor.Basic.themeName, text: $theme.name)
                     
-                    Picker("Background Style", selection: $theme.backgroundStyle) {
+                    Picker(L10n.ThemeEditor.Basic.backgroundStyle, selection: $theme.backgroundStyle) {
                         ForEach(BabySmashTheme.BackgroundStyle.allCases, id: \.self) { style in
-                            Text(style.displayName).tag(style)
+                            Text(style.localizedName).tag(style)
                         }
                     }
                     
-                    ColorPicker("Background Color", selection: backgroundColorBinding)
+                    ColorPicker(L10n.ThemeEditor.Basic.backgroundColor, selection: backgroundColorBinding)
                     
                     if theme.backgroundStyle != .solid && theme.backgroundStyle != .starfield {
                         VStack(alignment: .leading) {
-                            Text("Gradient Colors")
+                            Text(L10n.ThemeEditor.Basic.gradientColors)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             
@@ -74,10 +74,10 @@ struct ThemeEditorView: View {
                     }
                 }
                 
-                Section("Color Palette") {
+                Section(L10n.ThemeEditor.ColorPalette.sectionTitle) {
                     ForEach(Array(theme.palette.enumerated()), id: \.offset) { index, color in
                         HStack {
-                            ColorPicker("Color \(index + 1)", selection: paletteBinding(at: index))
+                            ColorPicker(L10n.ThemeEditor.ColorPalette.color(index + 1), selection: paletteBinding(at: index))
                             
                             Spacer()
                             
@@ -95,60 +95,60 @@ struct ThemeEditorView: View {
                     Button {
                         theme.palette.append(CodableColor(.white))
                     } label: {
-                        Label("Add Color", systemImage: "plus.circle.fill")
+                        Label(L10n.ThemeEditor.ColorPalette.addColor, systemImage: "plus.circle.fill")
                     }
                 }
                 
-                Section("Shapes") {
+                Section(L10n.ThemeEditor.Shapes.sectionTitle) {
                     ForEach(ShapeType.allCases) { shape in
-                        Toggle(shape.displayName, isOn: shapeBinding(for: shape))
+                        Toggle(shape.localizedName, isOn: shapeBinding(for: shape))
                     }
                     
-                    Picker("Shape Style", selection: $theme.shapeStyle) {
+                    Picker(L10n.ThemeEditor.Shapes.shapeStyle, selection: $theme.shapeStyle) {
                         ForEach(BabySmashTheme.ShapeStyle.allCases, id: \.self) { style in
-                            Text(style.displayName).tag(style)
+                            Text(style.localizedName).tag(style)
                         }
                     }
                     
                     VStack(alignment: .leading) {
-                        Text("Size Range: \(Int(theme.minShapeSize)) - \(Int(theme.maxShapeSize))")
+                        Text(L10n.ThemeEditor.Shapes.sizeRange(Int(theme.minShapeSize), Int(theme.maxShapeSize)))
                         HStack {
-                            Text("Min")
+                            Text(L10n.ThemeEditor.Shapes.min)
                                 .font(.caption)
                             Slider(value: $theme.minShapeSize, in: 50...200, step: 10)
-                            Text("Max")
+                            Text(L10n.ThemeEditor.Shapes.max)
                                 .font(.caption)
                             Slider(value: $theme.maxShapeSize, in: 200...500, step: 10)
                         }
                     }
                 }
                 
-                Section("Effects") {
-                    Toggle("Enable Shadow", isOn: $theme.shadowEnabled)
+                Section(L10n.ThemeEditor.Effects.sectionTitle) {
+                    Toggle(L10n.ThemeEditor.Effects.enableShadow, isOn: $theme.shadowEnabled)
                     if theme.shadowEnabled {
                         HStack {
-                            Text("Shadow Radius: \(Int(theme.shadowRadius))")
+                            Text(L10n.ThemeEditor.Effects.shadowRadius(Int(theme.shadowRadius)))
                             Slider(value: $theme.shadowRadius, in: 0...30, step: 1)
                         }
                         HStack {
-                            Text("Shadow Opacity: \(Int(theme.shadowOpacity * 100))%")
+                            Text(L10n.ThemeEditor.Effects.shadowOpacity(Int(theme.shadowOpacity * 100)))
                             Slider(value: $theme.shadowOpacity, in: 0...1, step: 0.1)
                         }
                     }
                     
-                    Toggle("Enable Glow", isOn: $theme.glowEnabled)
+                    Toggle(L10n.ThemeEditor.Effects.enableGlow, isOn: $theme.glowEnabled)
                     if theme.glowEnabled {
                         HStack {
-                            Text("Glow Radius: \(Int(theme.glowRadius))")
+                            Text(L10n.ThemeEditor.Effects.glowRadius(Int(theme.glowRadius)))
                             Slider(value: $theme.glowRadius, in: 0...30, step: 1)
                         }
                     }
                 }
                 
-                Section("Face Overlay") {
-                    Picker("Face Style", selection: $theme.faceStyle) {
+                Section(L10n.ThemeEditor.FaceOverlay.sectionTitle) {
+                    Picker(L10n.ThemeEditor.FaceOverlay.faceStyle, selection: $theme.faceStyle) {
                         ForEach(BabySmashTheme.FaceStyle.allCases, id: \.self) { style in
-                            Text(style.displayName).tag(style)
+                            Text(style.localizedName).tag(style)
                         }
                     }
                 }
@@ -161,11 +161,11 @@ struct ThemeEditorView: View {
                 
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Live Preview")
+                        Text(L10n.ThemeEditor.livePreview)
                             .font(.headline)
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Text(theme.name.isEmpty ? "Untitled Theme" : theme.name)
+                        Text(theme.name.isEmpty ? String(localized: L10n.ThemeEditor.untitledTheme) : theme.name)
                             .font(.subheadline)
                             .foregroundStyle(.tertiary)
                     }

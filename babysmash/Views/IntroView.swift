@@ -62,7 +62,7 @@ struct IntroView: View {
                         Text("👶")
                             .font(.system(size: 80))
                         
-                        Text("BabySmash!")
+                        Text(L10n.Intro.title)
                             .font(.system(size: 72, weight: .heavy, design: .rounded))
                             .foregroundStyle(
                                 LinearGradient(
@@ -73,7 +73,7 @@ struct IntroView: View {
                             )
                             .shadow(color: .purple.opacity(0.5), radius: 20, x: 0, y: 10)
                         
-                        Text("A colorful keyboard adventure for little ones")
+                        Text(L10n.Intro.subtitle)
                             .font(.system(size: 24, weight: .medium, design: .rounded))
                             .foregroundStyle(.white.opacity(0.8))
                     }
@@ -84,15 +84,15 @@ struct IntroView: View {
                     
                     // Controls section
                     VStack(spacing: 24) {
-                        Text("How to Play")
+                        Text(L10n.Intro.howToPlay)
                             .font(.system(size: 28, weight: .bold, design: .rounded))
                             .foregroundStyle(.white)
                         
                         VStack(alignment: .leading, spacing: 16) {
-                            controlRow(icon: "keyboard", text: "Press any key to create shapes & letters")
-                            controlRow(icon: "computermouse", text: "Click or drag to draw colorful trails")
-                            controlRow(icon: "speaker.wave.3", text: "Listen to fun sounds and speech")
-                            controlRow(icon: "gearshape", text: "Press ⌥S (Option+S) for settings")
+                            controlRow(icon: "keyboard", resource: L10n.Intro.instructionKeyboard)
+                            controlRow(icon: "computermouse", resource: L10n.Intro.instructionMouse)
+                            controlRow(icon: "speaker.wave.3", resource: L10n.Intro.instructionSound)
+                            controlRow(icon: "gearshape", resource: L10n.Intro.instructionSettings)
                         }
                     }
                     .padding(.vertical, 32)
@@ -108,7 +108,7 @@ struct IntroView: View {
                     Spacer()
                     
                     // Click to start prompt
-                    Text("Click anywhere to start!")
+                    Text(L10n.Intro.clickToStart)
                         .font(.system(size: 22, weight: .semibold, design: .rounded))
                         .foregroundStyle(.white.opacity(0.9))
                         .padding(.horizontal, 32)
@@ -144,14 +144,14 @@ struct IntroView: View {
         .ignoresSafeArea()
     }
     
-    private func controlRow(icon: String, text: String) -> some View {
+    private func controlRow(icon: String, resource: LocalizedStringResource) -> some View {
         HStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 24))
                 .foregroundStyle(.cyan)
                 .frame(width: 32)
             
-            Text(text)
+            Text(resource)
                 .font(.system(size: 18, weight: .medium, design: .rounded))
                 .foregroundStyle(.white.opacity(0.9))
         }

@@ -47,11 +47,11 @@ struct SettingsView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text("Settings")
+                Text(L10n.Settings.title)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 Spacer()
-                Button("Done") {
+                Button(L10n.Common.done) {
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
@@ -60,10 +60,10 @@ struct SettingsView: View {
             .background(.ultraThinMaterial)
             
             Form {
-                Section("Display") {
-                    Picker("Multi-Monitor Mode", selection: $displayMode) {
+                Section(L10n.Settings.Display.sectionTitle) {
+                    Picker(L10n.Settings.Display.multiMonitorMode, selection: $displayMode) {
                         ForEach(MultiMonitorManager.DisplayMode.allCases, id: \.rawValue) { mode in
-                            Text(mode.displayName).tag(mode.rawValue)
+                            Text(mode.localizedName).tag(mode.rawValue)
                         }
                     }
                     .onChange(of: displayMode) { _, _ in
@@ -72,7 +72,7 @@ struct SettingsView: View {
                     }
                     
                     if displayMode == MultiMonitorManager.DisplayMode.selected.rawValue {
-                        Picker("Active Display", selection: $selectedDisplayIndex) {
+                        Picker(L10n.Settings.Display.activeDisplay, selection: $selectedDisplayIndex) {
                             ForEach(multiMonitorManager.screens) { screen in
                                 Text(screen.localizedName).tag(screen.id)
                             }
@@ -83,20 +83,20 @@ struct SettingsView: View {
                         }
                     }
                     
-                    Text("\(multiMonitorManager.screenCount) display(s) detected")
+                    Text(L10n.Settings.Display.displaysDetected(multiMonitorManager.screenCount))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
                 
-                Section("Sound") {
-                    Picker("Sound Mode", selection: $soundMode) {
+                Section(L10n.Settings.Sound.sectionTitle) {
+                    Picker(L10n.Settings.Sound.soundMode, selection: $soundMode) {
                         ForEach(GameViewModel.SoundMode.allCases, id: \.self) { mode in
-                            Text(mode.rawValue).tag(mode)
+                            Text(mode.localizedName).tag(mode)
                         }
                     }
                     .pickerStyle(.segmented)
                     
-                    Text("Laughter plays random giggle sounds. Speech reads letters and shape names aloud.")
+                    Text(L10n.Settings.Sound.description)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -105,41 +105,41 @@ struct SettingsView: View {
                 
                 themeSection
                 
-                Section("Appearance") {
-                    Picker("Cursor", selection: $cursorType) {
+                Section(L10n.Settings.Appearance.sectionTitle) {
+                    Picker(L10n.Settings.Appearance.cursor, selection: $cursorType) {
                         ForEach(GameViewModel.CursorType.allCases, id: \.self) { cursor in
-                            Text(cursor.rawValue).tag(cursor)
+                            Text(cursor.localizedName).tag(cursor)
                         }
                     }
                     
-                    Toggle("Show Faces on Shapes", isOn: $showFaces)
-                    Toggle("Force Uppercase Letters", isOn: $forceUppercase)
+                    Toggle(L10n.Settings.Appearance.showFacesOnShapes, isOn: $showFaces)
+                    Toggle(L10n.Settings.Appearance.forceUppercaseLetters, isOn: $forceUppercase)
                 }
                 
-                Section("Mouse Drawing") {
-                    Toggle("Enable Mouse Drawing", isOn: $mouseDrawEnabled)
+                Section(L10n.Settings.MouseDrawing.sectionTitle) {
+                    Toggle(L10n.Settings.MouseDrawing.enableMouseDrawing, isOn: $mouseDrawEnabled)
                     
                     if mouseDrawEnabled {
-                        Toggle("Clickless Mouse Drawing", isOn: $clicklessMouseDraw)
+                        Toggle(L10n.Settings.MouseDrawing.clicklessMouseDrawing, isOn: $clicklessMouseDraw)
                         
-                        Text("When enabled, drawing happens as you move the mouse without clicking.")
+                        Text(L10n.Settings.MouseDrawing.clicklessDescription)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
                 
-                Section("Fade Away") {
-                    Toggle("Fade Shapes Away", isOn: $fadeEnabled)
+                Section(L10n.Settings.FadeAway.sectionTitle) {
+                    Toggle(L10n.Settings.FadeAway.fadeShapesAway, isOn: $fadeEnabled)
                     
                     if fadeEnabled {
                         VStack(alignment: .leading) {
-                            Text("Fade After: \(Int(fadeAfter)) seconds")
+                            Text(L10n.Settings.FadeAway.fadeAfterSeconds(Int(fadeAfter)))
                             Slider(value: $fadeAfter, in: 5...30, step: 1)
                         }
                     }
                     
                     VStack(alignment: .leading) {
-                        Text("Start Removing After: \(maxFigures) shapes")
+                        Text(L10n.Settings.FadeAway.startRemovingAfter(maxFigures))
                         Slider(value: Binding(
                             get: { Double(maxFigures) },
                             set: { maxFigures = Int($0) }
@@ -147,8 +147,8 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section("Baby Safety") {
-                    Toggle("Block System Keys", isOn: $blockSystemKeys)
+                Section(L10n.Settings.BabySafety.sectionTitle) {
+                    Toggle(L10n.Settings.BabySafety.blockSystemKeys, isOn: $blockSystemKeys)
                         .onChange(of: blockSystemKeys) { _, newValue in
                             if newValue {
                                 if !AccessibilityManager.isAccessibilityEnabled() {
@@ -163,19 +163,19 @@ struct SettingsView: View {
                         }
                     
                     if blockSystemKeys {
-                        Text("Blocks Cmd+Tab, Cmd+Q, Cmd+Space (Spotlight), Mission Control, and other system shortcuts")
+                        Text(L10n.Settings.BabySafety.blockDescription)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         
-                        Text("Emergency exit: ⌥⌘ Esc (Force Quit)")
+                        Text(L10n.Settings.BabySafety.emergencyExit)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
                 
-                Section("Keyboard Shortcuts") {
+                Section(L10n.Settings.KeyboardShortcuts.sectionTitle) {
                     HStack {
-                        Text("Open Settings")
+                        Text(L10n.Settings.KeyboardShortcuts.openSettings)
                         Spacer()
                         Text("⌥ + S")
                             .foregroundStyle(.secondary)
@@ -184,15 +184,15 @@ struct SettingsView: View {
                 
                 accessibilitySection
                 
-                Section("About") {
+                Section(L10n.Settings.About.sectionTitle) {
                     HStack {
-                        Text("BabySmash for macOS")
+                        Text(L10n.Settings.About.appName)
                         Spacer()
-                        Text("Version 1.0")
+                        Text(L10n.Settings.About.version("1.0"))
                             .foregroundStyle(.secondary)
                     }
                     
-                    Link("Original BabySmash by Scott Hanselman",
+                    Link(L10n.Settings.About.originalBy,
                          destination: URL(string: "https://github.com/shanselman/babysmash")!)
                         .font(.caption)
                 }
@@ -203,35 +203,35 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             Image(systemName: "arrow.counterclockwise")
-                            Text("Reset to Defaults")
+                            Text(L10n.Settings.ResetSection.resetToDefaults)
                         }
                         .frame(maxWidth: .infinity)
                     }
                 } header: {
-                    Text("Reset")
+                    Text(L10n.Settings.ResetSection.sectionTitle)
                 } footer: {
-                    Text("Resets all settings to default values and restarts onboarding on next launch.")
+                    Text(L10n.Settings.ResetSection.resetFooter)
                         .font(.caption)
                 }
             }
             .formStyle(.grouped)
         }
         .frame(minWidth: 500, minHeight: 700)
-        .alert("Accessibility Permission Required", isPresented: $showAccessibilityAlert) {
-            Button("Open System Settings") {
+        .alert(L10n.Settings.Alerts.accessibilityPermissionTitle, isPresented: $showAccessibilityAlert) {
+            Button(L10n.Settings.Alerts.openSystemSettings) {
                 AccessibilityManager.openAccessibilityPreferences()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(L10n.Common.cancel, role: .cancel) {}
         } message: {
-            Text("BabySmash needs Accessibility permission to block system keyboard shortcuts, preventing babies from accidentally switching apps or triggering system functions.\n\n1. Open System Settings\n2. Find BabySmash in the list\n3. Enable the checkbox\n4. Toggle this setting again")
+            Text(L10n.Settings.Alerts.accessibilityPermissionMessage)
         }
-        .alert("Reset to Defaults?", isPresented: $showResetConfirmation) {
-            Button("Reset", role: .destructive) {
+        .alert(L10n.Settings.Alerts.resetConfirmTitle, isPresented: $showResetConfirmation) {
+            Button(L10n.Common.reset, role: .destructive) {
                 resetToDefaults()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(L10n.Common.cancel, role: .cancel) {}
         } message: {
-            Text("This will reset all settings to their default values and restart the onboarding experience on next launch. The app will quit after resetting.")
+            Text(L10n.Settings.Alerts.resetConfirmMessage)
         }
         .sheet(isPresented: $showThemeEditor) {
             ThemeEditorView(theme: $editingTheme)
@@ -279,14 +279,14 @@ struct SettingsView: View {
     // MARK: - Language Section
     
     private var languageSection: some View {
-        Section("Language") {
-            Picker("Speech Language", selection: $speechLanguage) {
+        Section(L10n.Settings.Language.sectionTitle) {
+            Picker(L10n.Settings.Language.speechLanguage, selection: $speechLanguage) {
                 ForEach(LocalizedSpeechService.availableLanguages, id: \.code) { lang in
                     Text(lang.name).tag(lang.code)
                 }
             }
             
-            Toggle("Bilingual Mode", isOn: Binding(
+            Toggle(L10n.Settings.Language.bilingualMode, isOn: Binding(
                 get: { !secondaryLanguage.isEmpty },
                 set: { enabled in
                     if enabled {
@@ -300,20 +300,20 @@ struct SettingsView: View {
             ))
             
             if !secondaryLanguage.isEmpty {
-                Picker("Secondary Language", selection: $secondaryLanguage) {
+                Picker(L10n.Settings.Language.secondaryLanguage, selection: $secondaryLanguage) {
                     ForEach(LocalizedSpeechService.availableLanguages.filter { $0.code != speechLanguage }, id: \.code) { lang in
                         Text(lang.name).tag(lang.code)
                     }
                 }
                 
-                Toggle("Alternate Between Languages", isOn: $alternateSpeechLanguages)
+                Toggle(L10n.Settings.Language.alternateBetweenLanguages, isOn: $alternateSpeechLanguages)
                 
-                Text("When enabled, speech alternates between primary and secondary languages.")
+                Text(L10n.Settings.Language.alternateDescription)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             
-            Text("Changes how letters, numbers, and shapes are pronounced.")
+            Text(L10n.Settings.Language.changesDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -322,19 +322,19 @@ struct SettingsView: View {
     // MARK: - Theme Section
     
     private var themeSection: some View {
-        Section("Theme") {
-            Picker("Theme", selection: Binding(
+        Section(L10n.Settings.Theme.sectionTitle) {
+            Picker(L10n.Settings.Theme.theme, selection: Binding(
                 get: { themeManager.currentTheme },
                 set: { themeManager.selectTheme($0) }
             )) {
-                Section("Built-in") {
+                Section(L10n.Settings.Theme.builtIn) {
                     ForEach(BabySmashTheme.allBuiltIn) { theme in
                         Text(theme.name).tag(theme)
                     }
                 }
                 
                 if !themeManager.customThemes.isEmpty {
-                    Section("Custom") {
+                    Section(L10n.Settings.Theme.custom) {
                         ForEach(themeManager.customThemes) { theme in
                             Text(theme.name).tag(theme)
                         }
@@ -347,7 +347,7 @@ struct SettingsView: View {
                 .frame(height: 100)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Button("Edit Theme...") {
+            Button(L10n.Settings.Theme.editTheme) {
                 if themeManager.currentTheme.isBuiltIn {
                     // Duplicate for editing
                     var copy = themeManager.currentTheme
@@ -361,7 +361,7 @@ struct SettingsView: View {
                 showThemeEditor = true
             }
             
-            Button("Create New Theme...") {
+            Button(L10n.Settings.Theme.createNewTheme) {
                 var newTheme = BabySmashTheme.classic
                 newTheme.id = UUID()
                 newTheme.name = "New Theme"
@@ -371,7 +371,7 @@ struct SettingsView: View {
             }
             
             if !themeManager.currentTheme.isBuiltIn {
-                Button("Delete Theme", role: .destructive) {
+                Button(L10n.Settings.Theme.deleteTheme, role: .destructive) {
                     themeManager.deleteCustomTheme(themeManager.currentTheme)
                 }
             }
@@ -383,13 +383,13 @@ struct SettingsView: View {
     @State private var showAccessibilitySettings = false
     
     private var accessibilitySection: some View {
-        Section("Accessibility") {
+        Section(L10n.Settings.AccessibilitySection.sectionTitle) {
             Button {
                 showAccessibilitySettings = true
             } label: {
                 HStack {
                     Image(systemName: "accessibility")
-                    Text("Accessibility Settings...")
+                    Text(L10n.Settings.AccessibilitySection.accessibilitySettings)
                     Spacer()
                     Image(systemName: "chevron.right")
                         .foregroundStyle(.secondary)
@@ -399,10 +399,10 @@ struct SettingsView: View {
             .sheet(isPresented: $showAccessibilitySettings) {
                 NavigationStack {
                     AccessibilitySettingsView()
-                        .navigationTitle("Accessibility")
+                        .navigationTitle(L10n.Settings.AccessibilitySection.sectionTitle)
                         .toolbar {
                             ToolbarItem(placement: .confirmationAction) {
-                                Button("Done") {
+                                Button(L10n.Common.done) {
                                     showAccessibilitySettings = false
                                 }
                             }
@@ -411,7 +411,7 @@ struct SettingsView: View {
                 .frame(minWidth: 500, minHeight: 700)
             }
             
-            Text("Visual, audio, motor, and cognitive accessibility options.")
+            Text(L10n.Settings.AccessibilitySection.description)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
