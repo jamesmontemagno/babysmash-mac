@@ -19,8 +19,10 @@ struct MainGameView: View {
     
     @State private var showSettings = false
     @State private var showIntro = true
+    @State private var showThemePicker = false
     @AppStorage("cursorType") private var cursorType: GameViewModel.CursorType = .hand
     @AppStorage("clicklessMouseDraw") private var clicklessMouseDraw: Bool = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     
     @ObservedObject private var themeManager = ThemeManager.shared
     
@@ -36,10 +38,28 @@ struct MainGameView: View {
             // Main game view
             gameView
             
+            // Theme picker (shown after intro on first launch, only on main window)
+            if isMainWindow && showThemePicker {
+                ThemePickerView(onThemeSelected: { _ in
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showThemePicker = false
+                        hasCompletedOnboarding = true
+                    }
+                })
+                .transition(.opacity)
+                .zIndex(101)
+            }
+            
             // Intro overlay (shown on launch, only on main window)
             if isMainWindow && showIntro {
                 IntroView(onDismiss: {
-                    showIntro = false
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showIntro = false
+                        // Show theme picker if this is first launch
+                        if !hasCompletedOnboarding {
+                            showThemePicker = true
+                        }
+                    }
                 })
                 .transition(.opacity)
                 .zIndex(100)

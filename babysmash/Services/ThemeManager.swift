@@ -5,6 +5,7 @@
 //  Created by Copilot on 1/5/26.
 //
 
+import Combine
 import SwiftUI
 
 /// Manages theme selection and persistence for BabySmash
@@ -13,7 +14,7 @@ class ThemeManager: ObservableObject {
     static let shared = ThemeManager()
     
     /// The currently selected theme
-    @Published var currentTheme: BabySmashTheme
+    @Published var currentTheme: BabySmashTheme = .classic
     
     /// User-created custom themes
     @Published var customThemes: [BabySmashTheme] = []
@@ -23,10 +24,11 @@ class ThemeManager: ObservableObject {
     
     private init() {
         // Load custom themes first
-        customThemes = Self.loadCustomThemes()
+        let loadedCustomThemes = Self.loadCustomThemes()
+        customThemes = loadedCustomThemes
         
         // Load saved theme or default to classic
-        if let saved = customThemes.first(where: { $0.id.uuidString == selectedThemeID }) {
+        if let saved = loadedCustomThemes.first(where: { $0.id.uuidString == selectedThemeID }) {
             currentTheme = saved
         } else if let builtIn = BabySmashTheme.allBuiltIn.first(where: { $0.id.uuidString == selectedThemeID }) {
             currentTheme = builtIn

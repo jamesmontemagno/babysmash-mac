@@ -321,8 +321,232 @@ extension BabySmashTheme {
         faceStyle: .kawaii
     )
     
+    static let rainbow = BabySmashTheme(
+        id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
+        name: "Rainbow",
+        isBuiltIn: true,
+        backgroundColor: CodableColor(red: 0.1, green: 0.1, blue: 0.15),
+        backgroundStyle: .animatedGradient,
+        backgroundGradientColors: [
+            CodableColor(red: 0.15, green: 0.1, blue: 0.2),
+            CodableColor(red: 0.1, green: 0.15, blue: 0.2),
+            CodableColor(red: 0.1, green: 0.1, blue: 0.2)
+        ],
+        palette: [
+            CodableColor(red: 1.0, green: 0.2, blue: 0.2),    // Red
+            CodableColor(red: 1.0, green: 0.6, blue: 0.2),    // Orange
+            CodableColor(red: 1.0, green: 1.0, blue: 0.2),    // Yellow
+            CodableColor(red: 0.2, green: 1.0, blue: 0.4),    // Green
+            CodableColor(red: 0.2, green: 0.6, blue: 1.0),    // Blue
+            CodableColor(red: 0.6, green: 0.3, blue: 1.0),    // Indigo
+            CodableColor(red: 0.9, green: 0.4, blue: 1.0),    // Violet
+        ],
+        enabledShapes: Set(ShapeType.allCases.map { $0.rawValue }),
+        shapeStyle: .gradient,
+        minShapeSize: 150,
+        maxShapeSize: 320,
+        shadowEnabled: true,
+        shadowRadius: 20,
+        shadowOpacity: 0.6,
+        glowEnabled: true,
+        glowRadius: 10,
+        fontName: "SF Pro Rounded",
+        faceStyle: .simple
+    )
+    
+    static let dinosaur = BabySmashTheme(
+        id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
+        name: "Dinosaur",
+        isBuiltIn: true,
+        backgroundColor: CodableColor(red: 0.15, green: 0.25, blue: 0.1),
+        backgroundStyle: .linearGradient,
+        backgroundGradientColors: [
+            CodableColor(red: 0.1, green: 0.2, blue: 0.05),
+            CodableColor(red: 0.2, green: 0.3, blue: 0.1),
+            CodableColor(red: 0.15, green: 0.25, blue: 0.08)
+        ],
+        palette: [
+            CodableColor(red: 0.4, green: 0.8, blue: 0.3),    // Bright green
+            CodableColor(red: 0.6, green: 0.5, blue: 0.3),    // Brown
+            CodableColor(red: 1.0, green: 0.7, blue: 0.2),    // Orange-gold
+            CodableColor(red: 0.3, green: 0.6, blue: 0.4),    // Forest green
+            CodableColor(red: 0.8, green: 0.4, blue: 0.2),    // Rust
+            CodableColor(red: 0.5, green: 0.7, blue: 0.3),    // Lime
+        ],
+        enabledShapes: Set([ShapeType.triangle.rawValue, ShapeType.oval.rawValue, ShapeType.hexagon.rawValue, ShapeType.star.rawValue]),
+        shapeStyle: .filledWithOutline,
+        minShapeSize: 180,
+        maxShapeSize: 350,
+        shadowEnabled: true,
+        shadowRadius: 15,
+        shadowOpacity: 0.5,
+        glowEnabled: false,
+        glowRadius: 0,
+        fontName: "Marker Felt",
+        faceStyle: .simple
+    )
+    
+    static let princess = BabySmashTheme(
+        id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!,
+        name: "Princess",
+        isBuiltIn: true,
+        backgroundColor: CodableColor(red: 0.95, green: 0.85, blue: 0.95),
+        backgroundStyle: .radialGradient,
+        backgroundGradientColors: [
+            CodableColor(red: 1.0, green: 0.9, blue: 1.0),
+            CodableColor(red: 0.95, green: 0.8, blue: 0.95),
+            CodableColor(red: 0.9, green: 0.75, blue: 0.9)
+        ],
+        palette: [
+            CodableColor(red: 1.0, green: 0.4, blue: 0.7),    // Pink
+            CodableColor(red: 0.8, green: 0.5, blue: 1.0),    // Lavender
+            CodableColor(red: 1.0, green: 0.85, blue: 0.3),   // Gold
+            CodableColor(red: 0.6, green: 0.9, blue: 1.0),    // Sky blue
+            CodableColor(red: 1.0, green: 0.6, blue: 0.8),    // Rose
+            CodableColor(red: 0.9, green: 0.7, blue: 1.0),    // Light purple
+        ],
+        enabledShapes: Set([ShapeType.heart.rawValue, ShapeType.star.rawValue, ShapeType.circle.rawValue, ShapeType.oval.rawValue]),
+        shapeStyle: .gradient,
+        minShapeSize: 140,
+        maxShapeSize: 300,
+        shadowEnabled: true,
+        shadowRadius: 15,
+        shadowOpacity: 0.4,
+        glowEnabled: true,
+        glowRadius: 8,
+        fontName: "SF Pro Rounded",
+        faceStyle: .kawaii
+    )
+    
+    static let superhero = BabySmashTheme(
+        id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!,
+        name: "Superhero",
+        isBuiltIn: true,
+        backgroundColor: CodableColor(red: 0.05, green: 0.05, blue: 0.15),
+        backgroundStyle: .radialGradient,
+        backgroundGradientColors: [
+            CodableColor(red: 0.1, green: 0.05, blue: 0.2),
+            CodableColor(red: 0.05, green: 0.05, blue: 0.15),
+            CodableColor(red: 0.02, green: 0.02, blue: 0.1)
+        ],
+        palette: [
+            CodableColor(red: 1.0, green: 0.2, blue: 0.2),    // Red
+            CodableColor(red: 0.2, green: 0.4, blue: 1.0),    // Blue
+            CodableColor(red: 1.0, green: 0.85, blue: 0.1),   // Gold/Yellow
+            CodableColor(red: 0.1, green: 0.1, blue: 0.1),    // Black
+            CodableColor(red: 0.9, green: 0.9, blue: 0.9),    // Silver
+        ],
+        enabledShapes: Set([ShapeType.star.rawValue, ShapeType.hexagon.rawValue, ShapeType.triangle.rawValue, ShapeType.square.rawValue]),
+        shapeStyle: .filledWithOutline,
+        minShapeSize: 180,
+        maxShapeSize: 350,
+        shadowEnabled: true,
+        shadowRadius: 25,
+        shadowOpacity: 0.7,
+        glowEnabled: true,
+        glowRadius: 15,
+        fontName: "SF Pro",
+        faceStyle: .none
+    )
+    
+    static let farm = BabySmashTheme(
+        id: UUID(uuidString: "00000000-0000-0000-0000-00000000000C")!,
+        name: "Farm",
+        isBuiltIn: true,
+        backgroundColor: CodableColor(red: 0.5, green: 0.8, blue: 0.95),
+        backgroundStyle: .linearGradient,
+        backgroundGradientColors: [
+            CodableColor(red: 0.5, green: 0.8, blue: 0.95),   // Sky blue
+            CodableColor(red: 0.6, green: 0.85, blue: 0.5),   // Light green
+            CodableColor(red: 0.4, green: 0.7, blue: 0.3)     // Grass green
+        ],
+        palette: [
+            CodableColor(red: 0.9, green: 0.3, blue: 0.2),    // Barn red
+            CodableColor(red: 1.0, green: 0.9, blue: 0.5),    // Hay yellow
+            CodableColor(red: 0.6, green: 0.4, blue: 0.2),    // Brown
+            CodableColor(red: 1.0, green: 1.0, blue: 1.0),    // White
+            CodableColor(red: 0.3, green: 0.6, blue: 0.3),    // Green
+            CodableColor(red: 1.0, green: 0.6, blue: 0.4),    // Peach/pig pink
+        ],
+        enabledShapes: Set(ShapeType.allCases.map { $0.rawValue }),
+        shapeStyle: .filled,
+        minShapeSize: 150,
+        maxShapeSize: 300,
+        shadowEnabled: true,
+        shadowRadius: 10,
+        shadowOpacity: 0.3,
+        glowEnabled: false,
+        glowRadius: 0,
+        fontName: "Chalkboard SE",
+        faceStyle: .simple
+    )
+    
+    static let underwater = BabySmashTheme(
+        id: UUID(uuidString: "00000000-0000-0000-0000-00000000000D")!,
+        name: "Underwater",
+        isBuiltIn: true,
+        backgroundColor: CodableColor(red: 0.0, green: 0.15, blue: 0.3),
+        backgroundStyle: .animatedGradient,
+        backgroundGradientColors: [
+            CodableColor(red: 0.0, green: 0.2, blue: 0.4),
+            CodableColor(red: 0.0, green: 0.15, blue: 0.35),
+            CodableColor(red: 0.0, green: 0.1, blue: 0.25)
+        ],
+        palette: [
+            CodableColor(red: 0.3, green: 0.9, blue: 0.9),    // Aqua
+            CodableColor(red: 1.0, green: 0.5, blue: 0.3),    // Clownfish orange
+            CodableColor(red: 0.9, green: 0.9, blue: 0.3),    // Yellow fish
+            CodableColor(red: 0.8, green: 0.3, blue: 0.8),    // Purple
+            CodableColor(red: 0.3, green: 1.0, blue: 0.5),    // Sea green
+            CodableColor(red: 1.0, green: 0.4, blue: 0.6),    // Coral pink
+        ],
+        enabledShapes: Set([ShapeType.circle.rawValue, ShapeType.oval.rawValue, ShapeType.heart.rawValue, ShapeType.star.rawValue]),
+        shapeStyle: .gradient,
+        minShapeSize: 120,
+        maxShapeSize: 280,
+        shadowEnabled: true,
+        shadowRadius: 15,
+        shadowOpacity: 0.5,
+        glowEnabled: true,
+        glowRadius: 10,
+        fontName: "SF Pro Rounded",
+        faceStyle: .kawaii
+    )
+    
+    static let circus = BabySmashTheme(
+        id: UUID(uuidString: "00000000-0000-0000-0000-00000000000E")!,
+        name: "Circus",
+        isBuiltIn: true,
+        backgroundColor: CodableColor(red: 0.15, green: 0.1, blue: 0.2),
+        backgroundStyle: .radialGradient,
+        backgroundGradientColors: [
+            CodableColor(red: 0.25, green: 0.1, blue: 0.15),
+            CodableColor(red: 0.15, green: 0.1, blue: 0.2),
+            CodableColor(red: 0.1, green: 0.05, blue: 0.15)
+        ],
+        palette: [
+            CodableColor(red: 1.0, green: 0.2, blue: 0.2),    // Circus red
+            CodableColor(red: 1.0, green: 0.85, blue: 0.2),   // Gold
+            CodableColor(red: 1.0, green: 1.0, blue: 1.0),    // White
+            CodableColor(red: 0.2, green: 0.6, blue: 1.0),    // Blue
+            CodableColor(red: 1.0, green: 0.5, blue: 0.0),    // Orange
+        ],
+        enabledShapes: Set([ShapeType.star.rawValue, ShapeType.circle.rawValue, ShapeType.triangle.rawValue, ShapeType.hexagon.rawValue]),
+        shapeStyle: .filledWithOutline,
+        minShapeSize: 150,
+        maxShapeSize: 320,
+        shadowEnabled: true,
+        shadowRadius: 20,
+        shadowOpacity: 0.6,
+        glowEnabled: true,
+        glowRadius: 12,
+        fontName: "American Typewriter",
+        faceStyle: .simple
+    )
+    
     /// All built-in themes
     static let allBuiltIn: [BabySmashTheme] = [
-        .classic, .pastel, .highContrast, .space, .nightMode, .ocean, .candy
+        .classic, .pastel, .highContrast, .space, .nightMode, .ocean, .candy,
+        .rainbow, .dinosaur, .princess, .superhero, .farm, .underwater, .circus
     ]
 }
