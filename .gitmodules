@@ -1,0 +1,3 @@
+[submodule "original-babysmash"]
+	path = original-babysmash
+	url = https://github.com/shanselman/babysmash
