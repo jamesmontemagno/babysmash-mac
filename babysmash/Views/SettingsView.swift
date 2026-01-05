@@ -24,6 +24,10 @@ struct SettingsView: View {
     @AppStorage("customBackgroundRed") private var customBackgroundRed: Double = 0.0
     @AppStorage("customBackgroundGreen") private var customBackgroundGreen: Double = 0.0
     @AppStorage("customBackgroundBlue") private var customBackgroundBlue: Double = 0.0
+    @AppStorage("blockSystemKeys") private var blockSystemKeys: Bool = false
+    
+    // State for accessibility permission alert
+    @State private var showAccessibilityAlert: Bool = false
     
     // Computed property for custom color binding
     private var customColor: Binding<Color> {
@@ -158,6 +162,32 @@ struct SettingsView: View {
                     }
                 }
                 
+                Section("Baby Safety") {
+                    Toggle("Block System Keys", isOn: $blockSystemKeys)
+                        .onChange(of: blockSystemKeys) { _, newValue in
+                            if newValue {
+                                if !AccessibilityManager.isAccessibilityEnabled() {
+                                    showAccessibilityAlert = true
+                                    blockSystemKeys = false
+                                } else {
+                                    SystemKeyBlocker.shared.startBlocking()
+                                }
+                            } else {
+                                SystemKeyBlocker.shared.stopBlocking()
+                            }
+                        }
+                    
+                    if blockSystemKeys {
+                        Text("Blocks Cmd+Tab, Cmd+Q, Mission Control, and other system shortcuts")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        
+                        Text("Emergency exit: ⌥⌘ Esc (Force Quit)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
                 Section("Keyboard Shortcuts") {
                     HStack {
                         Text("Open Settings")
@@ -183,6 +213,14 @@ struct SettingsView: View {
             .formStyle(.grouped)
         }
         .frame(minWidth: 500, minHeight: 600)
+        .alert("Accessibility Permission Required", isPresented: $showAccessibilityAlert) {
+            Button("Open System Settings") {
+                AccessibilityManager.openAccessibilityPreferences()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("BabySmash needs Accessibility permission to block system keyboard shortcuts, preventing babies from accidentally switching apps or triggering system functions.\n\n1. Open System Settings\n2. Find BabySmash in the list\n3. Enable the checkbox\n4. Toggle this setting again")
+        }
     }
 }
 

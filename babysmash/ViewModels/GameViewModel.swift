@@ -29,6 +29,7 @@ class GameViewModel: ObservableObject {
     @AppStorage("customBackgroundRed") var customBackgroundRed: Double = 0.0
     @AppStorage("customBackgroundGreen") var customBackgroundGreen: Double = 0.0
     @AppStorage("customBackgroundBlue") var customBackgroundBlue: Double = 0.0
+    @AppStorage("blockSystemKeys") var blockSystemKeys: Bool = false
     
     enum SoundMode: String, CaseIterable {
         case laughter = "Laughter"
@@ -123,10 +124,28 @@ class GameViewModel: ObservableObject {
     
     func startKeyboardMonitoring() {
         keyboardMonitor.startMonitoring()
+        
+        // Start system key blocking if enabled
+        if blockSystemKeys {
+            startSystemKeyBlocking()
+        }
     }
     
     func stopKeyboardMonitoring() {
         keyboardMonitor.stopMonitoring()
+        stopSystemKeyBlocking()
+    }
+    
+    /// Starts blocking system keys if accessibility permission is granted.
+    /// - Returns: `true` if blocking started, `false` if permission denied.
+    @discardableResult
+    func startSystemKeyBlocking() -> Bool {
+        return SystemKeyBlocker.shared.startBlocking()
+    }
+    
+    /// Stops blocking system keys.
+    func stopSystemKeyBlocking() {
+        SystemKeyBlocker.shared.stopBlocking()
     }
     
     func playStartupSound() {
