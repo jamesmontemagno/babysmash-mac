@@ -6,6 +6,7 @@
 //
 
 import Cocoa
+import Combine
 import CoreGraphics
 
 /// Blocks system keyboard shortcuts to prevent babies from accidentally
