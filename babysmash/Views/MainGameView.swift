@@ -10,6 +10,7 @@ import SwiftUI
 struct MainGameView: View {
     @StateObject private var viewModel = GameViewModel()
     @State private var showSettings = false
+    @State private var showIntro = true
     @AppStorage("cursorType") private var cursorType: GameViewModel.CursorType = .hand
     @AppStorage("clicklessMouseDraw") private var clicklessMouseDraw: Bool = false
     @AppStorage("backgroundColor") private var backgroundColor: String = "black"
@@ -18,6 +19,28 @@ struct MainGameView: View {
     @AppStorage("customBackgroundBlue") private var customBackgroundBlue: Double = 0.0
     
     var body: some View {
+        ZStack {
+            // Main game view
+            gameView
+            
+            // Intro overlay (shown on launch)
+            if showIntro {
+                IntroView(onDismiss: {
+                    showIntro = false
+                })
+                .transition(.opacity)
+                .zIndex(100)
+            }
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .showSettings)) { _ in
+            showSettings = true
+        }
+    }
+    
+    private var gameView: some View {
         GeometryReader { geometry in
             ZStack {
                 // Background
@@ -70,12 +93,6 @@ struct MainGameView: View {
         }
         .ignoresSafeArea()
         .cursor(cursorForType)
-        .sheet(isPresented: $showSettings) {
-            SettingsView()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .showSettings)) { _ in
-            showSettings = true
-        }
     }
     
     private var cursorForType: NSCursor {
