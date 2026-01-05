@@ -193,6 +193,6 @@ class LocalizedSpeechService {
             "ru": [.circle: "Круг", .square: "Квадрат", .triangle: "Треугольник", .star: "Звезда", .heart: "Сердце", .rectangle: "Прямоугольник", .oval: "Овал", .hexagon: "Шестиугольник", .trapezoid: "Трапеция"],
         ]
         
-        return shapeNames[language]?[shape] ?? shapeNames["en"]![shape]!
+        return shapeNames[language]?[shape] ?? shapeNames["en"]?[shape] ?? shape.displayName
     }
 }

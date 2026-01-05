@@ -57,8 +57,8 @@ struct LanguageCharacters {
     static let italian = LanguageCharacters(
         languageCode: "it",
         displayName: "Italiano",
-        uppercase: Array("ABCDEFGHILMNOPQRSTUVZÀÈÉÌÒÙ"),
-        lowercase: Array("abcdefghilmnopqrstuvzàèéìòù"),
+        uppercase: Array("ABCDEFGHIJKLMNOPQRSTUVWXYZÀÈÉÌÒÙ"),
+        lowercase: Array("abcdefghijklmnopqrstuvwxyzàèéìòù"),
         numbers: Array("0123456789")
     )
     
