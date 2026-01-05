@@ -165,9 +165,15 @@ struct ThemeEditorView: View {
                             .font(.headline)
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Text(theme.name.isEmpty ? String(localized: L10n.ThemeEditor.untitledTheme) : theme.name)
-                            .font(.subheadline)
-                            .foregroundStyle(.tertiary)
+                        if theme.name.isEmpty {
+                            Text(L10n.ThemeEditor.untitledTheme)
+                                .font(.subheadline)
+                                .foregroundStyle(.tertiary)
+                        } else {
+                            Text(theme.name)
+                                .font(.subheadline)
+                                .foregroundStyle(.tertiary)
+                        }
                     }
                     .padding(.horizontal)
                     .padding(.top, 8)
