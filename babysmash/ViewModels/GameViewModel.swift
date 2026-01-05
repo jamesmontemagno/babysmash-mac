@@ -93,6 +93,7 @@ class GameViewModel: ObservableObject {
     private let keyboardMonitor = KeyboardMonitor()
     private let mouseDrawingManager = MouseDrawingManager()
     private let multiMonitorManager = MultiMonitorManager.shared
+    private let themeManager = ThemeManager.shared
     private var cancellables = Set<AnyCancellable>()
     private var fadeTimer: Timer?
     
@@ -262,19 +263,20 @@ class GameViewModel: ObservableObject {
     }
     
     private func addLetterFigure(_ character: Character, at position: CGPoint, screenIndex: Int = 0) {
+        let theme = themeManager.currentTheme
         let figure = Figure(
             shapeType: nil,
             character: character,
-            color: Color.randomBabySmash,
+            color: theme.randomColor(),
             position: position,
-            size: CGFloat.random(in: 150...300),
+            size: theme.randomSize(),
             createdAt: Date(),
             scale: 1.0,
             rotation: .zero,
             opacity: 1.0,
             showFace: false,
             animationStyle: .random,
-            fontFamily: fontFamily,
+            fontFamily: theme.fontName,
             screenIndex: screenIndex
         )
         
@@ -282,22 +284,32 @@ class GameViewModel: ObservableObject {
     }
     
     private func addRandomShape(at position: CGPoint, screenIndex: Int = 0) {
-        let shapeType = ShapeType.random
-        let color = Color.randomBabySmash
+        let theme = themeManager.currentTheme
+        let shapeType = theme.randomEnabledShape()
+        let color = theme.randomColor()
+        
+        // Determine if face should be shown based on theme and settings
+        let shouldShowFace: Bool
+        switch theme.faceStyle {
+        case .none:
+            shouldShowFace = false
+        case .simple, .kawaii:
+            shouldShowFace = showFaces
+        }
         
         let figure = Figure(
             shapeType: shapeType,
             character: nil,
             color: color,
             position: position,
-            size: CGFloat.random(in: 150...300),
+            size: theme.randomSize(),
             createdAt: Date(),
             scale: 1.0,
             rotation: .zero,
             opacity: 1.0,
-            showFace: showFaces,
+            showFace: shouldShowFace,
             animationStyle: .random,
-            fontFamily: fontFamily,
+            fontFamily: theme.fontName,
             screenIndex: screenIndex
         )
         

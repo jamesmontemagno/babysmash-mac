@@ -21,10 +21,8 @@ struct MainGameView: View {
     @State private var showIntro = true
     @AppStorage("cursorType") private var cursorType: GameViewModel.CursorType = .hand
     @AppStorage("clicklessMouseDraw") private var clicklessMouseDraw: Bool = false
-    @AppStorage("backgroundColor") private var backgroundColor: String = "black"
-    @AppStorage("customBackgroundRed") private var customBackgroundRed: Double = 0.0
-    @AppStorage("customBackgroundGreen") private var customBackgroundGreen: Double = 0.0
-    @AppStorage("customBackgroundBlue") private var customBackgroundBlue: Double = 0.0
+    
+    @ObservedObject private var themeManager = ThemeManager.shared
     
     /// Initializer with injected view model for multi-monitor support.
     init(viewModel: GameViewModel, screenIndex: Int = 0, isMainWindow: Bool = true) {
@@ -61,9 +59,8 @@ struct MainGameView: View {
     private var gameView: some View {
         GeometryReader { geometry in
             ZStack {
-                // Background
-                backgroundColorValue
-                    .ignoresSafeArea()
+                // Background - use themed background
+                ThemedBackground(theme: themeManager.currentTheme)
                 
                 // Mouse drawing trails - filter to show only trails for this screen
                 ForEach(viewModel.drawingTrailsForScreen(screenIndex)) { trail in
@@ -127,13 +124,6 @@ struct MainGameView: View {
         case .none:
             return .init(image: NSImage(), hotSpot: .zero)
         }
-    }
-    
-    private var backgroundColorValue: Color {
-        if backgroundColor == "custom" {
-            return Color(red: customBackgroundRed, green: customBackgroundGreen, blue: customBackgroundBlue)
-        }
-        return GameViewModel.BackgroundColor(rawValue: backgroundColor)?.color ?? .black
     }
 }
 
