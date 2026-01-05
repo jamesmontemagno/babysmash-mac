@@ -36,6 +36,7 @@ struct ThemeEditorView: View {
             .padding()
             .background(.ultraThinMaterial)
             
+            // Scrollable form content
             Form {
                 Section("Basic") {
                     TextField("Theme Name", text: $theme.name)
@@ -151,16 +152,36 @@ struct ThemeEditorView: View {
                         }
                     }
                 }
-                
-                Section("Preview") {
-                    ThemePreviewView(theme: theme)
-                        .frame(height: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
             }
             .formStyle(.grouped)
+            
+            // Sticky live preview at bottom
+            VStack(spacing: 0) {
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Live Preview")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(theme.name.isEmpty ? "Untitled Theme" : theme.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    
+                    ThemePreviewView(theme: theme)
+                        .frame(height: 140)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal)
+                        .padding(.bottom, 12)
+                }
+                .background(.ultraThinMaterial)
+            }
         }
-        .frame(minWidth: 550, minHeight: 700)
+        .frame(minWidth: 550, minHeight: 750)
     }
     
     // MARK: - Bindings
@@ -231,48 +252,141 @@ struct ThemeEditorView: View {
 struct ThemePreviewView: View {
     let theme: BabySmashTheme
     
+    private var previewShapes: [(ShapeType, Color, CGPoint)] {
+        let shapes = Array(theme.enabledShapeTypes.prefix(4))
+        let colors = theme.palette.map { $0.color }
+        
+        return [
+            (shapes.indices.contains(0) ? shapes[0] : .circle, colors.indices.contains(0) ? colors[0] : .red, CGPoint(x: 80, y: 60)),
+            (shapes.indices.contains(1) ? shapes[1] : .star, colors.indices.contains(1) ? colors[1] : .blue, CGPoint(x: 200, y: 80)),
+            (shapes.indices.contains(2) ? shapes[2] : .heart, colors.indices.contains(2) ? colors[2] : .green, CGPoint(x: 320, y: 55)),
+            (shapes.indices.contains(3) ? shapes[3] : .triangle, colors.indices.contains(3) ? colors[3] : .orange, CGPoint(x: 440, y: 75))
+        ]
+    }
+    
     var body: some View {
-        ZStack {
-            ThemedBackground(theme: theme)
-            
-            HStack(spacing: 30) {
-                // Sample shapes
-                ForEach(Array(theme.enabledShapeTypes.prefix(3)), id: \.self) { shape in
-                    previewShape(shape)
+        GeometryReader { geometry in
+            ZStack {
+                ThemedBackground(theme: theme)
+                
+                // Sample shapes scattered across preview
+                ForEach(Array(previewShapes.enumerated()), id: \.offset) { index, item in
+                    let (shape, color, basePos) = item
+                    let xScale = geometry.size.width / 520
+                    let yScale = geometry.size.height / 140
+                    
+                    previewShapeView(shape, color: color)
+                        .position(x: basePos.x * xScale, y: basePos.y * yScale)
                 }
                 
                 // Sample letter
-                Text("A")
-                    .font(.system(size: 50, weight: .heavy, design: .rounded))
-                    .foregroundStyle(theme.palette.last?.color.gradient ?? Color.blue.gradient)
+                Text("B")
+                    .font(.custom(theme.fontName, size: 55).weight(.heavy))
+                    .foregroundStyle(getTextStyle())
                     .shadow(
-                        color: theme.shadowEnabled ? .black.opacity(theme.shadowOpacity) : .clear,
-                        radius: theme.shadowRadius
+                        color: theme.shadowEnabled ? (theme.palette.last?.color ?? .purple).opacity(theme.shadowOpacity) : .clear,
+                        radius: theme.shadowRadius,
+                        x: 3,
+                        y: 3
                     )
+                    .overlay {
+                        if theme.glowEnabled {
+                            Text("B")
+                                .font(.custom(theme.fontName, size: 55).weight(.heavy))
+                                .foregroundStyle(theme.palette.last?.color ?? .purple)
+                                .blur(radius: theme.glowRadius / 2)
+                        }
+                    }
+                    .position(x: geometry.size.width * 0.85, y: geometry.size.height * 0.5)
             }
         }
     }
     
+    private func getTextStyle() -> AnyShapeStyle {
+        let color = theme.palette.last?.color ?? .purple
+        switch theme.shapeStyle {
+        case .gradient:
+            return AnyShapeStyle(color.gradient)
+        default:
+            return AnyShapeStyle(color)
+        }
+    }
+    
     @ViewBuilder
-    private func previewShape(_ shape: ShapeType) -> some View {
-        let color = theme.palette.first?.color ?? .red
+    private func previewShapeView(_ shape: ShapeType, color: Color) -> some View {
+        let size: CGFloat = 50
         
-        Circle()
+        shapeContent(shape)
             .fill(getPreviewShapeStyle(color))
-            .frame(width: 50, height: 50)
+            .frame(width: size, height: size)
+            .overlay {
+                if theme.shapeStyle == .outlined || theme.shapeStyle == .filledWithOutline {
+                    shapeContent(shape)
+                        .stroke(color, lineWidth: 2)
+                }
+            }
             .shadow(
                 color: theme.shadowEnabled ? color.opacity(theme.shadowOpacity) : .clear,
-                radius: theme.shadowRadius
+                radius: theme.shadowRadius,
+                x: 3,
+                y: 3
             )
             .overlay {
                 if theme.glowEnabled {
-                    Circle()
+                    shapeContent(shape)
                         .stroke(color, lineWidth: 2)
                         .blur(radius: theme.glowRadius / 3)
                 }
             }
+            .overlay {
+                if theme.faceStyle != .none {
+                    miniKawaiiFace(size: size)
+                }
+            }
     }
     
+    private func shapeContent(_ type: ShapeType) -> AnyShape {
+        switch type {
+        case .circle:
+            return AnyShape(Circle())
+        case .oval:
+            return AnyShape(Ellipse())
+        case .rectangle:
+            return AnyShape(RoundedRectangle(cornerRadius: 8))
+        case .square:
+            return AnyShape(RoundedRectangle(cornerRadius: 6))
+        case .triangle:
+            return AnyShape(TriangleShape())
+        case .hexagon:
+            return AnyShape(HexagonShape())
+        case .trapezoid:
+            return AnyShape(TrapezoidShape())
+        case .star:
+            return AnyShape(StarShape())
+        case .heart:
+            return AnyShape(HeartShape())
+        }
+    }
+    
+    private func miniKawaiiFace(size: CGFloat) -> some View {
+        VStack(spacing: size * 0.02) {
+            // Eyes
+            HStack(spacing: size * 0.12) {
+                Circle()
+                    .fill(.black)
+                    .frame(width: size * 0.08, height: size * 0.08)
+                Circle()
+                    .fill(.black)
+                    .frame(width: size * 0.08, height: size * 0.08)
+            }
+            // Smile
+            Arc(startAngle: .degrees(0), endAngle: .degrees(180), clockwise: false)
+                .stroke(.black, lineWidth: 1.5)
+                .frame(width: size * 0.15, height: size * 0.08)
+        }
+        .offset(y: -size * 0.03)
+    }
+
     private func getPreviewShapeStyle(_ color: Color) -> AnyShapeStyle {
         switch theme.shapeStyle {
         case .filled, .filledWithOutline:

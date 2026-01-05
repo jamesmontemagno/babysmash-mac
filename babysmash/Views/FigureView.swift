@@ -54,6 +54,7 @@ struct FigureView: View {
                         .blur(radius: theme.glowRadius / 2)
                 }
             }
+            .modifier(FloatEffect())
     }
     
     @ViewBuilder
