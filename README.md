@@ -14,6 +14,7 @@ A macOS port of [Scott Hanselman's BabySmash](https://github.com/shanselman/baby
 - 🖱️ **Mouse Drawing** - Drag the mouse to leave colorful trails
 - 😊 **Friendly Faces** - Shapes can display cute faces
 - 📝 **Word Detection** - Recognizes typed words and speaks them aloud
+- ♿ **Accessibility Features** - Comprehensive support for children with special needs
 - ⚙️ **Customizable** - Adjust fade timing, sound modes, and more
 
 ## Requirements
@@ -53,6 +54,64 @@ A macOS port of [Scott Hanselman's BabySmash](https://github.com/shanselman/baby
 | Mouse Drawing | Enable/disable mouse trail drawing |
 | Force Uppercase | Display all letters in uppercase |
 | Max Figures | Maximum number of shapes on screen |
+| **Accessibility** | Comprehensive accessibility options (see below) |
+
+## Accessibility Features
+
+BabySmash includes comprehensive accessibility support to make the app inclusive for children with various special needs:
+
+### Visual Accessibility
+
+- **High Contrast Mode** - Bold outlines and simplified fills for better visibility
+- **Large Elements Mode** - Configurable minimum shape size (300px+) for easier viewing
+- **Color Blindness Support** - Specialized color palettes for:
+  - Deuteranopia (green-blind)
+  - Protanopia (red-blind)
+  - Tritanopia (blue-blind)
+  - Monochromacy (total color blindness)
+- **Pattern Overlays** - Stripes, dots, crosshatch patterns help distinguish shapes beyond color alone
+
+### Motion Accessibility
+
+- **Reduce Motion** - Respects system preference, disables or reduces animations
+- **Animation Speed Control** - Slow, normal, fast, or none
+- **Disable Rotation** - Turn off spinning effects independently
+
+### Audio Accessibility
+
+- **Visual Sound Indicators** - Flashing border when sounds play
+- **Captions** - Text display for sounds and speech
+- **Volume Boost** - Enhanced audio output for better audibility
+
+### Motor Accessibility
+
+- **Auto-Play Mode** - Shapes appear automatically at configurable intervals (no keyboard needed)
+- **Switch Control Mode** - Scanning interface for single-switch input devices
+- **Reduced Physical Interaction** - Minimal input requirements
+
+### Cognitive Accessibility
+
+- **Simplified Mode** - Limits simultaneous shapes for reduced complexity (configurable 1-20 shapes)
+- **Predictable Mode** - Shapes appear in consistent positions rather than randomly
+- **Focus Mode** - Filter content to:
+  - Letters only
+  - Numbers only
+  - Shapes only
+  - All (default)
+
+### Photosensitivity Protection
+
+- **Safe Mode** - Disables all flashing effects and rapid transitions
+- **No Strobing** - Gentle, smooth animations only
+
+### System Integration
+
+- Automatically detects and responds to macOS accessibility settings:
+  - VoiceOver support
+  - System Reduce Motion preference
+  - System Increase Contrast preference
+
+To access accessibility settings, open Settings (Option + S) and select "Accessibility Settings..."
 
 ## Architecture
 
@@ -75,6 +134,9 @@ MouseDrawingManager → DrawingTrail model → MainGameView (renders trails)
 | `SoundManager` | Audio playback for laughter and effects |
 | `SpeechService` | Text-to-speech for letters and words |
 | `WordFinder` | Detects typed words from dictionary |
+| `AccessibilitySettingsManager` | Manages accessibility features and system integration |
+| `AutoPlayManager` | Automatic shape generation for motor accessibility |
+| `SwitchControlManager` | Switch control scanning for single-switch devices |
 
 ## Credits
 
