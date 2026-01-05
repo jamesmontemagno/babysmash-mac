@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient for Letter A -->
+    <linearGradient id="letterA" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B9D;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFA07A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD93D;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for Star -->
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for Circle -->
+    <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D4FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0099FF;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for Heart -->
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF1493;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF69B4;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for Triangle -->
+    <linearGradient id="triangleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00FF7F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#32CD32;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for Square -->
+    <linearGradient id="squareGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9B59B6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8E44AD;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for Numbers -->
+    <linearGradient id="numberGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8787;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="numberGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ECDC4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#44B3AA;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="numberGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A8E6CF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7ED6AF;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.4"/>
+    </filter>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Large Star (top left) -->
+  <g transform="translate(200, 200)">
+    <path d="M 0,-120 L 28,-36 L 120,-36 L 44,20 L 72,104 L 0,48 L -72,104 L -44,20 L -120,-36 L -28,-36 Z" 
+          fill="url(#starGrad)" stroke="#FF8C00" stroke-width="8" filter="url(#shadow)"/>
+  </g>
+  
+  <!-- Large Circle (top right) -->
+  <circle cx="824" cy="200" r="130" fill="url(#circleGrad)" stroke="#0077CC" stroke-width="10" filter="url(#shadow)"/>
+  
+  <!-- Large Heart (bottom right) -->
+  <g transform="translate(824, 824)">
+    <path d="M 0,-60 C -40,-100 -100,-100 -100,-40 C -100,20 0,80 0,80 C 0,80 100,20 100,-40 C 100,-100 40,-100 0,-60 Z" 
+          fill="url(#heartGrad)" stroke="#DC143C" stroke-width="8" filter="url(#shadow)"/>
+  </g>
+  
+  <!-- Large Triangle (bottom left) -->
+  <g transform="translate(200, 824)">
+    <path d="M 0,-120 L 120,80 L -120,80 Z" fill="url(#triangleGrad)" stroke="#228B22" stroke-width="8" filter="url(#shadow)"/>
+  </g>
+  
+  <!-- Large Square (middle right) -->
+  <rect x="750" y="450" width="140" height="140" rx="20" fill="url(#squareGrad)" stroke="#7D3C98" stroke-width="8" transform="rotate(15 820 520)" filter="url(#shadow)"/>
+  
+  <!-- Giant Letter 'A' in center with gradient -->
+  <text x="512" y="620" font-family="Arial Black, sans-serif" font-size="380" font-weight="bold" 
+        fill="url(#letterA)" text-anchor="middle" stroke="#FF1493" stroke-width="6" filter="url(#shadow)">A</text>
+  
+  <!-- Large colorful letters floating around -->
+  <text x="380" y="380" font-family="Arial Black, sans-serif" font-size="140" font-weight="bold" 
+        fill="url(#numberGrad1)" stroke="#FF4757" stroke-width="4" transform="rotate(-15 380 380)" filter="url(#shadow)">B</text>
+  
+  <text x="650" y="420" font-family="Arial Black, sans-serif" font-size="130" font-weight="bold" 
+        fill="url(#numberGrad2)" stroke="#2E86AB" stroke-width="4" transform="rotate(12 650 420)" filter="url(#shadow)">C</text>
+  
+  <!-- Large Numbers -->
+  <text x="140" y="520" font-family="Arial Black, sans-serif" font-size="120" font-weight="bold" 
+        fill="url(#numberGrad3)" stroke="#5FAD56" stroke-width="4" transform="rotate(18 140 520)" filter="url(#shadow)">1</text>
+  
+  <text x="880" y="580" font-family="Arial Black, sans-serif" font-size="110" font-weight="bold" 
+        fill="#FFD93D" stroke="#F9CA24" stroke-width="4" transform="rotate(-10 880 580)" filter="url(#shadow)">2</text>
+  
+  <text x="512" y="240" font-family="Arial Black, sans-serif" font-size="100" font-weight="bold" 
+        fill="#E056FD" stroke="#B53471" stroke-width="4" transform="rotate(8 512 240)" filter="url(#glow)">3</text>
+</svg>
