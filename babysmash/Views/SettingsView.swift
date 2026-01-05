@@ -25,9 +25,14 @@ struct SettingsView: View {
     @AppStorage("customBackgroundGreen") private var customBackgroundGreen: Double = 0.0
     @AppStorage("customBackgroundBlue") private var customBackgroundBlue: Double = 0.0
     @AppStorage("blockSystemKeys") private var blockSystemKeys: Bool = false
+    @AppStorage("displayMode") private var displayMode: String = "all"
+    @AppStorage("selectedDisplayIndex") private var selectedDisplayIndex: Int = 0
     
     // State for accessibility permission alert
     @State private var showAccessibilityAlert: Bool = false
+    
+    // Observe multi-monitor manager for screen changes
+    @ObservedObject private var multiMonitorManager = MultiMonitorManager.shared
     
     // Computed property for custom color binding
     private var customColor: Binding<Color> {
@@ -77,6 +82,34 @@ struct SettingsView: View {
             .background(.ultraThinMaterial)
             
             Form {
+                Section("Display") {
+                    Picker("Multi-Monitor Mode", selection: $displayMode) {
+                        ForEach(MultiMonitorManager.DisplayMode.allCases, id: \.rawValue) { mode in
+                            Text(mode.displayName).tag(mode.rawValue)
+                        }
+                    }
+                    .onChange(of: displayMode) { _, _ in
+                        // Notify app to recreate windows
+                        NotificationCenter.default.post(name: .displayModeChanged, object: nil)
+                    }
+                    
+                    if displayMode == MultiMonitorManager.DisplayMode.selected.rawValue {
+                        Picker("Active Display", selection: $selectedDisplayIndex) {
+                            ForEach(multiMonitorManager.screens) { screen in
+                                Text(screen.localizedName).tag(screen.id)
+                            }
+                        }
+                        .onChange(of: selectedDisplayIndex) { _, _ in
+                            // Notify app to recreate windows
+                            NotificationCenter.default.post(name: .displayModeChanged, object: nil)
+                        }
+                    }
+                    
+                    Text("\(multiMonitorManager.screenCount) display(s) detected")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                
                 Section("Sound") {
                     Picker("Sound Mode", selection: $soundMode) {
                         ForEach(GameViewModel.SoundMode.allCases, id: \.self) { mode in
@@ -212,7 +245,7 @@ struct SettingsView: View {
             }
             .formStyle(.grouped)
         }
-        .frame(minWidth: 500, minHeight: 600)
+        .frame(minWidth: 500, minHeight: 700)
         .alert("Accessibility Permission Required", isPresented: $showAccessibilityAlert) {
             Button("Open System Settings") {
                 AccessibilityManager.openAccessibilityPreferences()
