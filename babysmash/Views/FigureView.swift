@@ -48,27 +48,26 @@ struct FigureView: View {
         }
     }
     
-    @ViewBuilder
-    private func shapeContent(_ type: ShapeType) -> some Shape {
+    private func shapeContent(_ type: ShapeType) -> AnyShape {
         switch type {
         case .circle:
-            Circle()
+            return AnyShape(Circle())
         case .oval:
-            Ellipse()
+            return AnyShape(Ellipse())
         case .rectangle:
-            RoundedRectangle(cornerRadius: 10)
+            return AnyShape(RoundedRectangle(cornerRadius: 10))
         case .square:
-            RoundedRectangle(cornerRadius: 8)
+            return AnyShape(RoundedRectangle(cornerRadius: 8))
         case .triangle:
-            TriangleShape()
+            return AnyShape(TriangleShape())
         case .hexagon:
-            HexagonShape()
+            return AnyShape(HexagonShape())
         case .trapezoid:
-            TrapezoidShape()
+            return AnyShape(TrapezoidShape())
         case .star:
-            StarShape()
+            return AnyShape(StarShape())
         case .heart:
-            HeartShape()
+            return AnyShape(HeartShape())
         }
     }
     

@@ -6,6 +6,7 @@
 //
 
 import AVFoundation
+import SwiftUI
 
 class SpeechService {
     static let shared = SpeechService()

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct DrawingTrail: Identifiable {
     let id = UUID()
