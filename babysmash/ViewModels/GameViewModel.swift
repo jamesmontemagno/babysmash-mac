@@ -30,6 +30,8 @@ class GameViewModel: ObservableObject {
     @AppStorage("customBackgroundGreen") var customBackgroundGreen: Double = 0.0
     @AppStorage("customBackgroundBlue") var customBackgroundBlue: Double = 0.0
     @AppStorage("blockSystemKeys") var blockSystemKeys: Bool = false
+    @AppStorage("displayMode") var displayMode: String = "all"
+    @AppStorage("selectedDisplayIndex") var selectedDisplayIndex: Int = 0
     
     enum SoundMode: String, CaseIterable {
         case laughter = "Laughter"
@@ -81,10 +83,16 @@ class GameViewModel: ObservableObject {
     }
     
     // MARK: - Internal State
+    
+    /// Screen sizes keyed by screen index.
+    private var screenSizes: [Int: CGSize] = [:]
+    
+    /// Fallback screen size for backwards compatibility.
     private(set) var screenSize: CGSize = .zero
     
     private let keyboardMonitor = KeyboardMonitor()
     private let mouseDrawingManager = MouseDrawingManager()
+    private let multiMonitorManager = MultiMonitorManager.shared
     private var cancellables = Set<AnyCancellable>()
     private var fadeTimer: Timer?
     
@@ -116,11 +124,49 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Public Methods
+    // MARK: - Multi-Monitor Support
     
-    func setScreenSize(_ size: CGSize) {
-        screenSize = size
+    /// Returns figures that should be displayed on the specified screen.
+    /// - Parameter screenIndex: The index of the screen.
+    /// - Returns: Array of figures for this screen.
+    func figuresForScreen(_ screenIndex: Int) -> [Figure] {
+        return figures.filter { $0.screenIndex == screenIndex }
     }
+    
+    /// Returns drawing trails that should be displayed on the specified screen.
+    /// - Parameter screenIndex: The index of the screen.
+    /// - Returns: Array of drawing trails for this screen.
+    func drawingTrailsForScreen(_ screenIndex: Int) -> [DrawingTrail] {
+        return drawingTrails.filter { $0.screenIndex == screenIndex }
+    }
+    
+    /// Sets the screen size for a specific screen.
+    /// - Parameters:
+    ///   - size: The size of the screen.
+    ///   - screenIndex: The index of the screen.
+    func setScreenSize(_ size: CGSize, forScreen screenIndex: Int = 0) {
+        screenSizes[screenIndex] = size
+        // Keep backwards compatibility with single screen
+        if screenIndex == 0 {
+            screenSize = size
+        }
+    }
+    
+    /// Gets the screen size for a specific screen.
+    /// - Parameter screenIndex: The index of the screen.
+    /// - Returns: The size of the screen, or a default size if not found.
+    func getScreenSize(forScreen screenIndex: Int) -> CGSize {
+        return screenSizes[screenIndex] ?? screenSize
+    }
+    
+    /// Returns a random screen index from the active screens.
+    private func randomScreenIndex() -> Int {
+        let mode = MultiMonitorManager.DisplayMode(rawValue: displayMode) ?? .all
+        let screens = multiMonitorManager.screensForMode(mode, selectedIndex: selectedDisplayIndex)
+        return Int.random(in: 0..<max(1, screens.count))
+    }
+    
+    // MARK: - Public Methods
     
     func startKeyboardMonitoring() {
         keyboardMonitor.startMonitoring()
@@ -152,23 +198,26 @@ class GameViewModel: ObservableObject {
         SoundManager.shared.play(.startup)
     }
     
-    func handleTap(at location: CGPoint, in size: CGSize) {
-        screenSize = size
-        addRandomShape(at: location)
+    /// Handles tap events with screen index for multi-monitor support.
+    func handleTap(at location: CGPoint, in size: CGSize, screenIndex: Int = 0) {
+        setScreenSize(size, forScreen: screenIndex)
+        addRandomShape(at: location, screenIndex: screenIndex)
     }
     
-    func handleMouseDrag(at location: CGPoint, in size: CGSize, isDragging: Bool) {
+    /// Handles mouse drag events with screen index for multi-monitor support.
+    func handleMouseDrag(at location: CGPoint, in size: CGSize, isDragging: Bool, screenIndex: Int = 0) {
         guard mouseDrawEnabled else { return }
         // Only draw if clickless mode is on OR we're actively dragging (mouse button down)
         guard clicklessMouseDraw || isDragging else { return }
-        screenSize = size
-        mouseDrawingManager.addPoint(at: location)
+        setScreenSize(size, forScreen: screenIndex)
+        mouseDrawingManager.addPoint(at: location, screenIndex: screenIndex)
     }
     
-    func handleMouseMove(at location: CGPoint, in size: CGSize) {
+    /// Handles mouse move events with screen index for multi-monitor support.
+    func handleMouseMove(at location: CGPoint, in size: CGSize, screenIndex: Int = 0) {
         guard mouseDrawEnabled && clicklessMouseDraw else { return }
-        screenSize = size
-        mouseDrawingManager.addPoint(at: location)
+        setScreenSize(size, forScreen: screenIndex)
+        mouseDrawingManager.addPoint(at: location, screenIndex: screenIndex)
     }
     
     func handleMouseDragEnded() {
@@ -188,12 +237,16 @@ class GameViewModel: ObservableObject {
     private func handleKeyPress(_ keyEvent: KeyboardMonitor.KeyEvent) {
         guard let character = keyEvent.displayCharacter else { return }
         
-        // Generate random position
-        let position = randomPosition()
+        // Pick a random screen for keyboard-generated figures
+        let targetScreenIndex = randomScreenIndex()
+        let targetScreenSize = getScreenSize(forScreen: targetScreenIndex)
+        
+        // Generate random position on the target screen
+        let position = randomPosition(in: targetScreenSize)
         
         if keyEvent.isLetter || keyEvent.isNumber {
             let displayChar = forceUppercase ? Character(character.uppercased()) : character
-            addLetterFigure(displayChar, at: position)
+            addLetterFigure(displayChar, at: position, screenIndex: targetScreenIndex)
             
             // Check for word completion
             if keyEvent.isLetter {
@@ -202,13 +255,13 @@ class GameViewModel: ObservableObject {
                 }
             }
         } else {
-            addRandomShape(at: position)
+            addRandomShape(at: position, screenIndex: targetScreenIndex)
         }
         
         playSound(for: character)
     }
     
-    private func addLetterFigure(_ character: Character, at position: CGPoint) {
+    private func addLetterFigure(_ character: Character, at position: CGPoint, screenIndex: Int = 0) {
         let figure = Figure(
             shapeType: nil,
             character: character,
@@ -221,13 +274,14 @@ class GameViewModel: ObservableObject {
             opacity: 1.0,
             showFace: false,
             animationStyle: .random,
-            fontFamily: fontFamily
+            fontFamily: fontFamily,
+            screenIndex: screenIndex
         )
         
         addFigure(figure)
     }
     
-    private func addRandomShape(at position: CGPoint) {
+    private func addRandomShape(at position: CGPoint, screenIndex: Int = 0) {
         let shapeType = ShapeType.random
         let color = Color.randomBabySmash
         
@@ -243,7 +297,8 @@ class GameViewModel: ObservableObject {
             opacity: 1.0,
             showFace: showFaces,
             animationStyle: .random,
-            fontFamily: fontFamily
+            fontFamily: fontFamily,
+            screenIndex: screenIndex
         )
         
         addFigure(figure)
@@ -278,10 +333,12 @@ class GameViewModel: ObservableObject {
         SpeechService.shared.speakWord(word)
     }
     
-    private func randomPosition() -> CGPoint {
+    private func randomPosition(in size: CGSize) -> CGPoint {
         let padding: CGFloat = 150
-        let x = CGFloat.random(in: padding...(screenSize.width - padding))
-        let y = CGFloat.random(in: padding...(screenSize.height - padding))
+        let effectiveWidth = max(padding * 2 + 1, size.width)
+        let effectiveHeight = max(padding * 2 + 1, size.height)
+        let x = CGFloat.random(in: padding...(effectiveWidth - padding))
+        let y = CGFloat.random(in: padding...(effectiveHeight - padding))
         return CGPoint(x: x, y: y)
     }
     

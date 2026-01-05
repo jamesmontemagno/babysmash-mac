@@ -8,7 +8,15 @@
 import SwiftUI
 
 struct MainGameView: View {
-    @StateObject private var viewModel = GameViewModel()
+    /// The view model - can be injected for multi-monitor support or created locally.
+    @ObservedObject var viewModel: GameViewModel
+    
+    /// The screen index for this view (used in multi-monitor setups).
+    let screenIndex: Int
+    
+    /// Whether this is the main window (handles intro and settings).
+    let isMainWindow: Bool
+    
     @State private var showSettings = false
     @State private var showIntro = true
     @AppStorage("cursorType") private var cursorType: GameViewModel.CursorType = .hand
@@ -18,13 +26,20 @@ struct MainGameView: View {
     @AppStorage("customBackgroundGreen") private var customBackgroundGreen: Double = 0.0
     @AppStorage("customBackgroundBlue") private var customBackgroundBlue: Double = 0.0
     
+    /// Initializer with injected view model for multi-monitor support.
+    init(viewModel: GameViewModel, screenIndex: Int = 0, isMainWindow: Bool = true) {
+        self.viewModel = viewModel
+        self.screenIndex = screenIndex
+        self.isMainWindow = isMainWindow
+    }
+    
     var body: some View {
         ZStack {
             // Main game view
             gameView
             
-            // Intro overlay (shown on launch)
-            if showIntro {
+            // Intro overlay (shown on launch, only on main window)
+            if isMainWindow && showIntro {
                 IntroView(onDismiss: {
                     showIntro = false
                 })
@@ -36,7 +51,10 @@ struct MainGameView: View {
             SettingsView()
         }
         .onReceive(NotificationCenter.default.publisher(for: .showSettings)) { _ in
-            showSettings = true
+            // Only show settings from main window to avoid duplicate dialogs
+            if isMainWindow {
+                showSettings = true
+            }
         }
     }
     
@@ -47,8 +65,8 @@ struct MainGameView: View {
                 backgroundColorValue
                     .ignoresSafeArea()
                 
-                // Mouse drawing trails
-                ForEach(viewModel.drawingTrails) { trail in
+                // Mouse drawing trails - filter to show only trails for this screen
+                ForEach(viewModel.drawingTrailsForScreen(screenIndex)) { trail in
                     Circle()
                         .fill(trail.color)
                         .frame(width: trail.size, height: trail.size)
@@ -56,8 +74,8 @@ struct MainGameView: View {
                         .opacity(trail.opacity)
                 }
                 
-                // Main figures
-                ForEach(viewModel.figures) { figure in
+                // Main figures - filter to show only figures for this screen
+                ForEach(viewModel.figuresForScreen(screenIndex)) { figure in
                     FigureView(figure: figure)
                 }
             }
@@ -65,7 +83,7 @@ struct MainGameView: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
-                        viewModel.handleMouseDrag(at: value.location, in: geometry.size, isDragging: true)
+                        viewModel.handleMouseDrag(at: value.location, in: geometry.size, isDragging: true, screenIndex: screenIndex)
                     }
                     .onEnded { _ in
                         viewModel.handleMouseDragEnded()
@@ -74,21 +92,26 @@ struct MainGameView: View {
             .onContinuousHover { phase in
                 switch phase {
                 case .active(let location):
-                    viewModel.handleMouseMove(at: location, in: geometry.size)
+                    viewModel.handleMouseMove(at: location, in: geometry.size, screenIndex: screenIndex)
                 case .ended:
                     break
                 }
             }
             .onTapGesture { location in
-                viewModel.handleTap(at: location, in: geometry.size)
+                viewModel.handleTap(at: location, in: geometry.size, screenIndex: screenIndex)
             }
             .onAppear {
-                viewModel.setScreenSize(geometry.size)
-                viewModel.startKeyboardMonitoring()
-                viewModel.playStartupSound()
+                viewModel.setScreenSize(geometry.size, forScreen: screenIndex)
+                // Only start monitoring and play sounds from main window
+                if isMainWindow {
+                    viewModel.startKeyboardMonitoring()
+                    viewModel.playStartupSound()
+                }
             }
             .onDisappear {
-                viewModel.stopKeyboardMonitoring()
+                if isMainWindow {
+                    viewModel.stopKeyboardMonitoring()
+                }
             }
         }
         .ignoresSafeArea()
@@ -128,5 +151,5 @@ extension View {
 }
 
 #Preview {
-    MainGameView()
+    MainGameView(viewModel: GameViewModel(), screenIndex: 0, isMainWindow: true)
 }

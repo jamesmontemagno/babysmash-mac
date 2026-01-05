@@ -26,6 +26,9 @@ struct Figure: Identifiable {
     let animationStyle: AnimationStyle
     let fontFamily: String
     
+    /// The screen index this figure should be displayed on (for multi-monitor support).
+    let screenIndex: Int
+    
     enum AnimationStyle: CaseIterable {
         case jiggle
         case throb
@@ -50,7 +53,8 @@ struct Figure: Identifiable {
         opacity: Double = 1.0,
         showFace: Bool,
         animationStyle: AnimationStyle,
-        fontFamily: String = "SF Pro Rounded"
+        fontFamily: String = "SF Pro Rounded",
+        screenIndex: Int = 0
     ) {
         self.shapeType = shapeType
         self.character = character
@@ -64,5 +68,6 @@ struct Figure: Identifiable {
         self.showFace = showFace
         self.animationStyle = animationStyle
         self.fontFamily = fontFamily
+        self.screenIndex = screenIndex
     }
 }

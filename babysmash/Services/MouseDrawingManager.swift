@@ -15,6 +15,9 @@ struct DrawingTrail: Identifiable {
     let size: CGFloat
     var opacity: Double = 1.0
     let createdAt: Date
+    
+    /// The screen index this trail should be displayed on (for multi-monitor support).
+    let screenIndex: Int
 }
 
 class MouseDrawingManager: ObservableObject {
@@ -28,7 +31,11 @@ class MouseDrawingManager: ObservableObject {
         startFadeTimer()
     }
     
-    func addPoint(at position: CGPoint) {
+    /// Adds a drawing point at the specified position on the specified screen.
+    /// - Parameters:
+    ///   - position: The position of the point in screen coordinates.
+    ///   - screenIndex: The index of the screen this point belongs to.
+    func addPoint(at position: CGPoint, screenIndex: Int = 0) {
         if !isDrawing {
             isDrawing = true
             SoundManager.shared.play(.smallbumblebee)
@@ -38,7 +45,8 @@ class MouseDrawingManager: ObservableObject {
             position: position,
             color: Color.randomBabySmash,
             size: CGFloat.random(in: 15...30),
-            createdAt: Date()
+            createdAt: Date(),
+            screenIndex: screenIndex
         )
         
         trails.append(trail)
