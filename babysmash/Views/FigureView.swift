@@ -11,6 +11,7 @@ struct FigureView: View {
     let figure: Figure
     @State private var animationPhase: CGFloat = 0
     @ObservedObject private var themeManager = ThemeManager.shared
+    @ObservedObject private var accessibilityManager = AccessibilitySettingsManager.shared
     
     private var theme: BabySmashTheme {
         themeManager.currentTheme
@@ -35,7 +36,7 @@ struct FigureView: View {
     
     @ViewBuilder
     private func letterView(_ character: Character) -> some View {
-        let useGradient = theme.shapeStyle == .gradient
+        let useGradient = theme.shapeStyle == .gradient && !accessibilityManager.settings.highContrastMode
         
         Text(String(character))
             .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
@@ -47,25 +48,35 @@ struct FigureView: View {
                 y: 5
             )
             .overlay {
-                if theme.glowEnabled {
+                if theme.glowEnabled && !accessibilityManager.settings.photosensitivitySafeMode {
                     Text(String(character))
                         .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
                         .foregroundStyle(figure.color)
                         .blur(radius: theme.glowRadius / 2)
                 }
             }
-            .modifier(FloatEffect())
+            .modifier(effectiveFloatModifier)
     }
     
     @ViewBuilder
     private func shapeView(_ type: ShapeType) -> some View {
+        let showPattern = accessibilityManager.settings.showPatterns && 
+                          accessibilityManager.settings.colorBlindnessMode != .none
+        
         ZStack {
             shapeContent(type)
-                .fill(getShapeFillStyle())
+                .fill(getShapeFillStyle(figure.color))
                 .overlay {
-                    if theme.shapeStyle == .outlined || theme.shapeStyle == .filledWithOutline {
+                    // Pattern overlay for color blindness support
+                    if showPattern {
+                        PatternOverlay(pattern: PatternOverlay.PatternType.forShapeType(type))
+                            .clipShape(shapeContent(type))
+                    }
+                }
+                .overlay {
+                    if theme.shapeStyle == .outlined || theme.shapeStyle == .filledWithOutline || accessibilityManager.settings.highContrastMode {
                         shapeContent(type)
-                            .stroke(figure.color, lineWidth: 3)
+                            .stroke(figure.color, lineWidth: accessibilityManager.settings.highContrastMode ? 5 : 3)
                     }
                 }
                 .shadow(
@@ -75,7 +86,7 @@ struct FigureView: View {
                     y: 5
                 )
                 .overlay {
-                    if theme.glowEnabled {
+                    if theme.glowEnabled && !accessibilityManager.settings.photosensitivitySafeMode {
                         shapeContent(type)
                             .stroke(figure.color, lineWidth: 2)
                             .blur(radius: theme.glowRadius / 2)
@@ -88,14 +99,19 @@ struct FigureView: View {
         }
     }
     
-    private func getShapeFillStyle() -> AnyShapeStyle {
+    private func getShapeFillStyle(_ color: Color) -> AnyShapeStyle {
+        // Use simpler fills in high contrast mode
+        if accessibilityManager.settings.highContrastMode {
+            return AnyShapeStyle(color)
+        }
+        
         switch theme.shapeStyle {
         case .gradient:
-            return AnyShapeStyle(figure.color.gradient)
+            return AnyShapeStyle(color.gradient)
         case .filled, .filledWithOutline:
-            return AnyShapeStyle(figure.color)
+            return AnyShapeStyle(color)
         case .outlined:
-            return AnyShapeStyle(figure.color.opacity(0.2))
+            return AnyShapeStyle(color.opacity(0.2))
         }
     }
     
@@ -196,7 +212,16 @@ struct FigureView: View {
         .offset(y: -figure.size * 0.05)
     }
     
+    /// Returns the effective float modifier based on accessibility settings
+    private var effectiveFloatModifier: some ViewModifier {
+        if accessibilityManager.effectiveReduceMotion {
+            return AnyViewModifier(NoAnimationModifier())
+        }
+        return AnyViewModifier(FloatEffect())
+    }
+    
     private var animationModifier: some ViewModifier {
+        // Respect animation style set by GameViewModel (which already considers accessibility)
         switch figure.animationStyle {
         case .jiggle:
             return AnyViewModifier(JiggleEffect())

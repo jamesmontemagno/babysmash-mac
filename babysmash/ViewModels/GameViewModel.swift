@@ -52,12 +52,19 @@ class GameViewModel: ObservableObject {
     private let mouseDrawingManager = MouseDrawingManager()
     private let multiMonitorManager = MultiMonitorManager.shared
     private let themeManager = ThemeManager.shared
+    private let accessibilityManager = AccessibilitySettingsManager.shared
+    private let autoPlayManager = AutoPlayManager.shared
     private var cancellables = Set<AnyCancellable>()
     private var fadeTimer: Timer?
+    
+    /// Predictable position index for accessibility predictable mode
+    private var predictablePositionIndex: Int = 0
     
     init() {
         setupSubscriptions()
         startFadeTimer()
+        setupAutoPlay()
+        setupSwitchControl()
     }
     
     // MARK: - Setup
@@ -72,6 +79,13 @@ class GameViewModel: ObservableObject {
         
         mouseDrawingManager.$trails
             .assign(to: &$drawingTrails)
+        
+        // Observe accessibility settings changes for auto-play
+        accessibilityManager.$settings
+            .sink { [weak self] settings in
+                self?.handleAccessibilitySettingsChanged(settings)
+            }
+            .store(in: &cancellables)
     }
     
     private func startFadeTimer() {
@@ -81,6 +95,41 @@ class GameViewModel: ObservableObject {
             Task { @MainActor [weak self] in
                 self?.fadeOldFigures()
             }
+        }
+    }
+    
+    private func setupAutoPlay() {
+        autoPlayManager.onTick = { [weak self] in
+            Task { @MainActor [weak self] in
+                self?.generateAutoPlayShape()
+            }
+        }
+    }
+    
+    private func setupSwitchControl() {
+        SwitchControlManager.shared.onActionSelected = { [weak self] action in
+            Task { @MainActor [weak self] in
+                self?.handleSwitchAction(action)
+            }
+        }
+    }
+    
+    private func handleAccessibilitySettingsChanged(_ settings: AccessibilitySettings) {
+        // Handle auto-play mode
+        if settings.autoPlayMode && !autoPlayManager.isRunning {
+            autoPlayManager.setInterval(settings.autoPlayInterval)
+            autoPlayManager.start()
+        } else if !settings.autoPlayMode && autoPlayManager.isRunning {
+            autoPlayManager.stop()
+        } else if settings.autoPlayMode {
+            autoPlayManager.setInterval(settings.autoPlayInterval)
+        }
+        
+        // Handle switch control mode
+        if settings.switchControlEnabled && !SwitchControlManager.shared.isScanning {
+            SwitchControlManager.shared.startScanning()
+        } else if !settings.switchControlEnabled && SwitchControlManager.shared.isScanning {
+            SwitchControlManager.shared.stopScanning()
         }
     }
     
@@ -135,11 +184,24 @@ class GameViewModel: ObservableObject {
         if blockSystemKeys {
             startSystemKeyBlocking()
         }
+        
+        // Start auto-play if enabled
+        if accessibilityManager.settings.autoPlayMode {
+            autoPlayManager.setInterval(accessibilityManager.settings.autoPlayInterval)
+            autoPlayManager.start()
+        }
+        
+        // Start switch control if enabled
+        if accessibilityManager.settings.switchControlEnabled {
+            SwitchControlManager.shared.startScanning()
+        }
     }
     
     func stopKeyboardMonitoring() {
         keyboardMonitor.stopMonitoring()
         stopSystemKeyBlocking()
+        autoPlayManager.stop()
+        SwitchControlManager.shared.stopScanning()
     }
     
     /// Starts blocking system keys if accessibility permission is granted.
@@ -156,6 +218,7 @@ class GameViewModel: ObservableObject {
     
     func playStartupSound() {
         SoundManager.shared.play(.startup)
+        accessibilityManager.triggerSoundIndicator(caption: "🎵 Welcome!")
     }
     
     /// Handles tap events with screen index for multi-monitor support.
@@ -187,8 +250,85 @@ class GameViewModel: ObservableObject {
     func handleScrollWheel(deltaY: CGFloat) {
         if deltaY > 0 {
             SoundManager.shared.play(.rising)
+            accessibilityManager.triggerSoundIndicator(caption: "🔊 Rising")
         } else if deltaY < 0 {
             SoundManager.shared.play(.falling)
+            accessibilityManager.triggerSoundIndicator(caption: "🔊 Falling")
+        }
+    }
+    
+    /// Clears all figures from the screen
+    func clearScreen() {
+        figures.removeAll()
+    }
+    
+    // MARK: - Auto-Play and Switch Control
+    
+    private func generateAutoPlayShape() {
+        let targetScreenIndex = randomScreenIndex()
+        let targetScreenSize = getScreenSize(forScreen: targetScreenIndex)
+        let position = getPosition(in: targetScreenSize)
+        
+        // Generate a random element based on focus mode
+        let focusMode = accessibilityManager.settings.focusMode
+        switch focusMode {
+        case .all:
+            // Random choice between shape, letter, number
+            let choice = Int.random(in: 0..<3)
+            if choice == 0 {
+                addRandomShape(at: position, screenIndex: targetScreenIndex)
+            } else if choice == 1 {
+                let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                if let letter = letters.randomElement() {
+                    addLetterFigure(letter, at: position, screenIndex: targetScreenIndex)
+                    playSound(for: letter)
+                }
+            } else {
+                let numbers = "0123456789"
+                if let number = numbers.randomElement() {
+                    addLetterFigure(number, at: position, screenIndex: targetScreenIndex)
+                    playSound(for: number)
+                }
+            }
+        case .lettersOnly:
+            let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            if let letter = letters.randomElement() {
+                addLetterFigure(letter, at: position, screenIndex: targetScreenIndex)
+                playSound(for: letter)
+            }
+        case .numbersOnly:
+            let numbers = "0123456789"
+            if let number = numbers.randomElement() {
+                addLetterFigure(number, at: position, screenIndex: targetScreenIndex)
+                playSound(for: number)
+            }
+        case .shapesOnly:
+            addRandomShape(at: position, screenIndex: targetScreenIndex)
+        }
+    }
+    
+    private func handleSwitchAction(_ action: SwitchControlManager.SwitchAction) {
+        let targetScreenIndex = randomScreenIndex()
+        let targetScreenSize = getScreenSize(forScreen: targetScreenIndex)
+        let position = getPosition(in: targetScreenSize)
+        
+        switch action {
+        case .showRandomShape:
+            addRandomShape(at: position, screenIndex: targetScreenIndex)
+        case .showRandomLetter:
+            let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            if let letter = letters.randomElement() {
+                addLetterFigure(letter, at: position, screenIndex: targetScreenIndex)
+                playSound(for: letter)
+            }
+        case .showRandomNumber:
+            let numbers = "0123456789"
+            if let number = numbers.randomElement() {
+                addLetterFigure(number, at: position, screenIndex: targetScreenIndex)
+                playSound(for: number)
+            }
+        case .clearScreen:
+            clearScreen()
         }
     }
     
@@ -197,14 +337,34 @@ class GameViewModel: ObservableObject {
     private func handleKeyPress(_ keyEvent: KeyboardMonitor.KeyEvent) {
         guard let character = keyEvent.displayCharacter else { return }
         
+        // Check focus mode restrictions
+        let focusMode = accessibilityManager.settings.focusMode
+        if focusMode == .shapesOnly && (keyEvent.isLetter || keyEvent.isNumber) {
+            // In shapes-only mode, generate shapes for letter/number keys too
+            let targetScreenIndex = randomScreenIndex()
+            let targetScreenSize = getScreenSize(forScreen: targetScreenIndex)
+            let position = getPosition(in: targetScreenSize)
+            addRandomShape(at: position, screenIndex: targetScreenIndex)
+            playSound(for: character)
+            return
+        }
+        
         // Pick a random screen for keyboard-generated figures
         let targetScreenIndex = randomScreenIndex()
         let targetScreenSize = getScreenSize(forScreen: targetScreenIndex)
         
-        // Generate random position on the target screen
-        let position = randomPosition(in: targetScreenSize)
+        // Generate position based on accessibility settings
+        let position = getPosition(in: targetScreenSize)
         
         if keyEvent.isLetter || keyEvent.isNumber {
+            // Check if we should skip based on focus mode
+            if focusMode == .lettersOnly && keyEvent.isNumber {
+                return
+            }
+            if focusMode == .numbersOnly && keyEvent.isLetter {
+                return
+            }
+            
             let displayChar = forceUppercase ? Character(character.uppercased()) : character
             addLetterFigure(displayChar, at: position, screenIndex: targetScreenIndex)
             
@@ -221,20 +381,60 @@ class GameViewModel: ObservableObject {
         playSound(for: character)
     }
     
+    /// Gets position for a new figure, respecting accessibility settings
+    private func getPosition(in size: CGSize) -> CGPoint {
+        if accessibilityManager.settings.predictableMode {
+            return predictablePosition(in: size)
+        }
+        return randomPosition(in: size)
+    }
+    
     private func addLetterFigure(_ character: Character, at position: CGPoint, screenIndex: Int = 0) {
         let theme = themeManager.currentTheme
+        let settings = accessibilityManager.settings
+        
+        // Determine color based on color blindness mode
+        let color: Color
+        if settings.colorBlindnessMode != .none {
+            color = Color.randomColorFor(settings.colorBlindnessMode)
+        } else if settings.highContrastMode {
+            color = Color.highContrastColors.randomElement() ?? .white
+        } else {
+            color = theme.randomColor()
+        }
+        
+        // Determine size based on large elements mode
+        let size: CGFloat
+        if settings.largeElementsMode {
+            let minSize = max(settings.minimumShapeSize, 300)
+            size = CGFloat.random(in: minSize...(minSize + 100))
+        } else {
+            size = theme.randomSize()
+        }
+        
+        // Determine animation style based on reduce motion
+        let animationStyle: Figure.AnimationStyle
+        if accessibilityManager.effectiveReduceMotion {
+            animationStyle = .none
+        } else if settings.disableRotation {
+            // Avoid rotation-based animations
+            animationStyle = [Figure.AnimationStyle.jiggle, .throb, .snap, .none].randomElement() ?? .none
+        } else {
+            animationStyle = .random
+        }
+        
         let figure = Figure(
             shapeType: nil,
             character: character,
-            color: theme.randomColor(),
+            color: color,
             position: position,
-            size: theme.randomSize(),
+            size: size,
             createdAt: Date(),
             scale: 1.0,
             rotation: .zero,
             opacity: 1.0,
             showFace: false,
-            animationStyle: .random,
+            animationStyle: animationStyle,
             fontFamily: theme.fontName,
             screenIndex: screenIndex
         )
@@ -244,8 +444,27 @@ class GameViewModel: ObservableObject {
     
     private func addRandomShape(at position: CGPoint, screenIndex: Int = 0) {
         let theme = themeManager.currentTheme
+        let settings = accessibilityManager.settings
         let shapeType = theme.randomEnabledShape()
-        let color = theme.randomColor()
+        
+        // Determine color based on color blindness mode
+        let color: Color
+        if settings.colorBlindnessMode != .none {
+            color = Color.randomColorFor(settings.colorBlindnessMode)
+        } else if settings.highContrastMode {
+            color = Color.highContrastColors.randomElement() ?? .white
+        } else {
+            color = theme.randomColor()
+        }
+        
+        // Determine size based on large elements mode
+        let size: CGFloat
+        if settings.largeElementsMode {
+            let minSize = max(settings.minimumShapeSize, 300)
+            size = CGFloat.random(in: minSize...(minSize + 100))
+        } else {
+            size = theme.randomSize()
+        }
         
         // Determine if face should be shown based on theme and settings
         let shouldShowFace: Bool
@@ -256,36 +475,55 @@ class GameViewModel: ObservableObject {
             shouldShowFace = showFaces
         }
         
+        // Determine animation style based on reduce motion
+        let animationStyle: Figure.AnimationStyle
+        if accessibilityManager.effectiveReduceMotion {
+            animationStyle = .none
+        } else if settings.disableRotation {
+            // Avoid rotation-based animations
+            animationStyle = [Figure.AnimationStyle.jiggle, .throb, .snap, .none].randomElement() ?? .none
+        } else {
+            animationStyle = .random
+        }
+        
         let figure = Figure(
             shapeType: shapeType,
             character: nil,
             color: color,
             position: position,
-            size: theme.randomSize(),
+            size: size,
             createdAt: Date(),
             scale: 1.0,
             rotation: .zero,
             opacity: 1.0,
             showFace: shouldShowFace,
-            animationStyle: .random,
+            animationStyle: animationStyle,
             fontFamily: theme.fontName,
             screenIndex: screenIndex
         )
         
         addFigure(figure)
         
-        // Speak the shape and color
+        // Speak the shape and color, and trigger accessibility indicators
         if soundMode == .speech {
             SpeechService.shared.speakShapeWithColor(shape: shapeType, color: color)
+            accessibilityManager.triggerSoundIndicator(caption: "\(shapeType.displayName) - \(color.name)")
+        } else if soundMode == .laughter {
+            accessibilityManager.triggerSoundIndicator(caption: "😄 Giggle!")
         }
     }
     
     private func addFigure(_ figure: Figure) {
         figures.append(figure)
         
+        // Use effective max figures based on accessibility settings
+        let effectiveMax = accessibilityManager.settings.simplifiedMode
+            ? accessibilityManager.settings.maxSimultaneousShapes
+            : maxFigures
+        
         // Limit total figures
-        if figures.count > maxFigures {
-            figures.removeFirst(figures.count - maxFigures)
+        if figures.count > effectiveMax {
+            figures.removeFirst(figures.count - effectiveMax)
         }
     }
     
@@ -293,8 +531,10 @@ class GameViewModel: ObservableObject {
         switch soundMode {
         case .laughter:
             SoundManager.shared.playRandomLaughter()
+            accessibilityManager.triggerSoundIndicator(caption: "😄 Giggle!")
         case .speech:
             SpeechService.shared.speakLetter(character)
+            accessibilityManager.triggerSoundIndicator(caption: String(character).uppercased())
         case .off:
             break
         }
@@ -302,6 +542,7 @@ class GameViewModel: ObservableObject {
     
     private func announceWord(_ word: String) {
         SpeechService.shared.speakWord(word)
+        accessibilityManager.triggerSoundIndicator(caption: "📚 \(word)")
     }
     
     private func randomPosition(in size: CGSize) -> CGPoint {
@@ -313,6 +554,21 @@ class GameViewModel: ObservableObject {
         let x = CGFloat.random(in: padding...(effectiveWidth - padding))
         let y = CGFloat.random(in: padding...(effectiveHeight - padding))
         return CGPoint(x: x, y: y)
+    }
+    
+    /// Returns a predictable position for accessibility mode
+    private func predictablePosition(in size: CGSize) -> CGPoint {
+        let positions: [CGPoint] = [
+            CGPoint(x: size.width * 0.25, y: size.height * 0.25),
+            CGPoint(x: size.width * 0.75, y: size.height * 0.25),
+            CGPoint(x: size.width * 0.5, y: size.height * 0.5),
+            CGPoint(x: size.width * 0.25, y: size.height * 0.75),
+            CGPoint(x: size.width * 0.75, y: size.height * 0.75),
+        ]
+        
+        let position = positions[predictablePositionIndex % positions.count]
+        predictablePositionIndex += 1
+        return position
     }
     
     private func fadeOldFigures() {

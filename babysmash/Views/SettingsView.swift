@@ -182,6 +182,8 @@ struct SettingsView: View {
                     }
                 }
                 
+                accessibilitySection
+                
                 Section("About") {
                     HStack {
                         Text("BabySmash for macOS")
@@ -264,6 +266,9 @@ struct SettingsView: View {
         
         // Clear theme manager custom themes
         ThemeManager.shared.resetToDefault()
+        
+        // Reset accessibility settings
+        AccessibilitySettingsManager.shared.resetToDefaults()
         
         // Quit the app so user can restart and see onboarding
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -370,6 +375,45 @@ struct SettingsView: View {
                     themeManager.deleteCustomTheme(themeManager.currentTheme)
                 }
             }
+        }
+    }
+    
+    // MARK: - Accessibility Section
+    
+    @State private var showAccessibilitySettings = false
+    
+    private var accessibilitySection: some View {
+        Section("Accessibility") {
+            Button {
+                showAccessibilitySettings = true
+            } label: {
+                HStack {
+                    Image(systemName: "accessibility")
+                    Text("Accessibility Settings...")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
+            .sheet(isPresented: $showAccessibilitySettings) {
+                NavigationStack {
+                    AccessibilitySettingsView()
+                        .navigationTitle("Accessibility")
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done") {
+                                    showAccessibilitySettings = false
+                                }
+                            }
+                        }
+                }
+                .frame(minWidth: 500, minHeight: 700)
+            }
+            
+            Text("Visual, audio, motor, and cognitive accessibility options.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 }
