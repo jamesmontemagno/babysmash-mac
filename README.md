@@ -31,7 +31,7 @@ A macOS port of [Scott Hanselman's BabySmash](https://github.com/shanselman/baby
 
 2. Open the project in Xcode:
    ```bash
-   open src/babysmash.xcodeproj
+   open babysmash.xcodeproj
    ```
 
 3. Build and run (⌘R)

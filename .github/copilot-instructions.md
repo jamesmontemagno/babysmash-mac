@@ -19,10 +19,10 @@ MouseDrawingManager → DrawingTrail model → MainGameView (renders trails)
 ### Key Components
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `GameViewModel` | [ViewModels/GameViewModel.swift](src/babysmash/ViewModels/GameViewModel.swift) | Central state, input handling, figure lifecycle |
-| `Figure` | [Models/Figure.swift](src/babysmash/Models/Figure.swift) | Shape/letter data with animation style |
-| `FigureView` | [Views/FigureView.swift](src/babysmash/Views/FigureView.swift) | Renders figures with animations |
-| `KeyboardMonitor` | [Services/KeyboardMonitor.swift](src/babysmash/Services/KeyboardMonitor.swift) | Low-level `NSEvent` keyboard capture |
+| `GameViewModel` | [ViewModels/GameViewModel.swift](babysmash/ViewModels/GameViewModel.swift) | Central state, input handling, figure lifecycle |
+| `Figure` | [Models/Figure.swift](babysmash/Models/Figure.swift) | Shape/letter data with animation style |
+| `FigureView` | [Views/FigureView.swift](babysmash/Views/FigureView.swift) | Renders figures with animations |
+| `KeyboardMonitor` | [Services/KeyboardMonitor.swift](babysmash/Services/KeyboardMonitor.swift) | Low-level `NSEvent` keyboard capture |
 
 ## Conventions
 
@@ -48,10 +48,10 @@ Place `.wav` files in the bundle, register in `SoundManager.Sound` enum. Laughte
 
 ```bash
 # Open in Xcode
-open src/babysmash.xcodeproj
+open babysmash.xcodeproj
 
 # Build via command line
-xcodebuild -project src/babysmash.xcodeproj -scheme babysmash -configuration Debug build
+xcodebuild -project babysmash.xcodeproj -scheme babysmash -configuration Debug build
 ```
 
 **Requirements**: Xcode 16+, macOS 14+ SDK
