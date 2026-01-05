@@ -25,6 +25,7 @@ struct MainGameView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     
     @ObservedObject private var themeManager = ThemeManager.shared
+    @ObservedObject private var accessibilityManager = AccessibilitySettingsManager.shared
     
     /// Initializer with injected view model for multi-monitor support.
     init(viewModel: GameViewModel, screenIndex: Int = 0, isMainWindow: Bool = true) {
@@ -37,6 +38,14 @@ struct MainGameView: View {
         ZStack {
             // Main game view
             gameView
+            
+            // Accessibility overlays (sound indicator and captions)
+            AccessibilitySoundOverlay()
+            
+            // Switch control overlay
+            if accessibilityManager.settings.switchControlEnabled {
+                SwitchControlOverlay()
+            }
             
             // Theme picker (shown after intro on first launch, only on main window)
             if isMainWindow && showThemePicker {

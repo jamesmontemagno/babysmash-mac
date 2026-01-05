@@ -11,6 +11,7 @@ struct FigureView: View {
     let figure: Figure
     @State private var animationPhase: CGFloat = 0
     @ObservedObject private var themeManager = ThemeManager.shared
+    @ObservedObject private var accessibilityManager = AccessibilitySettingsManager.shared
     
     private var theme: BabySmashTheme {
         themeManager.currentTheme
@@ -35,49 +36,61 @@ struct FigureView: View {
     
     @ViewBuilder
     private func letterView(_ character: Character) -> some View {
-        let useGradient = theme.shapeStyle == .gradient
+        let useGradient = theme.shapeStyle == .gradient && !accessibilityManager.settings.highContrastMode
+        let effectiveColor = effectiveColorForDisplay
         
         Text(String(character))
             .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
-            .foregroundStyle(useGradient ? AnyShapeStyle(figure.color.gradient) : AnyShapeStyle(figure.color))
+            .foregroundStyle(useGradient ? AnyShapeStyle(effectiveColor.gradient) : AnyShapeStyle(effectiveColor))
             .shadow(
-                color: theme.shadowEnabled ? figure.color.opacity(theme.shadowOpacity) : .clear,
+                color: theme.shadowEnabled ? effectiveColor.opacity(theme.shadowOpacity) : .clear,
                 radius: theme.shadowRadius,
                 x: 5,
                 y: 5
             )
             .overlay {
-                if theme.glowEnabled {
+                if theme.glowEnabled && !accessibilityManager.settings.photosensitivitySafeMode {
                     Text(String(character))
                         .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
-                        .foregroundStyle(figure.color)
+                        .foregroundStyle(effectiveColor)
                         .blur(radius: theme.glowRadius / 2)
                 }
             }
-            .modifier(FloatEffect())
+            .modifier(effectiveFloatModifier)
     }
     
     @ViewBuilder
     private func shapeView(_ type: ShapeType) -> some View {
+        let effectiveColor = effectiveColorForDisplay
+        let showPattern = accessibilityManager.settings.showPatterns && 
+                          accessibilityManager.settings.colorBlindnessMode != .none
+        
         ZStack {
             shapeContent(type)
-                .fill(getShapeFillStyle())
+                .fill(getShapeFillStyle(effectiveColor))
                 .overlay {
-                    if theme.shapeStyle == .outlined || theme.shapeStyle == .filledWithOutline {
+                    // Pattern overlay for color blindness support
+                    if showPattern {
+                        PatternOverlay(pattern: PatternOverlay.PatternType.forShapeType(type))
+                            .clipShape(shapeContent(type))
+                    }
+                }
+                .overlay {
+                    if theme.shapeStyle == .outlined || theme.shapeStyle == .filledWithOutline || accessibilityManager.settings.highContrastMode {
                         shapeContent(type)
-                            .stroke(figure.color, lineWidth: 3)
+                            .stroke(effectiveColor, lineWidth: accessibilityManager.settings.highContrastMode ? 5 : 3)
                     }
                 }
                 .shadow(
-                    color: theme.shadowEnabled ? figure.color.opacity(theme.shadowOpacity) : .clear,
+                    color: theme.shadowEnabled ? effectiveColor.opacity(theme.shadowOpacity) : .clear,
                     radius: theme.shadowRadius,
                     x: 5,
                     y: 5
                 )
                 .overlay {
-                    if theme.glowEnabled {
+                    if theme.glowEnabled && !accessibilityManager.settings.photosensitivitySafeMode {
                         shapeContent(type)
-                            .stroke(figure.color, lineWidth: 2)
+                            .stroke(effectiveColor, lineWidth: 2)
                             .blur(radius: theme.glowRadius / 2)
                     }
                 }
@@ -88,14 +101,26 @@ struct FigureView: View {
         }
     }
     
-    private func getShapeFillStyle() -> AnyShapeStyle {
+    /// Returns the effective color considering accessibility settings
+    private var effectiveColorForDisplay: Color {
+        // The color should already be set correctly in GameViewModel based on accessibility settings
+        // This property is mainly for future extensibility
+        figure.color
+    }
+    
+    private func getShapeFillStyle(_ color: Color) -> AnyShapeStyle {
+        // Use simpler fills in high contrast mode
+        if accessibilityManager.settings.highContrastMode {
+            return AnyShapeStyle(color)
+        }
+        
         switch theme.shapeStyle {
         case .gradient:
-            return AnyShapeStyle(figure.color.gradient)
+            return AnyShapeStyle(color.gradient)
         case .filled, .filledWithOutline:
-            return AnyShapeStyle(figure.color)
+            return AnyShapeStyle(color)
         case .outlined:
-            return AnyShapeStyle(figure.color.opacity(0.2))
+            return AnyShapeStyle(color.opacity(0.2))
         }
     }
     
@@ -196,7 +221,16 @@ struct FigureView: View {
         .offset(y: -figure.size * 0.05)
     }
     
+    /// Returns the effective float modifier based on accessibility settings
+    private var effectiveFloatModifier: some ViewModifier {
+        if accessibilityManager.effectiveReduceMotion {
+            return AnyViewModifier(NoAnimationModifier())
+        }
+        return AnyViewModifier(FloatEffect())
+    }
+    
     private var animationModifier: some ViewModifier {
+        // Respect animation style set by GameViewModel (which already considers accessibility)
         switch figure.animationStyle {
         case .jiggle:
             return AnyViewModifier(JiggleEffect())
