@@ -22,9 +22,11 @@ struct SettingsView: View {
     @AppStorage("blockSystemKeys") private var blockSystemKeys: Bool = false
     @AppStorage("displayMode") private var displayMode: String = "all"
     @AppStorage("selectedDisplayIndex") private var selectedDisplayIndex: Int = 0
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     
     // State for accessibility permission alert
     @State private var showAccessibilityAlert: Bool = false
+    @State private var showResetConfirmation: Bool = false
     
     // Theme editor state
     @State private var showThemeEditor = false
@@ -185,6 +187,23 @@ struct SettingsView: View {
                          destination: URL(string: "https://github.com/shanselman/babysmash")!)
                         .font(.caption)
                 }
+                
+                Section {
+                    Button(role: .destructive) {
+                        showResetConfirmation = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise")
+                            Text("Reset to Defaults")
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                } header: {
+                    Text("Reset")
+                } footer: {
+                    Text("Resets all settings to default values and restarts onboarding on next launch.")
+                        .font(.caption)
+                }
             }
             .formStyle(.grouped)
         }
@@ -197,8 +216,46 @@ struct SettingsView: View {
         } message: {
             Text("BabySmash needs Accessibility permission to block system keyboard shortcuts, preventing babies from accidentally switching apps or triggering system functions.\n\n1. Open System Settings\n2. Find BabySmash in the list\n3. Enable the checkbox\n4. Toggle this setting again")
         }
+        .alert("Reset to Defaults?", isPresented: $showResetConfirmation) {
+            Button("Reset", role: .destructive) {
+                resetToDefaults()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This will reset all settings to their default values and restart the onboarding experience on next launch. The app will quit after resetting.")
+        }
         .sheet(isPresented: $showThemeEditor) {
             ThemeEditorView(theme: $editingTheme)
+        }
+    }
+    
+    // MARK: - Reset to Defaults
+    
+    private func resetToDefaults() {
+        // Reset all AppStorage values to defaults
+        soundMode = .laughter
+        fadeEnabled = true
+        fadeAfter = 10.0
+        showFaces = true
+        mouseDrawEnabled = true
+        clicklessMouseDraw = false
+        forceUppercase = true
+        maxFigures = 50
+        cursorType = .hand
+        blockSystemKeys = false
+        displayMode = "all"
+        selectedDisplayIndex = 0
+        hasCompletedOnboarding = false
+        
+        // Stop system key blocking if it was enabled
+        SystemKeyBlocker.shared.stopBlocking()
+        
+        // Clear theme manager custom themes
+        ThemeManager.shared.resetToDefault()
+        
+        // Quit the app so user can restart and see onboarding
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NSApplication.shared.terminate(nil)
         }
     }
     

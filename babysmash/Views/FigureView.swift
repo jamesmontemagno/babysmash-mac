@@ -30,6 +30,7 @@ struct FigureView: View {
         .opacity(figure.opacity)
         .position(figure.position)
         .modifier(animationModifier)
+        .drawingGroup() // Rasterize for better performance
     }
     
     @ViewBuilder

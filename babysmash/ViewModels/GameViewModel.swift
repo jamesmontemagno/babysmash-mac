@@ -75,7 +75,8 @@ class GameViewModel: ObservableObject {
     }
     
     private func startFadeTimer() {
-        fadeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        // Use longer interval to reduce UI updates - fade is gradual anyway
+        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             guard let self else { return }
             Task { @MainActor [weak self] in
                 self?.fadeOldFigures()
@@ -318,15 +319,34 @@ class GameViewModel: ObservableObject {
         guard fadeEnabled else { return }
         
         let now = Date()
+        let fadeDuration = 1.0 // Faster fade duration (was 2.0)
+        
+        // Only update if there are figures to process
+        guard !figures.isEmpty else { return }
+        
+        // Check if any figures need updating before modifying array
+        var needsUpdate = false
+        for figure in figures {
+            let age = now.timeIntervalSince(figure.createdAt)
+            if age > fadeAfter {
+                needsUpdate = true
+                break
+            }
+        }
+        
+        guard needsUpdate else { return }
+        
+        // Batch update - only create new array when needed
         figures = figures.compactMap { figure in
             let age = now.timeIntervalSince(figure.createdAt)
-            if age > fadeAfter + 2.0 { return nil } // Remove after fade
+            if age > fadeAfter + fadeDuration { return nil } // Remove after fade
             
-            var updated = figure
             if age > fadeAfter {
-                updated.opacity = max(0, 1.0 - (age - fadeAfter) / 2.0)
+                var updated = figure
+                updated.opacity = max(0, 1.0 - (age - fadeAfter) / fadeDuration)
+                return updated
             }
-            return updated
+            return figure
         }
     }
     

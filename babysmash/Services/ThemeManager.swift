@@ -90,6 +90,13 @@ class ThemeManager: ObservableObject {
         BabySmashTheme.allBuiltIn + customThemes
     }
     
+    /// Resets theme manager to default state - clears custom themes and selects classic
+    func resetToDefault() {
+        customThemes.removeAll()
+        UserDefaults.standard.removeObject(forKey: "customThemes")
+        selectTheme(.classic)
+    }
+    
     // MARK: - Persistence
     
     private static func saveCustomThemes(_ themes: [BabySmashTheme]) {
