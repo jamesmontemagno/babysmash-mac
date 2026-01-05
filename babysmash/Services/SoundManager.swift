@@ -50,7 +50,7 @@ class SoundManager {
     }
     
     func play(_ sound: Sound) {
-        guard let player = audioPlayers[sound.rawValue] else { return }
+        guard audioPlayers[sound.rawValue] != nil else { return }
         
         // Create a new player instance for overlapping sounds
         if let url = Bundle.main.url(forResource: sound.rawValue, withExtension: "wav"),
