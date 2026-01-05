@@ -24,6 +24,11 @@ struct SettingsView: View {
     @AppStorage("selectedDisplayIndex") private var selectedDisplayIndex: Int = 0
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     
+    // Language settings
+    @AppStorage("speechLanguage") private var speechLanguage: String = "en"
+    @AppStorage("secondaryLanguage") private var secondaryLanguage: String = ""
+    @AppStorage("alternateSpeechLanguages") private var alternateSpeechLanguages: Bool = false
+    
     // State for accessibility permission alert
     @State private var showAccessibilityAlert: Bool = false
     @State private var showResetConfirmation: Bool = false
@@ -95,6 +100,8 @@ struct SettingsView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+                
+                languageSection
                 
                 themeSection
                 
@@ -247,6 +254,11 @@ struct SettingsView: View {
         selectedDisplayIndex = 0
         hasCompletedOnboarding = false
         
+        // Reset language settings
+        speechLanguage = "en"
+        secondaryLanguage = ""
+        alternateSpeechLanguages = false
+        
         // Stop system key blocking if it was enabled
         SystemKeyBlocker.shared.stopBlocking()
         
@@ -256,6 +268,49 @@ struct SettingsView: View {
         // Quit the app so user can restart and see onboarding
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             NSApplication.shared.terminate(nil)
+        }
+    }
+    
+    // MARK: - Language Section
+    
+    private var languageSection: some View {
+        Section("Language") {
+            Picker("Speech Language", selection: $speechLanguage) {
+                ForEach(LocalizedSpeechService.availableLanguages, id: \.code) { lang in
+                    Text(lang.name).tag(lang.code)
+                }
+            }
+            
+            Toggle("Bilingual Mode", isOn: Binding(
+                get: { !secondaryLanguage.isEmpty },
+                set: { enabled in
+                    if enabled {
+                        // Default to Spanish if not already set
+                        secondaryLanguage = speechLanguage == "es" ? "en" : "es"
+                    } else {
+                        secondaryLanguage = ""
+                        alternateSpeechLanguages = false
+                    }
+                }
+            ))
+            
+            if !secondaryLanguage.isEmpty {
+                Picker("Secondary Language", selection: $secondaryLanguage) {
+                    ForEach(LocalizedSpeechService.availableLanguages.filter { $0.code != speechLanguage }, id: \.code) { lang in
+                        Text(lang.name).tag(lang.code)
+                    }
+                }
+                
+                Toggle("Alternate Between Languages", isOn: $alternateSpeechLanguages)
+                
+                Text("When enabled, speech alternates between primary and secondary languages.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            
+            Text("Changes how letters, numbers, and shapes are pronounced.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
     
