@@ -31,6 +31,12 @@
           }
         },
         {
+          "hidden" : false,
+          "image-name" : "Copilot_20260105_190519.png",
+          "name" : "Copilot_20260105_190519"
+        },
+        {
+          "hidden" : true,
           "image-name" : "Copilot_20260104_231852.png",
           "name" : "Copilot_20260104_231852"
         }

@@ -8,6 +8,7 @@
 import Cocoa
 import Combine
 import CoreGraphics
+import Carbon.HIToolbox
 
 /// Blocks system keyboard shortcuts to prevent babies from accidentally
 /// exiting the app, triggering Mission Control, switching apps, etc.
@@ -18,6 +19,13 @@ class SystemKeyBlocker: ObservableObject {
     
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
+    
+    // Hot key references for Carbon-based blocking (more reliable for some shortcuts)
+    private var spotlightHotKeyRef: EventHotKeyRef?
+    private var altSpotlightHotKeyRef: EventHotKeyRef?
+    private var missionControlHotKeyRef: EventHotKeyRef?
+    private var appExposeHotKeyRef: EventHotKeyRef?
+    private var hotKeyEventHandler: EventHandlerRef?
     
     // MARK: - Blocked Key Codes
     
@@ -170,15 +178,122 @@ class SystemKeyBlocker: ObservableObject {
             CGEvent.tapEnable(tap: tap, enable: true)
             isBlocking = true
             print("SystemKeyBlocker: Started blocking system keys")
+            
+            // Register Carbon hot keys for Spotlight and other shortcuts that bypass event taps
+            registerCarbonHotKeys()
+            
             return true
         }
         
         return false
     }
     
+    // MARK: - Carbon Hot Keys (More reliable for Spotlight)
+    
+    /// Registers Carbon hot keys to intercept shortcuts that may bypass CGEvent taps.
+    /// This is particularly effective for Cmd+Space (Spotlight).
+    private func registerCarbonHotKeys() {
+        // Set up the event handler for hot key events
+        var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+        
+        // Install handler using GetEventDispatcherTarget for global interception
+        let status = InstallEventHandler(
+            GetEventDispatcherTarget(),
+            hotKeyHandler,
+            1,
+            &eventType,
+            nil,
+            &hotKeyEventHandler
+        )
+        
+        if status != noErr {
+            print("SystemKeyBlocker: Failed to install hot key handler, status: \(status)")
+        }
+        
+        // Register Cmd+Space (Spotlight) - ID 1
+        var spotlightHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 1) // "BSMH" = BabySmash Hotkey
+        let spotlightStatus = RegisterEventHotKey(
+            UInt32(kVK_Space),
+            UInt32(cmdKey),
+            spotlightHotKeyID,
+            GetEventDispatcherTarget(),
+            OptionBits(0),
+            &spotlightHotKeyRef
+        )
+        
+        if spotlightStatus != noErr {
+            print("SystemKeyBlocker: Failed to register Spotlight hot key, status: \(spotlightStatus)")
+        } else {
+            print("SystemKeyBlocker: Registered Cmd+Space hot key")
+        }
+        
+        // Also register Cmd+Option+Space (alternative Spotlight shortcut)
+        var altSpotlightHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 3)
+        RegisterEventHotKey(
+            UInt32(kVK_Space),
+            UInt32(cmdKey | optionKey),
+            altSpotlightHotKeyID,
+            GetEventDispatcherTarget(),
+            OptionBits(0),
+            &altSpotlightHotKeyRef
+        )
+        
+        // Register Ctrl+Up (Mission Control) - ID 2
+        var missionControlHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 2)
+        RegisterEventHotKey(
+            UInt32(kVK_UpArrow),
+            UInt32(controlKey),
+            missionControlHotKeyID,
+            GetEventDispatcherTarget(),
+            OptionBits(0),
+            &missionControlHotKeyRef
+        )
+        
+        // Register Ctrl+Down (App Exposé)
+        var appExposeHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 4)
+        RegisterEventHotKey(
+            UInt32(kVK_DownArrow),
+            UInt32(controlKey),
+            appExposeHotKeyID,
+            GetEventDispatcherTarget(),
+            OptionBits(0),
+            &appExposeHotKeyRef
+        )
+        
+        print("SystemKeyBlocker: Registered Carbon hot keys for Spotlight and Mission Control")
+    }
+    
+    /// Unregisters Carbon hot keys.
+    private func unregisterCarbonHotKeys() {
+        if let ref = spotlightHotKeyRef {
+            UnregisterEventHotKey(ref)
+            spotlightHotKeyRef = nil
+        }
+        if let ref = altSpotlightHotKeyRef {
+            UnregisterEventHotKey(ref)
+            altSpotlightHotKeyRef = nil
+        }
+        if let ref = missionControlHotKeyRef {
+            UnregisterEventHotKey(ref)
+            missionControlHotKeyRef = nil
+        }
+        if let ref = appExposeHotKeyRef {
+            UnregisterEventHotKey(ref)
+            appExposeHotKeyRef = nil
+        }
+        if let handler = hotKeyEventHandler {
+            RemoveEventHandler(handler)
+            hotKeyEventHandler = nil
+        }
+        print("SystemKeyBlocker: Unregistered Carbon hot keys")
+    }
+    
     /// Stops blocking system keyboard shortcuts.
     func stopBlocking() {
         guard isBlocking else { return }
+        
+        // Unregister Carbon hot keys first
+        unregisterCarbonHotKeys()
         
         if let tap = eventTap {
             CGEvent.tapEnable(tap: tap, enable: false)
@@ -324,3 +439,14 @@ class SystemKeyBlocker: ObservableObject {
 
 // NX event type constant for system-defined events
 private let NX_SYSDEFINED: Int32 = 14
+
+// Global Carbon hot key handler - must be a C function pointer
+private func hotKeyHandler(
+    nextHandler: EventHandlerCallRef?,
+    event: EventRef?,
+    userData: UnsafeMutableRawPointer?
+) -> OSStatus {
+    // Consume the event by returning noErr - this blocks the shortcut
+    print("SystemKeyBlocker: Blocked hot key event")
+    return noErr
+}
