@@ -4,5 +4,15 @@
 <dict>
 	<key>NSAccessibilityUsageDescription</key>
 	<string>BabySmash needs accessibility access to block system keyboard shortcuts (like Cmd+Tab and Mission Control) so your baby can't accidentally exit the app. This is optional - the app works without it.</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.0.1</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>SUFeedURL</key>
+	<string>https://jamesmontemagno.github.io/babysmash-mac/appcast.xml</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	 <key>SUPublicEDKey</key>
+    <string>ku/dANkXw41Qjmff/fWAOs5ndybKdw65hOWYtinpEeQ=</string>
 </dict>
 </plist>
