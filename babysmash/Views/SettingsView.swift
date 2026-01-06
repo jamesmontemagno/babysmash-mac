@@ -43,6 +43,9 @@ struct SettingsView: View {
     // Theme manager for theme selection
     @ObservedObject private var themeManager = ThemeManager.shared
     
+    // Performance monitor for performance settings
+    @ObservedObject private var performanceMonitor = PerformanceMonitor.shared
+    
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -104,6 +107,8 @@ struct SettingsView: View {
                 languageSection
                 
                 themeSection
+                
+                performanceSection
                 
                 Section(L10n.Settings.Appearance.sectionTitle) {
                     Picker(L10n.Settings.Appearance.cursor, selection: $cursorType) {
@@ -261,6 +266,9 @@ struct SettingsView: View {
         secondaryLanguage = ""
         alternateSpeechLanguages = false
         
+        // Reset performance settings
+        performanceMonitor.performanceMode = .auto
+        
         // Stop system key blocking if it was enabled
         SystemKeyBlocker.shared.stopBlocking()
         
@@ -375,6 +383,46 @@ struct SettingsView: View {
                     themeManager.deleteCustomTheme(themeManager.currentTheme)
                 }
             }
+        }
+    }
+    
+    // MARK: - Performance Section
+    
+    private var performanceSection: some View {
+        Section(L10n.Performance.sectionTitle) {
+            Picker(L10n.Performance.performanceMode, selection: $performanceMonitor.performanceMode) {
+                ForEach(PerformanceMonitor.PerformanceMode.allCases, id: \.self) { mode in
+                    Text(mode.localizedName).tag(mode)
+                }
+            }
+            
+            // Show description based on selected mode
+            Group {
+                switch performanceMonitor.performanceMode {
+                case .auto:
+                    Text(L10n.Performance.autoDescription)
+                    if performanceMonitor.performanceMode == .auto {
+                        Text(L10n.Performance.currentTier(tierName(performanceMonitor.currentTier)))
+                            .foregroundStyle(.secondary)
+                    }
+                case .high:
+                    Text(L10n.Performance.highQualityDescription)
+                case .balanced:
+                    Text(L10n.Performance.balancedDescription)
+                case .low:
+                    Text(L10n.Performance.batterySaverDescription)
+                }
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+    }
+    
+    private func tierName(_ tier: PerformanceMonitor.PerformanceTier) -> String {
+        switch tier {
+        case .high: return "High"
+        case .medium: return "Medium"
+        case .low: return "Low"
         }
     }
     

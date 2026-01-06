@@ -17,7 +17,7 @@ class GameViewModel: ObservableObject {
     // MARK: - Settings
     @AppStorage("soundMode") var soundMode: SoundMode = .laughter
     @AppStorage("fadeEnabled") var fadeEnabled: Bool = true
-    @AppStorage("fadeAfter") var fadeAfter: Double = 10.0
+    @AppStorage("fadeAfter") var fadeAfter: Double = 5.0
     @AppStorage("showFaces") var showFaces: Bool = true
     @AppStorage("mouseDrawEnabled") var mouseDrawEnabled: Bool = true
     @AppStorage("clicklessMouseDraw") var clicklessMouseDraw: Bool = false
@@ -70,8 +70,12 @@ class GameViewModel: ObservableObject {
     private let themeManager = ThemeManager.shared
     private let accessibilityManager = AccessibilitySettingsManager.shared
     private let autoPlayManager = AutoPlayManager.shared
+    private let performanceMonitor = PerformanceMonitor.shared
     private var cancellables = Set<AnyCancellable>()
     private var fadeTimer: Timer?
+    
+    /// Cached performance tier to reduce property access
+    private var cachedPerformanceTier: PerformanceMonitor.PerformanceTier = .high
     
     /// Predictable position index for accessibility predictable mode
     private var predictablePositionIndex: Int = 0
@@ -105,8 +109,32 @@ class GameViewModel: ObservableObject {
     }
     
     private func startFadeTimer() {
-        // Use longer interval to reduce UI updates - fade is gradual anyway
-        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+        // Use adaptive interval based on performance tier
+        let interval = cachedPerformanceTier.fadeTimerInterval
+        fadeTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.fadeOldFigures()
+                // Report item counts for adaptive performance
+                self.performanceMonitor.reportItemCounts(
+                    figures: self.figures.count,
+                    trails: self.drawingTrails.count
+                )
+                // Update cached tier and restart timer if tier changed
+                let newTier = self.performanceMonitor.effectiveTier
+                if newTier != self.cachedPerformanceTier {
+                    self.cachedPerformanceTier = newTier
+                    self.restartFadeTimerIfNeeded()
+                }
+            }
+        }
+    }
+    
+    private func restartFadeTimerIfNeeded() {
+        fadeTimer?.invalidate()
+        let interval = cachedPerformanceTier.fadeTimerInterval
+        fadeTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             guard let self else { return }
             Task { @MainActor [weak self] in
                 self?.fadeOldFigures()
@@ -532,15 +560,20 @@ class GameViewModel: ObservableObject {
     private func addFigure(_ figure: Figure) {
         figures.append(figure)
         
-        // Use effective max figures based on accessibility settings
-        let effectiveMax = accessibilityManager.settings.simplifiedMode
+        // Use effective max figures based on accessibility settings and performance tier
+        let accessibilityMax = accessibilityManager.settings.simplifiedMode
             ? accessibilityManager.settings.maxSimultaneousShapes
             : maxFigures
+        let performanceMax = cachedPerformanceTier.maxFigures
+        let effectiveMax = min(accessibilityMax, performanceMax)
         
         // Limit total figures
         if figures.count > effectiveMax {
             figures.removeFirst(figures.count - effectiveMax)
         }
+        
+        // Record frame for performance monitoring
+        performanceMonitor.recordFrame()
     }
     
     private func playSound(for character: Character) {
@@ -590,35 +623,18 @@ class GameViewModel: ObservableObject {
     private func fadeOldFigures() {
         guard fadeEnabled else { return }
         
-        let now = Date()
-        let fadeDuration = 1.0 // Faster fade duration (was 2.0)
-        
         // Only update if there are figures to process
         guard !figures.isEmpty else { return }
         
-        // Check if any figures need updating before modifying array
-        var needsUpdate = false
-        for figure in figures {
-            let age = now.timeIntervalSince(figure.createdAt)
-            if age > fadeAfter {
-                needsUpdate = true
-                break
-            }
-        }
+        let now = Date()
         
-        guard needsUpdate else { return }
+        // Check if any figures need removal before modifying array
+        let hasExpired = figures.contains { now.timeIntervalSince($0.createdAt) > fadeAfter }
+        guard hasExpired else { return }
         
-        // Batch update - only create new array when needed
-        figures = figures.compactMap { figure in
-            let age = now.timeIntervalSince(figure.createdAt)
-            if age > fadeAfter + fadeDuration { return nil } // Remove after fade
-            
-            if age > fadeAfter {
-                var updated = figure
-                updated.opacity = max(0, 1.0 - (age - fadeAfter) / fadeDuration)
-                return updated
-            }
-            return figure
+        // Instantly remove expired figures (no fade animation)
+        figures.removeAll { figure in
+            now.timeIntervalSince(figure.createdAt) > fadeAfter
         }
     }
     

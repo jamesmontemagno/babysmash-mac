@@ -4525,6 +4525,50 @@
         }
       }
     },
+    "performanceMode.auto" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auto"
+          }
+        }
+      }
+    },
+    "performanceMode.balanced" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Balanced"
+          }
+        }
+      }
+    },
+    "performanceMode.batterySaver" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Battery Saver"
+          }
+        }
+      }
+    },
+    "performanceMode.highQuality" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "High Quality"
+          }
+        }
+      }
+    },
     "settings.about.appName" : {
       "localizations" : {
         "de" : {
@@ -7145,6 +7189,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "鼠标绘画"
+          }
+        }
+      }
+    },
+    "settings.performance.autoDescription" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Automatically adjusts quality based on system load."
+          }
+        }
+      }
+    },
+    "settings.performance.balancedDescription" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Reduced effects for better performance."
+          }
+        }
+      }
+    },
+    "settings.performance.batterySaverDescription" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Minimal effects for maximum performance."
+          }
+        }
+      }
+    },
+    "settings.performance.currentTier" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Current tier: %@"
+          }
+        }
+      }
+    },
+    "settings.performance.highQualityDescription" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Full effects, animations, and visual quality."
+          }
+        }
+      }
+    },
+    "settings.performance.performanceMode" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance Mode"
+          }
+        }
+      }
+    },
+    "settings.performance.sectionTitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance"
           }
         }
       }

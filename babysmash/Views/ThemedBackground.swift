@@ -60,38 +60,53 @@ struct AnimatedGradientBackground: View {
 }
 
 /// A starfield background with twinkling stars
+/// Uses TimelineView for efficient animation without Timer overhead
 struct StarfieldBackground: View {
     let baseColor: Color
     @State private var stars: [Star] = []
-    @State private var twinkleTimer: Timer?
     
     struct Star: Identifiable {
         let id = UUID()
         var position: CGPoint
         var size: CGFloat
         var opacity: Double
-        var twinklePhase: Double
+        var twinkleSpeed: Double // Individual speed multiplier for variety
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                baseColor
-                
-                ForEach(stars) { star in
-                    Circle()
-                        .fill(.white)
-                        .frame(width: star.size, height: star.size)
-                        .opacity(star.opacity * (0.5 + 0.5 * sin(star.twinklePhase)))
-                        .position(star.position)
+        TimelineView(.animation(minimumInterval: 0.1)) { timeline in
+            GeometryReader { geometry in
+                Canvas { context, size in
+                    let time = timeline.date.timeIntervalSinceReferenceDate
+                    
+                    // Draw base color
+                    context.fill(
+                        Path(CGRect(origin: .zero, size: size)),
+                        with: .color(baseColor)
+                    )
+                    
+                    // Draw all stars in a single pass
+                    for star in stars {
+                        let twinkle = 0.5 + 0.5 * sin(time * star.twinkleSpeed)
+                        let finalOpacity = star.opacity * twinkle
+                        
+                        let rect = CGRect(
+                            x: star.position.x - star.size / 2,
+                            y: star.position.y - star.size / 2,
+                            width: star.size,
+                            height: star.size
+                        )
+                        
+                        context.opacity = finalOpacity
+                        context.fill(
+                            Path(ellipseIn: rect),
+                            with: .color(.white)
+                        )
+                    }
                 }
-            }
-            .onAppear {
-                generateStars(in: geometry.size)
-                startTwinkling()
-            }
-            .onDisappear {
-                twinkleTimer?.invalidate()
+                .onAppear {
+                    generateStars(in: geometry.size)
+                }
             }
         }
         .ignoresSafeArea()
@@ -101,7 +116,8 @@ struct StarfieldBackground: View {
         let width = max(size.width, 100)
         let height = max(size.height, 100)
         
-        stars = (0..<200).map { _ in
+        // Reduce star count for better performance (was 200)
+        stars = (0..<120).map { _ in
             Star(
                 position: CGPoint(
                     x: CGFloat.random(in: 0...width),
@@ -109,16 +125,8 @@ struct StarfieldBackground: View {
                 ),
                 size: CGFloat.random(in: 1...3),
                 opacity: Double.random(in: 0.3...1.0),
-                twinklePhase: Double.random(in: 0...2 * .pi)
+                twinkleSpeed: Double.random(in: 0.5...2.0) // Varied twinkle speeds
             )
-        }
-    }
-    
-    private func startTwinkling() {
-        twinkleTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            for i in stars.indices {
-                stars[i].twinklePhase += 0.1
-            }
         }
     }
 }

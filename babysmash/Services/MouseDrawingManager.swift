@@ -24,60 +24,109 @@ class MouseDrawingManager: ObservableObject {
     @Published var trails: [DrawingTrail] = []
     
     private var isDrawing = false
-    private let maxTrails = 500
     private var fadeTimer: Timer?
+    
+    /// Last recorded position for distance throttling
+    private var lastPosition: CGPoint?
+    
+    /// Cached performance tier to reduce lookups
+    private var cachedMinDistance: CGFloat = 5
+    private var cachedMaxTrails: Int = 300
     
     init() {
         startFadeTimer()
+        updatePerformanceSettings()
+    }
+    
+    /// Updates cached performance settings from PerformanceMonitor
+    private func updatePerformanceSettings() {
+        Task { @MainActor in
+            let tier = PerformanceMonitor.shared.effectiveTier
+            self.cachedMinDistance = tier.minTrailDistance
+            self.cachedMaxTrails = tier.maxTrails
+        }
     }
     
     /// Adds a drawing point at the specified position on the specified screen.
+    /// Throttles points based on minimum distance to reduce rendering load.
     /// - Parameters:
     ///   - position: The position of the point in screen coordinates.
     ///   - screenIndex: The index of the screen this point belongs to.
     func addPoint(at position: CGPoint, screenIndex: Int = 0) {
+        // Distance throttling: skip points too close to the last one
+        if let last = lastPosition {
+            let dx = position.x - last.x
+            let dy = position.y - last.y
+            let distance = sqrt(dx * dx + dy * dy)
+            if distance < cachedMinDistance {
+                return
+            }
+        }
+        lastPosition = position
+        
         if !isDrawing {
             isDrawing = true
             SoundManager.shared.play(.smallbumblebee)
+            // Refresh performance settings when drawing starts
+            updatePerformanceSettings()
         }
         
         let trail = DrawingTrail(
             position: position,
             color: Color.randomBabySmash,
-            size: CGFloat.random(in: 15...30),
+            size: CGFloat.random(in: 15...25), // Slightly smaller range
             createdAt: Date(),
             screenIndex: screenIndex
         )
         
         trails.append(trail)
         
-        // Limit total trails
-        if trails.count > maxTrails {
-            trails.removeFirst(trails.count - maxTrails)
+        // Limit total trails using performance-aware max
+        if trails.count > cachedMaxTrails {
+            trails.removeFirst(trails.count - cachedMaxTrails)
         }
     }
     
     func endDrawing() {
         isDrawing = false
+        lastPosition = nil
     }
     
     private func startFadeTimer() {
-        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+        // Use slightly longer interval to reduce CPU usage
+        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { [weak self] _ in
             self?.fadeOldTrails()
         }
     }
     
     private func fadeOldTrails() {
+        // Early exit if no trails
+        guard !trails.isEmpty else { return }
+        
         let now = Date()
+        
+        // Check if any trail needs updating before rebuilding the array
+        var needsUpdate = false
+        for trail in trails {
+            let age = now.timeIntervalSince(trail.createdAt)
+            if age > 1.0 {
+                needsUpdate = true
+                break
+            }
+        }
+        
+        guard needsUpdate else { return }
+        
         trails = trails.compactMap { trail in
             let age = now.timeIntervalSince(trail.createdAt)
-            if age > 3.0 { return nil } // Remove after 3 seconds
+            if age > 2.5 { return nil } // Slightly faster cleanup (was 3.0)
             
-            var updated = trail
             if age > 1.0 {
-                updated.opacity = max(0, 1.0 - (age - 1.0) / 2.0)
+                var updated = trail
+                updated.opacity = max(0, 1.0 - (age - 1.0) / 1.5) // Faster fade (was 2.0)
+                return updated
             }
-            return updated
+            return trail
         }
     }
     

@@ -91,14 +91,8 @@ struct MainGameView: View {
                 // Background - use themed background
                 ThemedBackground(theme: themeManager.currentTheme)
                 
-                // Mouse drawing trails - filter to show only trails for this screen
-                ForEach(viewModel.drawingTrailsForScreen(screenIndex)) { trail in
-                    Circle()
-                        .fill(trail.color)
-                        .frame(width: trail.size, height: trail.size)
-                        .position(trail.position)
-                        .opacity(trail.opacity)
-                }
+                // Mouse drawing trails rendered with Canvas for better performance
+                TrailsCanvasView(trails: viewModel.drawingTrailsForScreen(screenIndex))
                 
                 // Main figures - filter to show only figures for this screen
                 ForEach(viewModel.figuresForScreen(screenIndex)) { figure in
@@ -171,4 +165,31 @@ extension View {
 
 #Preview {
     MainGameView(viewModel: GameViewModel(), screenIndex: 0, isMainWindow: true)
+}
+
+// MARK: - Canvas-based Trail Rendering
+
+/// High-performance Canvas view for rendering drawing trails
+/// Uses a single draw call for all trails instead of individual SwiftUI views
+struct TrailsCanvasView: View {
+    let trails: [DrawingTrail]
+    
+    var body: some View {
+        Canvas { context, size in
+            for trail in trails {
+                let rect = CGRect(
+                    x: trail.position.x - trail.size / 2,
+                    y: trail.position.y - trail.size / 2,
+                    width: trail.size,
+                    height: trail.size
+                )
+                
+                context.opacity = trail.opacity
+                context.fill(
+                    Path(ellipseIn: rect),
+                    with: .color(trail.color)
+                )
+            }
+        }
+    }
 }

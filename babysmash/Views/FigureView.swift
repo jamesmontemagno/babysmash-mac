@@ -12,9 +12,20 @@ struct FigureView: View {
     @State private var animationPhase: CGFloat = 0
     @ObservedObject private var themeManager = ThemeManager.shared
     @ObservedObject private var accessibilityManager = AccessibilitySettingsManager.shared
+    @ObservedObject private var performanceMonitor = PerformanceMonitor.shared
     
     private var theme: BabySmashTheme {
         themeManager.currentTheme
+    }
+    
+    /// Whether to use expensive effects based on current performance tier
+    private var useExpensiveEffects: Bool {
+        performanceMonitor.effectiveTier.showGlowEffects
+    }
+    
+    /// Whether to use drawingGroup based on performance tier
+    private var useDrawingGroup: Bool {
+        performanceMonitor.effectiveTier.useDrawingGroup
     }
     
     var body: some View {
@@ -31,7 +42,7 @@ struct FigureView: View {
         .opacity(figure.opacity)
         .position(figure.position)
         .modifier(animationModifier)
-        .drawingGroup() // Rasterize for better performance
+        .modifier(ConditionalDrawingGroup(enabled: useDrawingGroup))
     }
     
     @ViewBuilder
@@ -42,13 +53,13 @@ struct FigureView: View {
             .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
             .foregroundStyle(useGradient ? AnyShapeStyle(figure.color.gradient) : AnyShapeStyle(figure.color))
             .shadow(
-                color: theme.shadowEnabled ? figure.color.opacity(theme.shadowOpacity) : .clear,
+                color: (theme.shadowEnabled && useExpensiveEffects) ? figure.color.opacity(theme.shadowOpacity) : .clear,
                 radius: theme.shadowRadius,
                 x: 5,
                 y: 5
             )
             .overlay {
-                if theme.glowEnabled && !accessibilityManager.settings.photosensitivitySafeMode {
+                if theme.glowEnabled && useExpensiveEffects && !accessibilityManager.settings.photosensitivitySafeMode {
                     Text(String(character))
                         .font(.custom(figure.fontFamily, size: figure.size * 0.8).weight(.heavy))
                         .foregroundStyle(figure.color)
@@ -80,13 +91,13 @@ struct FigureView: View {
                     }
                 }
                 .shadow(
-                    color: theme.shadowEnabled ? figure.color.opacity(theme.shadowOpacity) : .clear,
+                    color: (theme.shadowEnabled && useExpensiveEffects) ? figure.color.opacity(theme.shadowOpacity) : .clear,
                     radius: theme.shadowRadius,
                     x: 5,
                     y: 5
                 )
                 .overlay {
-                    if theme.glowEnabled && !accessibilityManager.settings.photosensitivitySafeMode {
+                    if theme.glowEnabled && useExpensiveEffects && !accessibilityManager.settings.photosensitivitySafeMode {
                         shapeContent(type)
                             .stroke(figure.color, lineWidth: 2)
                             .blur(radius: theme.glowRadius / 2)
@@ -303,5 +314,18 @@ struct SnapEffect: ViewModifier {
 struct NoAnimationModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
+    }
+}
+
+// Conditional drawingGroup modifier for performance optimization
+struct ConditionalDrawingGroup: ViewModifier {
+    let enabled: Bool
+    
+    func body(content: Content) -> some View {
+        if enabled {
+            content.drawingGroup()
+        } else {
+            content
+        }
     }
 }

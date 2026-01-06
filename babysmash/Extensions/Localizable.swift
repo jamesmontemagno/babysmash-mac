@@ -925,4 +925,58 @@ enum L10n {
             defaultValue: "Shapes Only"
         )
     }
+    
+    // MARK: - Performance Mode Names
+    enum PerformanceModeNames {
+        static let auto = LocalizedStringResource(
+            "performanceMode.auto",
+            defaultValue: "Auto"
+        )
+        static let highQuality = LocalizedStringResource(
+            "performanceMode.highQuality",
+            defaultValue: "High Quality"
+        )
+        static let balanced = LocalizedStringResource(
+            "performanceMode.balanced",
+            defaultValue: "Balanced"
+        )
+        static let batterySaver = LocalizedStringResource(
+            "performanceMode.batterySaver",
+            defaultValue: "Battery Saver"
+        )
+    }
+    
+    // MARK: - Performance Section Strings
+    enum Performance {
+        static let sectionTitle = LocalizedStringResource(
+            "settings.performance.sectionTitle",
+            defaultValue: "Performance"
+        )
+        static let performanceMode = LocalizedStringResource(
+            "settings.performance.performanceMode",
+            defaultValue: "Performance Mode"
+        )
+        static let autoDescription = LocalizedStringResource(
+            "settings.performance.autoDescription",
+            defaultValue: "Automatically adjusts quality based on system load."
+        )
+        static let highQualityDescription = LocalizedStringResource(
+            "settings.performance.highQualityDescription",
+            defaultValue: "Full effects, animations, and visual quality."
+        )
+        static let balancedDescription = LocalizedStringResource(
+            "settings.performance.balancedDescription",
+            defaultValue: "Reduced effects for better performance."
+        )
+        static let batterySaverDescription = LocalizedStringResource(
+            "settings.performance.batterySaverDescription",
+            defaultValue: "Minimal effects for maximum performance."
+        )
+        static func currentTier(_ tier: String) -> LocalizedStringResource {
+            LocalizedStringResource(
+                "settings.performance.currentTier",
+                defaultValue: "Current tier: \(tier)"
+            )
+        }
+    }
 }
