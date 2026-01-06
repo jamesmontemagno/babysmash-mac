@@ -42,6 +42,14 @@ enum L10n {
         )
     }
     
+    // MARK: - General
+    enum General {
+        static let quit = LocalizedStringResource(
+            "general.quit",
+            defaultValue: "Quit"
+        )
+    }
+    
     // MARK: - Intro View
     enum Intro {
         static let title = LocalizedStringResource(

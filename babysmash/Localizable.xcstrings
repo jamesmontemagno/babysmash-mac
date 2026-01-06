@@ -7,6 +7,12 @@
     "⌥ + S" : {
 
     },
+    "⌥⌘Q" : {
+
+    },
+    "⌥S" : {
+
+    },
     "🎨" : {
 
     },
@@ -3724,6 +3730,12 @@
         }
       }
     },
+    "Emergency" : {
+
+    },
+    "Exit" : {
+
+    },
     "faceStyle.kawaii" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
@@ -4009,6 +4021,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "仅形状"
+          }
+        }
+      }
+    },
+    "general.quit" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Quit"
           }
         }
       }
@@ -4568,6 +4591,12 @@
           }
         }
       }
+    },
+    "Press . x20" : {
+
+    },
+    "Settings" : {
+
     },
     "settings.about.appName" : {
       "localizations" : {

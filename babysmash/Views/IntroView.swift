@@ -124,6 +124,26 @@ struct IntroView: View {
                         .scaleEffect(promptPulse ? 1.05 : 1.0)
                         .opacity(promptOpacity)
                     
+                    // Exit button
+                    Button(action: {
+                        NSApplication.shared.terminate(nil)
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "xmark.circle")
+                            Text(L10n.General.quit)
+                        }
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .fill(.white.opacity(0.1))
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .opacity(controlsOpacity)
+                    
                     Spacer()
                         .frame(height: 40)
                 }

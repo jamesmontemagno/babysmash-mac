@@ -95,32 +95,40 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             isMainWindow: isMainWindow
         )
         
-        let window = NSWindow(
+        let window = KioskWindow(
             contentRect: screen.frame,
-            styleMask: [.borderless, .fullSizeContentView],
+            styleMask: [.borderless],
             backing: .buffered,
             defer: false,
             screen: screen
         )
         
         window.contentView = NSHostingView(rootView: contentView)
-        window.level = .normal
         window.isOpaque = true
         window.backgroundColor = .black
-        window.collectionBehavior = [.canJoinAllSpaces, .fullScreenPrimary]
         window.hasShadow = false
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         
-        // Set window to cover entire screen
+        // Kiosk mode: cover entire screen including menu bar
+        window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
+        window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        
+        // Set window to cover entire screen (including menu bar area)
         window.setFrame(screen.frame, display: true)
         window.makeKeyAndOrderFront(nil)
+        
+        // Hide the dock and menu bar when our window is active
+        NSApp.presentationOptions = [.hideDock, .hideMenuBar, .disableProcessSwitching]
         
         return window
     }
     
     /// Closes all game windows.
     private func closeAllGameWindows() {
+        // Restore normal presentation (show dock and menu bar)
+        NSApp.presentationOptions = []
+        
         for window in gameWindows {
             window.close()
         }
@@ -133,4 +141,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension Notification.Name {
     /// Posted when display mode setting changes.
     static let displayModeChanged = Notification.Name("displayModeChanged")
+}
+
+// MARK: - Kiosk Window
+
+/// A borderless window that stays on top and blocks clicks from reaching other apps.
+class KioskWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+    
+    /// Prevents the window from being moved
+    override func performDrag(with event: NSEvent) {
+        // Don't allow dragging
+    }
 }

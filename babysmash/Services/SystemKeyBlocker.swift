@@ -130,8 +130,8 @@ class SystemKeyBlocker: ObservableObject {
         71,  // Clear
     ]
     
-    // Emergency exit key code: Escape (53) with Opt+Cmd
-    private static let escapeKeyCode: Int64 = 53
+    // Exit shortcut: Q (12) with Opt+Cmd
+    private static let qKeyCode: Int64 = 12
     
     // Settings shortcut: S key code
     private static let sKeyCode: Int64 = 1
@@ -339,8 +339,8 @@ class SystemKeyBlocker: ObservableObject {
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         let flags = event.flags
         
-        // ALLOW: Emergency exit with Opt+Cmd+Esc (Force Quit dialog)
-        if flags.contains([.maskAlternate, .maskCommand]) && keyCode == escapeKeyCode {
+        // ALLOW: Exit shortcut with Opt+Cmd+Q
+        if flags.contains([.maskAlternate, .maskCommand]) && keyCode == qKeyCode {
             return Unmanaged.passRetained(event)
         }
         
@@ -366,7 +366,8 @@ class SystemKeyBlocker: ObservableObject {
         }
         
         // BLOCK: Cmd+Option combinations (common system shortcuts)
-        if flags.contains([.maskCommand, .maskAlternate]) && keyCode != escapeKeyCode {
+        // But allow Opt+Cmd+Q for exit
+        if flags.contains([.maskCommand, .maskAlternate]) && keyCode != qKeyCode {
             return nil
         }
         
@@ -377,7 +378,7 @@ class SystemKeyBlocker: ObservableObject {
         
         // BLOCK: Standalone special keys (Escape without modifiers, etc.)
         if blockedStandaloneKeyCodes.contains(keyCode) {
-            // Only block if no important modifiers (allow Opt+Cmd+Esc)
+            // Only block if no important modifiers (allow Opt+Cmd+Q)
             if !flags.contains([.maskAlternate, .maskCommand]) {
                 return nil
             }

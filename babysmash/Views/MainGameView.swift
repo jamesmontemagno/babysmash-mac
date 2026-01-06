@@ -23,6 +23,7 @@ struct MainGameView: View {
     @AppStorage("cursorType") private var cursorType: GameViewModel.CursorType = .hand
     @AppStorage("clicklessMouseDraw") private var clicklessMouseDraw: Bool = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
+    @AppStorage("blockSystemKeys") private var blockSystemKeys: Bool = false
     
     @ObservedObject private var themeManager = ThemeManager.shared
     @ObservedObject private var accessibilityManager = AccessibilitySettingsManager.shared
@@ -72,6 +73,12 @@ struct MainGameView: View {
                 })
                 .transition(.opacity)
                 .zIndex(100)
+            }
+            
+            // Exit hint overlay - always on top (only on main window, after intro dismissed)
+            if isMainWindow && !showIntro && !showThemePicker {
+                ExitHintOverlay(blockSystemKeys: blockSystemKeys)
+                    .zIndex(200)
             }
         }
         .sheet(isPresented: $showSettings) {
@@ -190,6 +197,81 @@ struct TrailsCanvasView: View {
                     with: .color(trail.color)
                 )
             }
+        }
+    }
+}
+
+// MARK: - Exit Hint Overlay
+
+/// Shows a subtle hint in the corner for how to exit/access settings
+/// Small icon always visible, expands on hover to show shortcuts
+struct ExitHintOverlay: View {
+    let blockSystemKeys: Bool
+    
+    @State private var isExpanded = false
+    
+    var body: some View {
+        VStack {
+            HStack {
+                // Hint button in top-left corner
+                Button(action: {
+                    // Toggle expanded state on click
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "questionmark.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(.white.opacity(0.6))
+                        
+                        if isExpanded {
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack(spacing: 4) {
+                                    Text("⌥S")
+                                        .fontWeight(.bold)
+                                    Text("Settings")
+                                        .foregroundStyle(.white.opacity(0.8))
+                                }
+                                
+                                HStack(spacing: 4) {
+                                    Text("⌥⌘Q")
+                                        .fontWeight(.bold)
+                                    Text("Exit")
+                                        .foregroundStyle(.white.opacity(0.8))
+                                }
+                                
+                                HStack(spacing: 4) {
+                                    Text("Press . x20")
+                                        .fontWeight(.bold)
+                                    Text("Emergency")
+                                        .foregroundStyle(.white.opacity(0.8))
+                                }
+                            }
+                            .font(.system(size: 13))
+                            .foregroundStyle(.white)
+                        }
+                    }
+                    .padding(.horizontal, isExpanded ? 14 : 10)
+                    .padding(.vertical, 10)
+                    .background(
+                        Capsule()
+                            .fill(.black.opacity(isExpanded ? 0.75 : 0.4))
+                    )
+                }
+                .buttonStyle(.plain)
+                .onHover { hovering in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        isExpanded = hovering
+                    }
+                }
+                
+                Spacer()
+            }
+            .padding(.leading, 16)
+            .padding(.top, 16)
+            
+            Spacer()
         }
     }
 }
