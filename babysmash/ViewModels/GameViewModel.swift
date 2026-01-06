@@ -32,12 +32,28 @@ class GameViewModel: ObservableObject {
         case laughter = "Laughter"
         case speech = "Speech"
         case off = "Off"
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .laughter: return L10n.SoundModeNames.laughter
+            case .speech: return L10n.SoundModeNames.speech
+            case .off: return L10n.SoundModeNames.off
+            }
+        }
     }
     
     enum CursorType: String, CaseIterable {
         case hand = "Hand"
         case arrow = "Arrow"
         case none = "Hidden"
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .hand: return L10n.CursorTypeNames.hand
+            case .arrow: return L10n.CursorTypeNames.arrow
+            case .none: return L10n.CursorTypeNames.hidden
+            }
+        }
     }
     
     // MARK: - Internal State

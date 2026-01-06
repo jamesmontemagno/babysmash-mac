@@ -41,6 +41,14 @@ class MultiMonitorManager: ObservableObject {
             case .selected: return "Select Display..."
             }
         }
+        
+        var localizedName: LocalizedStringResource {
+            switch self {
+            case .all: return L10n.DisplayModeNames.allDisplays
+            case .primary: return L10n.DisplayModeNames.primaryOnly
+            case .selected: return L10n.DisplayModeNames.selectDisplay
+            }
+        }
     }
     
     /// All detected screens.
