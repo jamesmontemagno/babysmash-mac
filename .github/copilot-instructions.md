@@ -44,6 +44,36 @@ Use `Color.randomBabySmash` from `Extensions/Color+Random.swift` - curated brigh
 ### Sound Assets
 Place `.wav` files in the bundle, register in `SoundManager.Sound` enum. Laughter sounds are grouped for random playback.
 
+### Popovers
+Prefer using `.popover(item:)` over `.popover(isPresented:)` for data-dependent popovers to avoid state race conditions.
+
+## Localization
+
+### Centralized Strings
+All user-facing strings must be localized using `LocalizedStringResource` in the `L10n` enum located in [Extensions/Localizable.swift](babysmash/Extensions/Localizable.swift).
+
+**Structure**:
+```swift
+enum L10n {
+    enum Category {
+        static let myKey = LocalizedStringResource("category.myKey", defaultValue: "Default Text")
+    }
+}
+```
+
+### Usage in Views
+Access strings through the `L10n` namespace:
+```swift
+Text(L10n.Category.myKey)
+```
+
+### String Catalog
+Translations are managed in [Localizable.xcstrings](babysmash/Localizable.xcstrings). When adding new strings:
+1. Add the static property to `L10n` in `Localizable.swift`.
+2. Use the string in the UI.
+3. Ensure the key and default value match in both `L10n` and the UI's implicit localization.
+4. Xcode will automatically discover new `LocalizedStringResource` entries and add them to the `.xcstrings` catalog during build.
+
 ## Build & Run
 
 ```bash

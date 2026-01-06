@@ -39,7 +39,7 @@ struct ThemeEditorView: View {
             // Scrollable form content
             Form {
                 Section(L10n.ThemeEditor.Basic.sectionTitle) {
-                    TextField(L10n.ThemeEditor.Basic.themeName, text: $theme.name)
+                    TextField(String(localized: L10n.ThemeEditor.Basic.themeName), text: $theme.name)
                     
                     Picker(L10n.ThemeEditor.Basic.backgroundStyle, selection: $theme.backgroundStyle) {
                         ForEach(BabySmashTheme.BackgroundStyle.allCases, id: \.self) { style in
