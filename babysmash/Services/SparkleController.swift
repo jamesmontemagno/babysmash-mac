@@ -101,7 +101,7 @@ final class SparkleController: NSObject, ObservableObject {
             return
         }
         
-        let savedAutoCheck = (UserDefaults.standard.object(forKey: defaultsKey) as? Bool) ?? true
+        let savedAutoCheck = (UserDefaults.standard.object(forKey: defaultsKey) as? Bool) ?? false
         let controller = SPUStandardUpdaterController(
             startingUpdater: false,
             updaterDelegate: self,
