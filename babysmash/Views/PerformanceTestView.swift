@@ -26,10 +26,10 @@ struct PerformanceTestView: View {
     
     private let testDuration: TimeInterval = 5.0
     private let targetFrameRate: Double = 60.0
-    private let maxShapesPhase1 = 30
-    private let maxShapesPhase2 = 50
-    private let maxShapesPhase3 = 75
-    private let maxShapesFinal = 100
+    private let maxShapesPhase1 = 15
+    private let maxShapesPhase2 = 25
+    private let maxShapesPhase3 = 38
+    private let maxShapesFinal = 50
     
     enum TestState {
         case ready
