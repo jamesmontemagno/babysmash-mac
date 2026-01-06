@@ -4,6 +4,9 @@
     "" : {
 
     },
+    "%lld%%" : {
+
+    },
     "⌥ + S" : {
 
     },
@@ -13,10 +16,19 @@
     "⌥S" : {
 
     },
+    "⚡️" : {
+
+    },
+    "✅" : {
+
+    },
     "🎨" : {
 
     },
     "👶" : {
+
+    },
+    "🔒" : {
 
     },
     "A" : {
@@ -4544,6 +4556,347 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "宝宝敲击！"
+          }
+        }
+      }
+    },
+    "onboarding.performance.completeSubtitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "We've found the best settings for you"
+          }
+        }
+      }
+    },
+    "onboarding.performance.completeTitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Test Complete!"
+          }
+        }
+      }
+    },
+    "onboarding.performance.continueButton" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "onboarding.performance.infoDuration" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Takes only 5 seconds"
+          }
+        }
+      }
+    },
+    "onboarding.performance.infoOptimize" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Optimize settings for smooth animation"
+          }
+        }
+      }
+    },
+    "onboarding.performance.infoTest" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "We'll run a quick visual test"
+          }
+        }
+      }
+    },
+    "onboarding.performance.recommended" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Recommended Setting"
+          }
+        }
+      }
+    },
+    "onboarding.performance.resultBalanced" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Balanced mode will give you smooth animations with great visuals."
+          }
+        }
+      }
+    },
+    "onboarding.performance.resultHigh" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your Mac handles everything beautifully! Full effects enabled."
+          }
+        }
+      }
+    },
+    "onboarding.performance.resultLow" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Battery saver mode ensures smooth performance on your Mac."
+          }
+        }
+      }
+    },
+    "onboarding.performance.runningSubtitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Measuring your Mac's performance"
+          }
+        }
+      }
+    },
+    "onboarding.performance.runningTitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Testing..."
+          }
+        }
+      }
+    },
+    "onboarding.performance.startTest" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Start Test"
+          }
+        }
+      }
+    },
+    "onboarding.performance.subtitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Let's find the best settings for your Mac"
+          }
+        }
+      }
+    },
+    "onboarding.performance.testing" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Testing..."
+          }
+        }
+      }
+    },
+    "onboarding.performance.title" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance Check"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.blocksTitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "What Gets Blocked"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.continueButton" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Let's Play!"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.emergencyExit" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Emergency exit (press period 20 times)"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.exitApp" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Exit the app"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.exitTitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Parents Can Still Exit"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.missionControl" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mission Control"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.openSettings" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Open settings"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.openSettingsButton" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.quitApp" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Quit the app"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.spotlight" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Open Spotlight search"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.statusDisabled" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Baby-Proof Mode is OFF - Enable in Settings"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.statusEnabled" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Baby-Proof Mode is ON"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.subtitle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Keep your baby from accidentally closing the app"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.switchApps" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Switch to other apps"
+          }
+        }
+      }
+    },
+    "onboarding.systemBlocking.title" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Baby-Proof Mode"
           }
         }
       }

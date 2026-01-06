@@ -31,6 +31,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     /// Reference to multi-monitor manager.
     private let multiMonitorManager = MultiMonitorManager.shared
     
+    /// Debug mode: Set to true to disable kiosk mode during development
+    /// This allows normal window behavior, dock, menu bar, and app switching
+    #if DEBUG
+    private let debugDisableKioskMode = true
+    #else
+    private let debugDisableKioskMode = false
+    #endif
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Create windows for all screens based on current settings
         createGameWindows()
@@ -103,31 +111,45 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             screen: screen
         )
         
-        window.contentView = NSHostingView(rootView: contentView)
+        // Use custom hosting view that prevents constraint loops
+        let hostingView = StableHostingView(rootView: contentView)
+        hostingView.translatesAutoresizingMaskIntoConstraints = true
+        hostingView.autoresizingMask = [.width, .height]
+        window.contentView = hostingView
         window.isOpaque = true
         window.backgroundColor = .black
         window.hasShadow = false
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         
-        // Kiosk mode: cover entire screen including menu bar
-        window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
-        window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        // Kiosk mode: cover entire screen including menu bar (unless debug mode)
+        if !debugDisableKioskMode {
+            window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
+            window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        } else {
+            // Debug mode: normal window level, allow interaction with other apps
+            window.level = .normal
+            window.collectionBehavior = []
+        }
         
         // Set window to cover entire screen (including menu bar area)
         window.setFrame(screen.frame, display: true)
         window.makeKeyAndOrderFront(nil)
         
-        // Hide the dock and menu bar when our window is active
-        NSApp.presentationOptions = [.hideDock, .hideMenuBar, .disableProcessSwitching]
+        // Hide the dock and menu bar when our window is active (unless debug mode)
+        if !debugDisableKioskMode {
+            NSApp.presentationOptions = [.hideDock, .hideMenuBar, .disableProcessSwitching]
+        }
         
         return window
     }
     
     /// Closes all game windows.
     private func closeAllGameWindows() {
-        // Restore normal presentation (show dock and menu bar)
-        NSApp.presentationOptions = []
+        // Restore normal presentation (show dock and menu bar) only if we changed it
+        if !debugDisableKioskMode {
+            NSApp.presentationOptions = []
+        }
         
         for window in gameWindows {
             window.close()
@@ -153,5 +175,34 @@ class KioskWindow: NSWindow {
     /// Prevents the window from being moved
     override func performDrag(with event: NSEvent) {
         // Don't allow dragging
+    }
+    
+    /// Prevent constraint update loops
+    override func updateConstraintsIfNeeded() {
+        // Batch constraint updates to prevent infinite loops
+        NSAnimationContext.runAnimationGroup { context in
+            context.allowsImplicitAnimation = false
+            super.updateConstraintsIfNeeded()
+        }
+    }
+}
+
+/// Custom NSHostingView that prevents constraint update loops
+class StableHostingView<Content: View>: NSHostingView<Content> {
+    private var isUpdatingConstraints = false
+    
+    override func updateConstraints() {
+        guard !isUpdatingConstraints else { return }
+        isUpdatingConstraints = true
+        super.updateConstraints()
+        isUpdatingConstraints = false
+    }
+    
+    override func layout() {
+        // Disable implicit animations during layout to prevent loops
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        super.layout()
+        CATransaction.commit()
     }
 }

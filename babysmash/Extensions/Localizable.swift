@@ -987,4 +987,139 @@ enum L10n {
             )
         }
     }
+    
+    // MARK: - Onboarding Strings
+    enum Onboarding {
+        // Performance Test
+        enum Performance {
+            static let title = LocalizedStringResource(
+                "onboarding.performance.title",
+                defaultValue: "Performance Check"
+            )
+            static let subtitle = LocalizedStringResource(
+                "onboarding.performance.subtitle",
+                defaultValue: "Let's find the best settings for your Mac"
+            )
+            static let runningTitle = LocalizedStringResource(
+                "onboarding.performance.runningTitle",
+                defaultValue: "Testing..."
+            )
+            static let runningSubtitle = LocalizedStringResource(
+                "onboarding.performance.runningSubtitle",
+                defaultValue: "Measuring your Mac's performance"
+            )
+            static let completeTitle = LocalizedStringResource(
+                "onboarding.performance.completeTitle",
+                defaultValue: "Test Complete!"
+            )
+            static let completeSubtitle = LocalizedStringResource(
+                "onboarding.performance.completeSubtitle",
+                defaultValue: "We've found the best settings for you"
+            )
+            static let infoTest = LocalizedStringResource(
+                "onboarding.performance.infoTest",
+                defaultValue: "We'll run a quick visual test"
+            )
+            static let infoOptimize = LocalizedStringResource(
+                "onboarding.performance.infoOptimize",
+                defaultValue: "Optimize settings for smooth animation"
+            )
+            static let infoDuration = LocalizedStringResource(
+                "onboarding.performance.infoDuration",
+                defaultValue: "Takes only 5 seconds"
+            )
+            static let startTest = LocalizedStringResource(
+                "onboarding.performance.startTest",
+                defaultValue: "Start Test"
+            )
+            static let testing = LocalizedStringResource(
+                "onboarding.performance.testing",
+                defaultValue: "Testing..."
+            )
+            static let continueButton = LocalizedStringResource(
+                "onboarding.performance.continueButton",
+                defaultValue: "Continue"
+            )
+            static let recommended = LocalizedStringResource(
+                "onboarding.performance.recommended",
+                defaultValue: "Recommended Setting"
+            )
+            static let resultHigh = LocalizedStringResource(
+                "onboarding.performance.resultHigh",
+                defaultValue: "Your Mac handles everything beautifully! Full effects enabled."
+            )
+            static let resultBalanced = LocalizedStringResource(
+                "onboarding.performance.resultBalanced",
+                defaultValue: "Balanced mode will give you smooth animations with great visuals."
+            )
+            static let resultLow = LocalizedStringResource(
+                "onboarding.performance.resultLow",
+                defaultValue: "Battery saver mode ensures smooth performance on your Mac."
+            )
+        }
+        
+        // System Blocking
+        enum SystemBlocking {
+            static let title = LocalizedStringResource(
+                "onboarding.systemBlocking.title",
+                defaultValue: "Baby-Proof Mode"
+            )
+            static let subtitle = LocalizedStringResource(
+                "onboarding.systemBlocking.subtitle",
+                defaultValue: "Keep your baby from accidentally closing the app"
+            )
+            static let blocksTitle = LocalizedStringResource(
+                "onboarding.systemBlocking.blocksTitle",
+                defaultValue: "What Gets Blocked"
+            )
+            static let quitApp = LocalizedStringResource(
+                "onboarding.systemBlocking.quitApp",
+                defaultValue: "Quit the app"
+            )
+            static let switchApps = LocalizedStringResource(
+                "onboarding.systemBlocking.switchApps",
+                defaultValue: "Switch to other apps"
+            )
+            static let spotlight = LocalizedStringResource(
+                "onboarding.systemBlocking.spotlight",
+                defaultValue: "Open Spotlight search"
+            )
+            static let missionControl = LocalizedStringResource(
+                "onboarding.systemBlocking.missionControl",
+                defaultValue: "Mission Control"
+            )
+            static let exitTitle = LocalizedStringResource(
+                "onboarding.systemBlocking.exitTitle",
+                defaultValue: "Parents Can Still Exit"
+            )
+            static let openSettings = LocalizedStringResource(
+                "onboarding.systemBlocking.openSettings",
+                defaultValue: "Open settings"
+            )
+            static let exitApp = LocalizedStringResource(
+                "onboarding.systemBlocking.exitApp",
+                defaultValue: "Exit the app"
+            )
+            static let emergencyExit = LocalizedStringResource(
+                "onboarding.systemBlocking.emergencyExit",
+                defaultValue: "Emergency exit (press period 20 times)"
+            )
+            static let statusEnabled = LocalizedStringResource(
+                "onboarding.systemBlocking.statusEnabled",
+                defaultValue: "Baby-Proof Mode is ON"
+            )
+            static let statusDisabled = LocalizedStringResource(
+                "onboarding.systemBlocking.statusDisabled",
+                defaultValue: "Baby-Proof Mode is OFF - Enable in Settings"
+            )
+            static let openSettingsButton = LocalizedStringResource(
+                "onboarding.systemBlocking.openSettingsButton",
+                defaultValue: "Open Settings"
+            )
+            static let continueButton = LocalizedStringResource(
+                "onboarding.systemBlocking.continueButton",
+                defaultValue: "Let's Play!"
+            )
+        }
+    }
 }

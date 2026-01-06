@@ -20,6 +20,8 @@ struct MainGameView: View {
     @State private var showSettings = false
     @State private var showIntro = true
     @State private var showThemePicker = false
+    @State private var showPerformanceTest = false
+    @State private var showSystemBlockingInfo = false
     @AppStorage("cursorType") private var cursorType: GameViewModel.CursorType = .hand
     @AppStorage("clicklessMouseDraw") private var clicklessMouseDraw: Bool = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
@@ -48,35 +50,57 @@ struct MainGameView: View {
                 SwitchControlOverlay()
             }
             
+            // System blocking info (shown after performance test, only on main window)
+            if isMainWindow && showSystemBlockingInfo {
+                SystemBlockingInfoView(onComplete: {
+                    showSystemBlockingInfo = false
+                    hasCompletedOnboarding = true
+                })
+                .zIndex(101)
+            }
+            
+            // Performance test (shown after theme picker, only on main window)
+            if isMainWindow && showPerformanceTest {
+                PerformanceTestView(onComplete: { recommendedMode in
+                    // Apply the recommended performance mode
+                    PerformanceMonitor.shared.performanceMode = recommendedMode
+                    showPerformanceTest = false
+                    // Defer showing next screen to avoid layout conflicts
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        showSystemBlockingInfo = true
+                    }
+                })
+                .zIndex(102)
+            }
+            
             // Theme picker (shown after intro on first launch, only on main window)
             if isMainWindow && showThemePicker {
                 ThemePickerView(onThemeSelected: { _ in
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        showThemePicker = false
-                        hasCompletedOnboarding = true
+                    showThemePicker = false
+                    // Defer showing next screen to avoid layout conflicts
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        showPerformanceTest = true
                     }
                 })
-                .transition(.opacity)
-                .zIndex(101)
+                .zIndex(103)
             }
             
             // Intro overlay (shown on launch, only on main window)
             if isMainWindow && showIntro {
                 IntroView(onDismiss: {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        showIntro = false
-                        // Show theme picker if this is first launch
-                        if !hasCompletedOnboarding {
+                    showIntro = false
+                    // Show theme picker if this is first launch
+                    if !hasCompletedOnboarding {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             showThemePicker = true
                         }
                     }
                 })
-                .transition(.opacity)
-                .zIndex(100)
+                .zIndex(104)
             }
             
-            // Exit hint overlay - always on top (only on main window, after intro dismissed)
-            if isMainWindow && !showIntro && !showThemePicker {
+            // Exit hint overlay - always on top (only on main window, after onboarding complete)
+            if isMainWindow && !showIntro && !showThemePicker && !showPerformanceTest && !showSystemBlockingInfo {
                 ExitHintOverlay(blockSystemKeys: blockSystemKeys)
                     .zIndex(200)
             }
