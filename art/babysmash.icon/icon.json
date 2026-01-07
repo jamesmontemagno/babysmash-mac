@@ -33,7 +33,14 @@
         {
           "hidden" : false,
           "image-name" : "Copilot_20260105_190519.png",
-          "name" : "Copilot_20260105_190519"
+          "name" : "Copilot_20260105_190519",
+          "position" : {
+            "scale" : 0.85,
+            "translation-in-points" : [
+              4.5234375,
+              13.5546875
+            ]
+          }
         },
         {
           "hidden" : true,
