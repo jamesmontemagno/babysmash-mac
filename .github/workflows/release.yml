@@ -68,20 +68,20 @@ jobs:
           
       - name: Resolve Swift packages
         run: |
-          xcUse manual input version if workflow_dispatch, otherwise use git tag
+          xcodebuild -resolvePackageDependencies \
+            -project ${{ env.SCHEME }}.xcodeproj \
+            -scheme ${{ env.SCHEME }}
+      
+      - name: Set Version Numbers
+        run: |
+          # Use manual input version if workflow_dispatch, otherwise use git tag
           if [ -n "${{ github.event.inputs.version }}" ]; then
             TAG="${{ github.event.inputs.version }}"
           else
             TAG="${{ github.ref_name }}"
           fi
           
-          # Extract version from tag (remove 'v' prefix).xcodeproj \
-            -scheme ${{ env.SCHEME }}
-      
-      - name: Set Version Numbers
-        run: |
           # Extract version from tag (remove 'v' prefix)
-          TAG="${{ github.ref_name }}"
           VERSION="${TAG#v}"
           
           # Use GitHub run number as build number for auto-increment
@@ -91,13 +91,13 @@ jobs:
           echo "Setting CURRENT_PROJECT_VERSION to: $BUILD_NUMBER"
           
           # Update Info.plist
-          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" babysmash/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" babysmash/Info.plist
           
           # Also export for use in build step
           echo "MARKETING_VERSION=$VERSION" >> $GITHUB_ENV
           echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
             
       - name: Build and Archive
         env:
@@ -167,14 +167,14 @@ jobs:
             --wait
           
           # Staple the notarization ticket
-          xcrun stapler staple "$RUNNER_TEMP/Export/${env.RELEASE_TAG.app"
+          xcrun stapler staple "$RUNNER_TEMP/Export/${{ env.SCHEME }}.app"
           
       - name: Create Distribution ZIP
         run: |
           # Create final distribution ZIP
           ditto -c -k --sequesterRsrc --keepParent \
             "$RUNNER_TEMP/Export/${{ env.SCHEME }}.app" \
-            "$RUNNER_TEMP/${{ env.PRODUCT_NAME }}-${{ github.ref_name }}.zip"
+            "$RUNNER_TEMP/${{ env.PRODUCT_NAME }}-${{ env.RELEASE_TAG }}.zip"
             
       - name: Verify Signature
         run: |
@@ -187,22 +187,22 @@ jobs:
             "https://github.com/sparkle-project/Sparkle/releases/download/${{ env.SPARKLE_VERSION }}/Sparkle-${{ env.SPARKLE_VERSION }}.tar.xz"
           mkdir -p $RUNNER_TEMP/Sparkle
           tar -xf $RUNNER_TEMP/Sparkle.tar.xz -C $RUNNER_TEMP/Sparkle
-          env.RELEASE_TAG
+          
       - name: Generate Appcast
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: |
           # Create directory for release files
           mkdir -p $RUNNER_TEMP/release-files
-          cp "$RUNNER_TEMP/${{ env.PRODUCT_NAME }}-${{ github.ref_name }}.zip" $RUNNER_TEMP/release-files/
+          cp "$RUNNER_TEMP/${{ env.PRODUCT_NAME }}-${{ env.RELEASE_TAG }}.zip" $RUNNER_TEMP/release-files/
           
           # Save private key to file
           echo "$SPARKLE_PRIVATE_KEY" > $RUNNER_TEMP/sparkle_private_key
           
           # Generate appcast with Sparkle tools
           $RUNNER_TEMP/Sparkle/bin/generate_appcast \
-            --ed-key-file $RUNNER_TEMP/sparkle_private_key \env.RELEASE_TAG
-            --download-url-prefix "https://github.com/jamesmontemagno/babysmash-mac/releases/download/${{ github.ref_name }}/" \
+            --ed-key-file $RUNNER_TEMP/sparkle_private_key \
+            --download-url-prefix "https://github.com/jamesmontemagno/babysmash-mac/releases/download/${{ env.RELEASE_TAG }}/" \
             $RUNNER_TEMP/release-files
           
           # Move generated appcast
@@ -216,11 +216,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Get release notes from GitHub release (will be created in next step)
-          # For now, use the tag message or generate placeholdenv.RELEASE_TAG
-          TAG_MESSAGE=$(git tag -l --format='%(contents)' ${{ github.ref_name }} || echo "")
+          # For now, use the tag message or generate placeholder
+          TAG_MESSAGE=$(git tag -l --format='%(contents)' ${{ env.RELEASE_TAG }} || echo "")
           
-          if [ -z "$TAG_MESSAGE" ]; tenv.RELEASE_TAG
-            TAG_MESSAGE="Release ${{ github.ref_name }}"
+          if [ -z "$TAG_MESSAGE" ]; then
+            TAG_MESSAGE="Release ${{ env.RELEASE_TAG }}"
           fi
           
           # The appcast already contains the item from generate_appcast
@@ -255,8 +255,8 @@ jobs:
           
       - name: Commit Updated Appcast
         uses: stefanzweifel/git-auto-commit-action@v5
-        with:env.RELEASE_TAG
-          commit_message: "Update appcast.xml for ${{ github.ref_name }}"
+        with:
+          commit_message: "Update appcast.xml for ${{ env.RELEASE_TAG }}"
           file_pattern: docs/appcast.xml
           branch: main
           
