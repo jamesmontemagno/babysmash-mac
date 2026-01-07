@@ -16,6 +16,11 @@ env:
   PRODUCT_NAME: BabySmash
   SPARKLE_VERSION: "2.8.1"
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build-and-release:
     runs-on: macos-26
