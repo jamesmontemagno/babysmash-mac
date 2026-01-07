@@ -211,7 +211,8 @@ struct SettingsView: View {
                     if sparkleController.canCheckForUpdates {
                         Button {
                             // Dispatch asynchronously to avoid blocking the UI
-                            DispatchQueue.main.async {
+                            // Similar to the app termination pattern used elsewhere in this file
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 sparkleController.checkForUpdates()
                             }
                         } label: {
