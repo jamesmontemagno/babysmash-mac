@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v0.0.1)'
+        required: true
+        type: string
 
 env:
   SCHEME: babysmash
@@ -62,8 +68,14 @@ jobs:
           
       - name: Resolve Swift packages
         run: |
-          xcodebuild -resolvePackageDependencies \
-            -project ${{ env.SCHEME }}.xcodeproj \
+          xcUse manual input version if workflow_dispatch, otherwise use git tag
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            TAG="${{ github.event.inputs.version }}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+          
+          # Extract version from tag (remove 'v' prefix).xcodeproj \
             -scheme ${{ env.SCHEME }}
       
       - name: Set Version Numbers
@@ -79,6 +91,7 @@ jobs:
           echo "Setting CURRENT_PROJECT_VERSION to: $BUILD_NUMBER"
           
           # Update Info.plist
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" babysmash/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" babysmash/Info.plist
           
@@ -102,6 +115,14 @@ jobs:
             MARKETING_VERSION=${{ env.MARKETING_VERSION }} \
             CURRENT_PROJECT_VERSION=${{ env.BUILD_NUMBER }}
             
+      - name: List Available Signing Identities
+        run: |
+          echo "Available signing identities in temporary keychain:"
+          security find-identity -v -p codesigning $RUNNER_TEMP/app-signing.keychain-db
+          echo ""
+          echo "Available signing identities in all keychains:"
+          security find-identity -v -p codesigning
+            
       - name: Export Archive
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
@@ -124,7 +145,8 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath $RUNNER_TEMP/${{ env.PRODUCT_NAME }}.xcarchive \
             -exportPath $RUNNER_TEMP/Export \
-            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
+            -allowProvisioningUpdates
             
       - name: Notarize App
         env:
@@ -145,7 +167,7 @@ jobs:
             --wait
           
           # Staple the notarization ticket
-          xcrun stapler staple "$RUNNER_TEMP/Export/${{ env.SCHEME }}.app"
+          xcrun stapler staple "$RUNNER_TEMP/Export/${env.RELEASE_TAG.app"
           
       - name: Create Distribution ZIP
         run: |
@@ -165,7 +187,7 @@ jobs:
             "https://github.com/sparkle-project/Sparkle/releases/download/${{ env.SPARKLE_VERSION }}/Sparkle-${{ env.SPARKLE_VERSION }}.tar.xz"
           mkdir -p $RUNNER_TEMP/Sparkle
           tar -xf $RUNNER_TEMP/Sparkle.tar.xz -C $RUNNER_TEMP/Sparkle
-          
+          env.RELEASE_TAG
       - name: Generate Appcast
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
@@ -179,7 +201,7 @@ jobs:
           
           # Generate appcast with Sparkle tools
           $RUNNER_TEMP/Sparkle/bin/generate_appcast \
-            --ed-key-file $RUNNER_TEMP/sparkle_private_key \
+            --ed-key-file $RUNNER_TEMP/sparkle_private_key \env.RELEASE_TAG
             --download-url-prefix "https://github.com/jamesmontemagno/babysmash-mac/releases/download/${{ github.ref_name }}/" \
             $RUNNER_TEMP/release-files
           
@@ -194,10 +216,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Get release notes from GitHub release (will be created in next step)
-          # For now, use the tag message or generate placeholder
+          # For now, use the tag message or generate placeholdenv.RELEASE_TAG
           TAG_MESSAGE=$(git tag -l --format='%(contents)' ${{ github.ref_name }} || echo "")
           
-          if [ -z "$TAG_MESSAGE" ]; then
+          if [ -z "$TAG_MESSAGE" ]; tenv.RELEASE_TAG
             TAG_MESSAGE="Release ${{ github.ref_name }}"
           fi
           
@@ -208,12 +230,13 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
           files: |
-            ${{ runner.temp }}/${{ env.PRODUCT_NAME }}-${{ github.ref_name }}.zip
+            ${{ runner.temp }}/${{ env.PRODUCT_NAME }}-${{ env.RELEASE_TAG }}.zip
             ${{ runner.temp }}/release-files/*.delta
           generate_release_notes: true
           draft: false
-          prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}
+          prerelease: ${{ contains(env.RELEASE_TAG, 'beta') || contains(env.RELEASE_TAG, 'alpha') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
@@ -232,7 +255,7 @@ jobs:
           
       - name: Commit Updated Appcast
         uses: stefanzweifel/git-auto-commit-action@v5
-        with:
+        with:env.RELEASE_TAG
           commit_message: "Update appcast.xml for ${{ github.ref_name }}"
           file_pattern: docs/appcast.xml
           branch: main
