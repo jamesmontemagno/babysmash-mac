@@ -241,8 +241,11 @@ struct SettingsView: View {
                         .frame(maxWidth: .infinity)
                     }
                     
-                    Button {
-                        NSApplication.shared.terminate(nil)
+                    Button(role: .destructive) {
+                        dismiss()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            NSApplication.shared.terminate(nil)
+                        }
                     } label: {
                         HStack {
                             Image(systemName: "xmark.circle")
@@ -250,6 +253,7 @@ struct SettingsView: View {
                         }
                         .frame(maxWidth: .infinity)
                     }
+                    .buttonStyle(.plain)
                 } header: {
                     Text(L10n.Settings.ResetSection.sectionTitle)
                 } footer: {
