@@ -1,10 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
-        <title>BabySmash Updates</title>
-        <link>https://jamesmontemagno.github.io/babysmash-mac/appcast.xml</link>
-        <description>Most recent updates to BabySmash for macOS</description>
-        <language>en</language>
-        <!-- Items will be added by GitHub Actions release workflow -->
+        <title>babysmash</title>
+        <item>
+            <title>0.0.1</title>
+            <pubDate>Wed, 07 Jan 2026 08:13:43 +0000</pubDate>
+            <sparkle:version>10</sparkle:version>
+            <sparkle:shortVersionString>0.0.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/jamesmontemagno/babysmash-mac/releases/download/v0.0.1/BabySmash-v0.0.1.zip" length="6307138" type="application/octet-stream" sparkle:edSignature="5i0W9gezAxkSLuXJNm10WnlyWf2vhgm2ClyNUfAOv8juK/TP6EoMCNVEHUOfGk+BNe6ufs3ebyAu4+IXvnvJDg=="/>
+        </item>
     </channel>
 </rss>
