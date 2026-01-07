@@ -210,7 +210,10 @@ struct SettingsView: View {
                     // Check for Updates
                     if sparkleController.canCheckForUpdates {
                         Button {
-                            sparkleController.checkForUpdates()
+                            // Dispatch asynchronously to avoid blocking the UI
+                            DispatchQueue.main.async {
+                                sparkleController.checkForUpdates()
+                            }
                         } label: {
                             Text(L10n.Settings.About.checkForUpdates)
                         }
