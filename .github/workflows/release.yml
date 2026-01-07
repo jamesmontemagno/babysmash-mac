@@ -116,10 +116,6 @@ jobs:
               <string>developer-id</string>
               <key>teamID</key>
               <string>$APPLE_TEAM_ID</string>
-              <key>signingStyle</key>
-              <string>manual</string>
-              <key>signingCertificate</key>
-              <string>Developer ID Application</string>
           </dict>
           </plist>
           EOF
