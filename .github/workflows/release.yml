@@ -159,12 +159,34 @@ jobs:
             "$RUNNER_TEMP/Export/${{ env.SCHEME }}.app" \
             "$RUNNER_TEMP/${{ env.PRODUCT_NAME }}-notarize.zip"
           
-          # Submit for notarization and wait
-          xcrun notarytool submit "$RUNNER_TEMP/${{ env.PRODUCT_NAME }}-notarize.zip" \
+          # Submit for notarization and capture the submission ID
+          SUBMISSION_OUTPUT=$(xcrun notarytool submit "$RUNNER_TEMP/${{ env.PRODUCT_NAME }}-notarize.zip" \
             --apple-id "$APPLE_ID" \
             --password "$APP_PASSWORD" \
             --team-id "$APPLE_TEAM_ID" \
-            --wait
+            --wait \
+            --output-format json)
+          
+          echo "$SUBMISSION_OUTPUT"
+          
+          # Extract submission ID
+          SUBMISSION_ID=$(echo "$SUBMISSION_OUTPUT" | jq -r '.id')
+          
+          # Get the status
+          STATUS=$(echo "$SUBMISSION_OUTPUT" | jq -r '.status')
+          
+          # If notarization failed, get the log
+          if [ "$STATUS" != "Accepted" ]; then
+            echo "Notarization failed with status: $STATUS"
+            echo "Fetching notarization log..."
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --apple-id "$APPLE_ID" \
+              --password "$APP_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID"
+            exit 1
+          fi
+          
+          echo "Notarization succeeded!"
           
           # Staple the notarization ticket
           xcrun stapler staple "$RUNNER_TEMP/Export/${{ env.SCHEME }}.app"
