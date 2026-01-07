@@ -46,6 +46,16 @@ struct SettingsView: View {
     // Performance monitor for performance settings
     @ObservedObject private var performanceMonitor = PerformanceMonitor.shared
     
+    // Sparkle controller for updates
+    @ObservedObject private var sparkleController = SparkleController.shared
+    
+    /// App version from bundle
+    private var appVersion: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.0.1"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
+        return "\(version) (\(build))"
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -193,7 +203,25 @@ struct SettingsView: View {
                     HStack {
                         Text(L10n.Settings.About.appName)
                         Spacer()
-                        Text(L10n.Settings.About.version("1.0"))
+                        Text(L10n.Settings.About.version(appVersion))
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    // Check for Updates
+                    if sparkleController.canCheckForUpdates {
+                        Button {
+                            sparkleController.checkForUpdates()
+                        } label: {
+                            Text(L10n.Settings.About.checkForUpdates)
+                        }
+                        
+                        Toggle(L10n.Settings.About.automaticallyCheckForUpdates, isOn: Binding(
+                            get: { sparkleController.automaticallyChecksForUpdates },
+                            set: { sparkleController.automaticallyChecksForUpdates = $0 }
+                        ))
+                    } else {
+                        Text(L10n.Settings.About.updatesNotAvailable)
+                            .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                     

@@ -327,6 +327,18 @@ enum L10n {
                 "settings.about.originalBy",
                 defaultValue: "Original BabySmash by Scott Hanselman"
             )
+            static let checkForUpdates = LocalizedStringResource(
+                "settings.about.checkForUpdates",
+                defaultValue: "Check for Updates..."
+            )
+            static let automaticallyCheckForUpdates = LocalizedStringResource(
+                "settings.about.automaticallyCheckForUpdates",
+                defaultValue: "Automatically Check for Updates"
+            )
+            static let updatesNotAvailable = LocalizedStringResource(
+                "settings.about.updatesNotAvailable",
+                defaultValue: "Updates not available in development builds"
+            )
         }
         
         // Reset Section

@@ -12,6 +12,11 @@ import AppKit
 struct babysmashApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
+    init() {
+        // Initialize SparkleController early to start automatic update checks
+        _ = SparkleController.shared
+    }
+    
     var body: some Scene {
         // Settings window - separate from game windows
         Settings {
