@@ -113,7 +113,8 @@ jobs:
             CODE_SIGN_IDENTITY=- \
             DEVELOPMENT_TEAM=$APPLE_TEAM_ID \
             MARKETING_VERSION=${{ env.MARKETING_VERSION }} \
-            CURRENT_PROJECT_VERSION=${{ env.BUILD_NUMBER }}
+            CURRENT_PROJECT_VERSION=${{ env.BUILD_NUMBER }} \
+            OTHER_CODE_SIGN_FLAGS="--timestamp --options=runtime"
             
       - name: List Available Signing Identities
         run: |
