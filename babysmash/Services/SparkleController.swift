@@ -9,6 +9,7 @@
 import Foundation
 import Security
 import Combine
+import AppKit
 
 #if canImport(Sparkle)
 import Sparkle
@@ -196,6 +197,44 @@ extension SparkleController: SPUUpdaterDelegate {
                 self.isUpdateReady = false
             }
         }
+    }
+
+    nonisolated func updater(_ updater: SPUUpdater, willInstallUpdateOnQuit item: SUAppcastItem, immediateInstallationBlock: @escaping () -> Void) -> Bool {
+        // When automatic updates are enabled, Sparkle may default to installing the update
+        // "on quit" (without relaunching). For BabySmash, we prefer applying the update
+        // immediately so the app actually restarts into the new version.
+        let autoUpdateEnabled = UserDefaults.standard.bool(forKey: defaultsKey)
+        guard autoUpdateEnabled else { return true }
+
+        DispatchQueue.main.async {
+            immediateInstallationBlock()
+        }
+
+        // We initiated immediate installation; don't also install on quit.
+        return false
+    }
+
+    nonisolated func updater(_ updater: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
+        // Clean up kiosk mode BEFORE Sparkle tries to quit/install.
+        // This is critical - without this, the app may not be able to terminate.
+        DispatchQueue.main.sync {
+            SystemKeyBlocker.shared.stopBlocking()
+            NSApp.presentationOptions = []
+        }
+        print("[SparkleController] Cleaned up kiosk mode for update installation")
+    }
+
+    nonisolated func updaterShouldRelaunchApplication(_ updater: SPUUpdater) -> Bool {
+        true
+    }
+
+    nonisolated func updaterWillRelaunchApplication(_ updater: SPUUpdater) {
+        // Extra safety: ensure kiosk restrictions are cleared before relaunch
+        DispatchQueue.main.sync {
+            SystemKeyBlocker.shared.stopBlocking()
+            NSApp.presentationOptions = []
+        }
+        print("[SparkleController] Preparing for relaunch")
     }
 }
 #endif
