@@ -13,7 +13,7 @@ struct babysmashApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
-        // Initialize SparkleController early to start automatic update checks
+        // Initialize SparkleController for manual update checks
         _ = SparkleController.shared
     }
     

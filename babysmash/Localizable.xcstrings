@@ -5015,17 +5015,6 @@
         }
       }
     },
-    "settings.about.automaticallyCheckForUpdates" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Automatically Check for Updates"
-          }
-        }
-      }
-    },
     "settings.about.checkForUpdates" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {

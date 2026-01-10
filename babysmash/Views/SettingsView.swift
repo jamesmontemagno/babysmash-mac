@@ -218,11 +218,6 @@ struct SettingsView: View {
                         } label: {
                             Text(L10n.Settings.About.checkForUpdates)
                         }
-                        
-                        Toggle(L10n.Settings.About.automaticallyCheckForUpdates, isOn: Binding(
-                            get: { sparkleController.automaticallyChecksForUpdates },
-                            set: { sparkleController.automaticallyChecksForUpdates = $0 }
-                        ))
                     } else {
                         Text(L10n.Settings.About.updatesNotAvailable)
                             .font(.caption)
