@@ -41,7 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     #if DEBUG
     private let debugDisableKioskMode = true
     #else
-    private let debugDisableKioskMode = true
+    private let debugDisableKioskMode = false
     #endif
     
     func applicationDidFinishLaunching(_ notification: Notification) {
