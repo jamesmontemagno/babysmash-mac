@@ -210,9 +210,10 @@ struct SettingsView: View {
                     // Check for Updates
                     if sparkleController.canCheckForUpdates {
                         Button {
-                            // Dispatch asynchronously to avoid blocking the UI
-                            // Similar to the app termination pattern used elsewhere in this file
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            // Use async Task to prevent blocking the UI thread
+                            Task { @MainActor in
+                                // Brief delay to let button animation complete
+                                try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
                                 sparkleController.checkForUpdates()
                             }
                         } label: {
