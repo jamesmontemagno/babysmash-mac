@@ -1,184 +1,1813 @@
-a
-é
-o
-ai
-ao
-as
-dá
-de
-do
-em
-eu
-há
-ir
-já
-lá
-me
-na
-no
-os
-ou
-pé
-se
-só
-te
-tu
-um
-ar
-ato
-aí
-até
-bem
-boa
-bom
-cão
-cara
-casa
-cem
-céu
-chá
-com
-cor
-dar
-das
-dez
-dia
-dor
-dos
-dois
-ela
-ele
-era
-está
-eu
-faz
-fez
-foi
-gato
-gol
-grande
-há
-hei
-hoje
-ir
-isso
-já
-lado
-lei
-ler
-livro
-lá
-luz
-lhe
-lua
-mãe
-mão
-mais
-mal
-mas
-mato
-me
-mel
-meu
-mil
-mim
-modo
-monte
-na
-não
-nem
-no
-nada
-nela
-nele
-nome
-nos
-nós
-nova
-nove
-novo
-num
-nós
-oito
-olá
-olho
-onde
-ora
-para
-pau
-pé
-pela
-pelo
-pequeno
-pode
-pois
-por
-povo
-preto
-qualquer
-quando
-que
-quem
-quero
-quer
-quê
-rosa
-rio
-rua
-saber
-sal
-sangue
-se
-sei
-sem
-senhor
-ser
-seu
-seus
-sim
-sob
-sol
-som
-são
-só
-sul
-tal
-tarde
-te
-tem
-tempo
-ter
-teu
-tia
-tipo
-tio
-todos
-tomar
-tom
-trabalho
-trazer
-três
-tu
-tua
-tudo
-tão
-um
-uma
-uns
-vai
-vão
-vejo
-vem
-vento
-ver
-verde
-vez
-vida
-vim
-vir
-vivo
-você
-voz
-vê
-xampu
-zero
+1. aarav
+2. aaron
+3. abigail
+4. capaz
+5. sobre
+6. acima
+7. abraham
+8. aceitar
+9. aceitado
+10. aceitando
+11. aceita
+12. bolota
+13. bolotas
+14. através
+15. agir
+16. agiu
+17. agindo
+18. ator
+19. atores
+20. age
+21. adam
+22. adicionar
+23. adicionado
+24. víbora
+25. víboras
+26. adicionando
+27. adiciona
+28. adjetivo
+29. adjetivos
+30. depois
+31. novamente
+32. contra
+33. atrás
+34. aiden
+35. ar
+36. transmitido
+37. transmitindo
+38. avião
+39. aviões
+40. transmite
+41. alex
+42. alexis
+43. alfie
+44. ali
+45. alice
+46. tudo
+47. junto
+48. também
+49. sempre
+50. alyssa
+51. sou
+52. amber
+53. amelia
+54. amelie
+55. américa
+56. entre
+57. amy
+58. um
+59. e
+60. andrew
+61. animal
+62. animais
+63. anna
+64. outro
+65. resposta
+66. respondeu
+67. respondendo
+68. respostas
+69. formiga
+70. formigas
+71. qualquer
+72. aparecer
+73. apareceu
+74. aparecendo
+75. aparece
+76. maçã
+77. maçãs
+78. são
+79. área
+80. aria
+81. ariana
+82. ao redor
+83. arthur
+84. como
+85. perguntar
+86. perguntou
+87. perguntando
+88. em
+89. comeu
+90. áudio
+91. tia
+92. tias
+93. austin
+94. ava
+95. avery
+96. longe
+97. bebês
+98. bebê
+99. babysmash
+100. costas
+101. traseiras
+102. mau
+103. careca
+104. bola
+105. banir
+106. banana
+107. bananas
+108. baque
+109. banido
+110. banindo
+111. bane
+112. barra
+113. bardo
+114. barrado
+115. barrando
+116. barras
+117. base
+118. baseado
+119. bases
+120. baseando
+121. baterias
+122. bateria
+123. ser
+124. urso
+125. suportando
+126. ursos
+127. bonito
+128. beleza
+129. tornou
+130. porque
+131. tornar
+132. cama
+133. camas
+134. abelha
+135. sido
+136. abelhas
+137. antes
+138. começou
+139. começar
+140. começado
+141. atrás
+142. belinda
+143. sino
+144. bella
+145. sinos
+146. ben
+147. abaixo
+148. benjamin
+149. melhor
+150. bethany
+151. melhor
+152. entre
+153. grande
+154. maior
+155. maior
+156. conta
+157. cobrado
+158. cobrando
+159. contas
+160. pássaro
+161. pássaros
+162. nascimento
+163. aniversário
+164. aniversários
+165. nascimentos
+166. birts
+167. preto
+168. blake
+169. azul
+170. azuis
+171. barco
+172. barcos
+173. corpos
+174. corpo
+175. parafuso
+176. parafusos
+177. livro
+178. reservado
+179. reservando
+180. livros
+181. ambos
+182. comprou
+183. tigela
+184. tigelas
+185. caixa
+186. encaixotado
+187. caixas
+188. boxe
+189. menino
+190. meninos
+191. galho
+192. ramificado
+193. galhos
+194. ramificando
+195. pão
+196. empanado
+197. pães
+198. trazer
+199. traz
+200. amplo
+201. irmão
+202. irmãos
+203. trouxe
+204. marrom
+205. construir
+206. construindo
+207. edifícios
+208. constrói
+209. construído
+210. mais ocupado
+211. mais ocupado
+212. ocupado
+213. mas
+214. comprar
+215. comprador
+216. comprando
+217. compra
+218. por
+219. tchau
+220. táxi
+221. cabo
+222. cabos
+223. táxis
+224. bolo
+225. incrustado
+226. bolos
+227. caleb
+228. chamar
+229. chamado
+230. chamando
+231. chama
+232. callum
+233. veio
+234. cameron
+235. acampar
+236. acampado
+237. campista
+238. campistas
+239. acampando
+240. poder
+241. não pode
+242. carro
+243. cuidado
+244. cuidou
+245. cuidadoso
+246. cuidadosamente
+247. cuida
+248. cuidando
+249. carrega
+250. cenoura
+251. cenouras
+252. carregar
+253. carros
+254. carson
+255. caso
+256. castelo
+257. castelos
+258. gato
+259. gatos
+260. causa
+261. caylee
+262. célula
+263. adega
+264. adegas
+265. células
+266. centavo
+267. centro
+268. centavos
+269. séculos
+270. século
+271. certo
+272. cadeira
+273. cadeiras
+274. mudança
+275. mudanças
+276. charlie
+277. verificar
+278. verifica
+279. alegrar
+280. alegrou
+281. alegrando
+282. alegra
+283. frango
+284. frangos
+285. criança
+286. crianças
+287. chloe
+288. círculo
+289. círculos
+290. cidades
+291. cidade
+292. clara
+293. classe
+294. classes
+295. limpo
+296. claro
+297. limpou
+298. limpando
+299. limpa
+300. fechar
+301. fechado
+302. mais perto
+303. fecha
+304. fechando
+305. roupas
+306. casaco
+307. casacos
+308. código
+309. codificado
+310. programador
+311. programadores
+312. códigos
+313. codificando
+314. frio
+315. mais frio
+316. mais frio
+317. resfriados
+318. cor
+319. colorido
+320. colorido
+321. colorindo
+322. cores
+323. vir
+324. vindo
+325. comum
+326. empresa
+327. completo
+328. completado
+329. completando
+330. computado
+331. computador
+332. computadores
+333. computando
+334. connor
+335. conter
+336. contém
+337. legal
+338. resfriado
+339. mais legal
+340. coolers
+341. resfriando
+342. corda
+343. cordas
+344. milho
+345. milhos
+346. correto
+347. corrigido
+348. corrige
+349. poderia
+350. países
+351. país
+352. curso
+353. cursos
+354. cobrir
+355. coberto
+356. cobre
+357. vaca
+358. vacas
+359. caranguejo
+360. caranguejos
+361. assustador
+362. chorou
+363. chorão
+364. chora
+365. cruzar
+366. cruzado
+367. cruzando
+368. chorar
+369. cursor
+370. cursores
+371. superficial
+372. cortina
+373. cortinas
+374. cortar
+375. fofo
+376. mais fofo
+377. mais fofo
+378. corta
+379. pai
+380. papai
+381. pais
+382. daisy
+383. daniel
+384. escuro
+385. filha
+386. filhas
+387. david
+388. dia
+389. dias
+390. decidir
+391. decidiu
+392. decidindo
+393. fundo
+394. mais fundo
+395. denise
+396. mesa
+397. mesas
+398. desenvolver
+399. desenvolvedor
+400. desenvolvendo
+401. desenvolve
+402. dexter
+403. fez
+404. diferir
+405. diferente
+406. direto
+407. distância
+408. distante
+409. fazer
+410. faz
+411. cachorro
+412. cachorros
+413. boneca
+414. dólar
+415. dólares
+416. bonecas
+417. feito
+418. porta
+419. portas
+420. dora
+421. baixo
+422. dragão
+423. dragões
+424. ralo
+425. drenado
+426. drenando
+427. drena
+428. bebeu
+429. desenhar
+430. desenha
+431. beber
+432. bebidas
+433. dirigir
+434. motorista
+435. dirige
+436. dirigindo
+437. dirigiu
+438. seco
+439. pato
+440. abaixado
+441. abaixando
+442. patos
+443. durante
+444. dylan
+445. cada
+446. cedo
+447. terra
+448. facilidade
+449. facilita
+450. mais fácil
+451. mais fácil
+452. leste
+453. fácil
+454. comer
+455. ed
+456. edward
+457. ovo
+458. ovos
+459. oito
+460. dezoito
+461. décimo oitavo
+462. oitavo
+463. oitenta
+464. cotovelo
+465. cotovelos
+466. eleanor
+467. elemento
+468. elementos
+469. elena
+470. onze
+471. décimo primeiro
+472. eli
+473. elijah
+474. eliot
+475. eliza
+476. ella
+477. ellie
+478. ellis
+479. elsa
+480. elsie
+481. emilia
+482. emily
+483. emma
+484. fim
+485. termina
+486. inglês
+487. suficiente
+488. equiparar
+489. equação
+490. erin
+491. esme
+492. ethan
+493. eva
+494. evan
+495. evelyn
+496. até
+497. sempre
+498. todo
+499. evie
+500. exemplo
+501. explicar
+502. olho
+503. olhos
+504. rosto
+505. rostos
+506. fato
+507. fatos
+508. fé
+509. cair
+510. familiar
+511. famílias
+512. família
+513. longe
+514. fazenda
+515. fazendeiro
+516. fazendeiros
+517. fazendas
+518. rápido
+519. mais rápido
+520. mais rápido
+521. pai
+522. pais
+523. sentir
+524. sentimento
+525. sentimentos
+526. pés
+527. felix
+528. caiu
+529. sentiu
+530. poucos
+531. campo
+532. campos
+533. quinze
+534. décimo quinto
+535. quinto
+536. cinquenta
+537. figura
+538. figurado
+539. figuras
+540. figurando
+541. arquivo
+542. arquivado
+543. arquivando
+544. encher
+545. enchido
+546. enchedor
+547. enchedores
+548. enchendo
+549. enche
+550. final
+551. finalmente
+552. encontrar
+553. localizador
+554. encontrando
+555. descobertas
+556. fino
+557. multas
+558. dedo
+559. dedos
+560. finley
+561. finn
+562. fogo
+563. fogos
+564. primeiro
+565. peixe
+566. pescador
+567. pesca
+568. peixes
+569. cinco
+570. fugiu
+571. fugir
+572. panfleto
+573. voa
+574. voo
+575. voos
+576. chão
+577. chãos
+578. mole
+579. florence
+580. fluxo
+581. flor
+582. flores
+583. flui
+584. gripe
+585. fofura
+586. fofinho
+587. voar
+588. seguir
+589. seguiu
+590. seguidor
+591. seguidores
+592. seguindo
+593. segue
+594. comida
+595. comidas
+596. pé
+597. para
+598. força
+599. forçado
+600. forças
+601. forçando
+602. garfo
+603. garfos
+604. forma
+605. formas
+606. quarenta
+607. encontrou
+608. quatro
+609. quatorze
+610. décimo quarto
+611. quarto
+612. moldura
+613. molduras
+614. freddie
+615. livre
+616. libertado
+617. libertando
+618. liberta
+619. freya
+620. sexta
+621. amigo
+622. amigos
+623. de
+624. frente
+625. cheio
+626. diversão
+627. mais engraçado
+628. mais engraçado
+629. engraçado
+630. gabriel
+631. jogo
+632. jogador
+633. jogos
+634. jogando
+635. jardim
+636. jardins
+637. deu
+638. george
+639. georgia
+640. obter
+641. gigante
+642. presente
+643. presenteado
+644. presenteando
+645. presentes
+646. menina
+647. meninas
+648. dar
+649. doador
+650. dando
+651. ir
+652. vai
+653. ouro
+654. ido
+655. bom
+656. mercadorias
+657. pegou
+658. governar
+659. governo
+660. grace
+661. gracie
+662. vovó
+663. vovô
+664. grama
+665. ótimo
+666. verde
+667. chão
+668. terrenos
+669. grupo
+670. crescer
+671. crescendo
+672. crescido
+673. cresce
+674. guarda
+675. guardado
+676. guardando
+677. guardas
+678. teve
+679. metade
+680. mão
+681. entregue
+682. entregando
+683. mãos
+684. útil
+685. hannah
+686. acontecer
+687. aconteceu
+688. acontecendo
+689. acontece
+690. feliz
+691. difícil
+692. harpa
+693. harper
+694. harpas
+695. harriet
+696. harrison
+697. harry
+698. harvey
+699. tem
+700. chapéu
+701. chapéus
+702. ter
+703. ele
+704. cabeça
+705. cabeças
+706. ouvir
+707. ouviu
+708. ouvindo
+709. ouve
+710. coração
+711. corações
+712. calor
+713. aquecido
+714. aquecedor
+715. aquecendo
+716. aquece
+717. pesado
+718. olá
+719. ajuda
+720. ajudou
+721. ajudante
+722. ajudando
+723. ajuda
+724. henry
+725. dela
+726. aqui
+727. dela
+728. ei
+729. hexágono
+730. hexágonos
+731. alto
+732. colina
+733. colinas
+734. ele
+735. ele mesmo
+736. dele
+737. história
+738. segurar
+739. holly
+740. casa
+741. casas
+742. cavalo
+743. cavalos
+744. quente
+745. mais quente
+746. mais quente
+747. hora
+748. horas
+749. casa
+750. casas
+751. habitação
+752. habitações
+753. como
+754. entretanto
+755. hudnred
+756. hugo
+757. cem
+758. centenas
+759. hunter
+760. machucar
+761. ibrahim
+762. ideia
+763. ideias
+764. se
+765. doente
+766. imogen
+767. importante
+768. em
+769. polegada
+770. polegadas
+771. incluir
+772. infinito
+773. dentro
+774. conhecedor
+775. interiores
+776. interesse
+777. interessado
+778. interessante
+779. interesses
+780. para dentro
+781. iris
+782. é
+783. isaac
+784. isabella
+785. isabelle
+786. isla
+787. ilha
+788. ilhas
+789. questão
+790. questões
+791. isto
+792. seu
+793. ivy
+794. jack
+795. jackson
+796. jacob
+797. jake
+798. james
+799. jamie
+800. jasmine
+801. jason
+802. jasper
+803. jayden
+804. jazz
+805. jessica
+806. jill
+807. joana
+808. jodi
+809. john
+810. piada
+811. brincou
+812. brincalhão
+813. brincalhões
+814. piadas
+815. brincando
+816. jonathan
+817. joseph
+818. joshua
+819. jude
+820. pular
+821. pulou
+822. pulador
+823. pulando
+824. pula
+825. apenas
+826. kai
+827. katie
+828. katy
+829. kay
+830. caiaque
+831. caiaques
+832. kayla
+833. manter
+834. manteve
+835. chave
+836. teclado
+837. teclados
+838. chaves
+839. kian
+840. tipo
+841. tipos
+842. rei
+843. reis
+844. pipa
+845. pipas
+846. gatinho
+847. sabia
+848. faca
+849. facas
+850. saber
+851. sabendo
+852. conhecido
+853. sabe
+854. kyle
+855. lacey
+856. terra
+857. aterrissou
+858. aterrissando
+859. terras
+860. idioma
+861. idiomas
+862. lara
+863. grande
+864. maior
+865. maior
+866. último
+867. tarde
+868. mais tarde
+869. último
+870. rir
+871. riu
+872. rindo
+873. ri
+874. deitar
+875. layla
+876. liderar
+877. lidera
+878. leah
+879. aprender
+880. sair
+881. folhas
+882. esquerda
+883. perna
+884. pernas
+885. leo
+886. leon
+887. menos
+888. deixar
+889. deixa
+890. carta
+891. cartas
+892. lewis
+893. lexi
+894. liam
+895. vida
+896. levantar
+897. levantado
+898. levantando
+899. levanta
+900. luz
+901. gostar
+902. gostou
+903. lily
+904. linha
+905. alinhado
+906. linhas
+907. alinhando
+908. forros
+909. lista
+910. ouvir
+911. ouviu
+912. ouvinte
+913. ouvindo
+914. ouve
+915. pequeno
+916. menor
+917. menor
+918. viver
+919. viveu
+920. vive
+921. vivendo
+922. lne
+923. logan
+924. lola
+925. longo
+926. olhar
+927. olhou
+928. olhando
+929. olha
+930. lottie
+931. amor
+932. amou
+933. ama
+934. amando
+935. baixo
+936. baixas
+937. luca
+938. lucas
+939. lucy
+940. máquina
+941. máquinas
+942. feito
+943. madison
+944. principal
+945. maisie
+946. fazer
+947. faz
+948. fazendo
+949. homem
+950. muitos
+951. mapa
+952. mapas
+953. marcus
+954. maria
+955. marca
+956. marcas
+957. maryam
+958. mason
+959. material
+960. matilda
+961. matthew
+962. max
+963. pode
+964. maya
+965. me
+966. significar
+967. significa
+968. medir
+969. medido
+970. mede
+971. medindo
+972. carne
+973. carnes
+974. encontrar
+975. encontra
+976. megan
+977. homens
+978. metal
+979. metais
+980. mia
+981. michael
+982. poderia
+983. mila
+984. milha
+985. leite
+986. millie
+987. milo
+988. mente
+989. mentes
+990. minuto
+991. minutos
+992. perder
+993. perdeu
+994. perde
+995. faltando
+996. molly
+997. mãe
+998. mamãe
+999. mães
+1000. segunda
+1001. dinheiro
+1002. macaco
+1003. mês
+1004. meses
+1005. lua
+1006. luas
+1007. mais
+1008. manhã
+1009. maior
+1010. mãe
+1011. mães
+1012. montanha
+1013. montanhas
+1014. mover
+1015. moveu
+1016. mudança
+1017. move
+1018. movendo
+1019. muito
+1020. multiplicar
+1021. mãe
+1022. música
+1023. deve
+1024. meu
+1025. eu mesmo
+1026. prego
+1027. pregos
+1028. nome
+1029. nomes
+1030. nana
+1031. naomi
+1032. nathan
+1033. perto
+1034. pescoço
+1035. colar
+1036. colares
+1037. pescoços
+1038. precisar
+1039. precisou
+1040. precisando
+1041. precisa
+1042. ninho
+1043. ninhos
+1044. nunca
+1045. novo
+1046. notícias
+1047. próximo
+1048. niamh
+1049. noite
+1050. noites
+1051. nove
+1052. dezenove
+1053. décimo nono
+1054. noventa
+1055. nono
+1056. não
+1057. noah
+1058. norte
+1059. não
+1060. nota
+1061. notas
+1062. nada
+1063. perceber
+1064. substantivo
+1065. substantivos
+1066. agora
+1067. número
+1068. números
+1069. numeral
+1070. objeto
+1071. oceano
+1072. de
+1073. fora
+1074. escritório
+1075. escritórios
+1076. oficial
+1077. oficiais
+1078. frequentemente
+1079. oh
+1080. óleo
+1081. óleos
+1082. okay
+1083. velho
+1084. oliver
+1085. olivia
+1086. ollie
+1087. omar
+1088. em
+1089. uma vez
+1090. um
+1091. apenas
+1092. abrir
+1093. abriu
+1094. abrindo
+1095. abre
+1096. ou
+1097. laranja
+1098. laranjas
+1099. orbe
+1100. órbita
+1101. órbitas
+1102. orbes
+1103. ordem
+1104. ordenado
+1105. ordenando
+1106. ordens
+1107. oscar
+1108. outro
+1109. outros
+1110. nosso
+1111. nosso
+1112. fora
+1113. fora
+1114. oval
+1115. ovais
+1116. sobre
+1117. overnment
+1118. owen
+1119. próprio
+1120. página
+1121. paginado
+1122. paginador
+1123. páginas
+1124. paginando
+1125. pintar
+1126. pintado
+1127. pintor
+1128. pintores
+1129. pintando
+1130. pinturas
+1131. tintas
+1132. par
+1133. pares
+1134. palácio
+1135. palácios
+1136. calça
+1137. calças
+1138. papai
+1139. papel
+1140. papéis
+1141. papelada
+1142. parque
+1143. estacionado
+1144. parker
+1145. estacionando
+1146. parques
+1147. parte
+1148. separado
+1149. separando
+1150. partes
+1151. festa
+1152. passar
+1153. passou
+1154. passa
+1155. passando
+1156. padrão
+1157. caneta
+1158. lápis
+1159. lápis
+1160. escrito
+1161. canetas
+1162. pessoas
+1163. pessoa
+1164. phoebe
+1165. escolher
+1166. escolheu
+1167. escolhedor
+1168. escolhendo
+1169. escolhe
+1170. foto
+1171. retratado
+1172. fotos
+1173. imaginando
+1174. peça
+1175. montado
+1176. peças
+1177. montando
+1178. porco
+1179. porcos
+1180. tubo
+1181. tubos
+1182. lugar
+1183. lugares
+1184. planície
+1185. planícies
+1186. plano
+1187. avião
+1188. aviões
+1189. planejado
+1190. planejador
+1191. planejando
+1192. planos
+1193. planta
+1194. plantado
+1195. plantador
+1196. plantadores
+1197. plantando
+1198. plantas
+1199. plástico
+1200. plásticos
+1201. prato
+1202. pratos
+1203. brincar
+1204. brincou
+1205. jogador
+1206. brincando
+1207. brinca
+1208. por favor
+1209. ponto
+1210. pontos
+1211. poppy
+1212. porto
+1213. portagem
+1214. portando
+1215. portos
+1216. pose
+1217. posou
+1218. poses
+1219. posando
+1220. possível
+1221. libra
+1222. batendo
+1223. libras
+1224. poder
+1225. preposição
+1226. preposições
+1227. presente
+1228. presentes
+1229. pressionar
+1230. pressionado
+1231. pressiona
+1232. pressionando
+1233. bonito
+1234. problema
+1235. problemas
+1236. produzir
+1237. produzido
+1238. produtor
+1239. produz
+1240. produzindo
+1241. produto
+1242. produtos
+1243. público
+1244. pudim
+1245. pudins
+1246. puxar
+1247. puxado
+1248. polia
+1249. polias
+1250. puxa
+1251. colocar
+1252. coloca
+1253. tacos
+1254. tacos
+1255. colocando
+1256. rainha
+1257. rainhas
+1258. pergunta
+1259. questionado
+1260. questionando
+1261. perguntas
+1262. rápido
+1263. rapidamente
+1264. quieto
+1265. mais quieto
+1266. silenciosamente
+1267. acalma
+1268. coelho
+1269. coelhos
+1270. rádio
+1271. rádios
+1272. trilho
+1273. trilhos
+1274. chuva
+1275. chove
+1276. correu
+1277. randy
+1278. alcançar
+1279. alcançou
+1280. alcança
+1281. alcançando
+1282. ler
+1283. pronto
+1284. realmente
+1285. rebecca
+1286. gravar
+1287. gravado
+1288. gravando
+1289. grava
+1290. retângulo
+1291. retângulos
+1292. vermelho
+1293. lembrar
+1294. lembrou
+1295. lembrando
+1296. lembra
+1297. remover
+1298. removido
+1299. remove
+1300. removendo
+1301. descansar
+1302. descansou
+1303. descansando
+1304. descansa
+1305. reuben
+1306. andar
+1307. anda
+1308. direito
+1309. direitos
+1310. riley
+1311. anel
+1312. anéis
+1313. rio
+1314. rios
+1315. estrada
+1316. estradas
+1317. robin
+1318. robins
+1319. robyn
+1320. pedra
+1321. balançou
+1322. balançando
+1323. pedras
+1324. andou
+1325. rolar
+1326. rola
+1327. ronda
+1328. quarto
+1329. quartos
+1330. rory
+1331. rosa
+1332. rosie
+1333. redondo
+1334. ruby
+1335. regra
+1336. regrado
+1337. régua
+1338. réguas
+1339. regras
+1340. governando
+1341. correr
+1342. ryan
+1343. seguro
+1344. mais seguro
+1345. segurança
+1346. disse
+1347. venda
+1348. vendas
+1349. salão
+1350. sam
+1351. mesmo
+1352. samuel
+1353. cantou
+1354. sarah
+1355. sentou
+1356. sábado
+1357. salvar
+1358. salvou
+1359. salva
+1360. salvando
+1361. economias
+1362. serra
+1363. serras
+1364. dizer
+1365. scarlett
+1366. escola
+1367. escolas
+1368. ciência
+1369. ciências
+1370. cientistas
+1371. scott
+1372. mar
+1373. segundo
+1374. segundos
+1375. ver
+1376. semente
+1377. sementes
+1378. vendo
+1379. parecer
+1380. visto
+1381. eu
+1382. vender
+1383. vendedor
+1384. vendendo
+1385. eus
+1386. frase
+1387. servir
+1388. definir
+1389. seth
+1390. sete
+1391. dezessete
+1392. décimo sétimo
+1393. sétimo
+1394. setenta
+1395. vários
+1396. deve
+1397. forma
+1398. formas
+1399. ela
+1400. ovelha
+1401. pastor
+1402. navio
+1403. enviado
+1404. enviando
+1405. navios
+1406. camisa
+1407. camisas
+1408. sapato
+1409. sapatos
+1410. loja
+1411. comprou
+1412. comprador
+1413. comprando
+1414. lojas
+1415. curto
+1416. shorts
+1417. deveria
+1418. ombro
+1419. ombros
+1420. mostrar
+1421. mostrado
+1422. ônibus espacial
+1423. ônibus espaciais
+1424. lado
+1425. lateral
+1426. lados
+1427. revestimento
+1428. sienna
+1429. sinal
+1430. mais bobo
+1431. mais bobo
+1432. bobo
+1433. simon
+1434. desde
+1435. cantar
+1436. irmã
+1437. irmãs
+1438. sentar
+1439. seis
+1440. dezesseis
+1441. décimo sexto
+1442. sexto
+1443. sessenta
+1444. tamanho
+1445. saia
+1446. saias
+1447. skye
+1448. dormir
+1449. lento
+1450. mais lento
+1451. mais lento
+1452. lentamente
+1453. pequeno
+1454. menor
+1455. menor
+1456. esmagar
+1457. esmagado
+1458. esmaga
+1459. esmagando
+1460. cobra
+1461. cobras
+1462. neve
+1463. neva
+1464. então
+1465. meia
+1466. meias
+1467. algum
+1468. filho
+1469. canção
+1470. canções
+1471. filhos
+1472. logo
+1473. sophia
+1474. sophie
+1475. som
+1476. sons
+1477. sul
+1478. espaço
+1479. espaços
+1480. espaçamento
+1481. especial
+1482. velocidade
+1483. velocidades
+1484. soletrar
+1485. soletrado
+1486. soletrando
+1487. soletra
+1488. colher
+1489. colheres
+1490. spork
+1491. esporte
+1492. esportivo
+1493. esportes
+1494. quadrado
+1495. quadrados
+1496. esquilo
+1497. esquilos
+1498. ficar
+1499. stanley
+1500. estrela
+1501. estrelas
+1502. começar
+1503. começa
+1504. estado
+1505. declarado
+1506. estados
+1507. declarando
+1508. ficar
+1509. ficou
+1510. ficando
+1511. fica
+1512. lugar
+1513. passo
+1514. pisou
+1515. pisando
+1516. passos
+1517. graveto
+1518. gravetos
+1519. ainda
+1520. picar
+1521. pica
+1522. ficou
+1523. parar
+1524. parou
+1525. tampa
+1526. parando
+1527. para
+1528. histórias
+1529. história
+1530. rua
+1531. ruas
+1532. corda
+1533. cordas
+1534. forte
+1535. mais forte
+1536. mais forte
+1537. estudou
+1538. estuda
+1539. estudar
+1540. toco
+1541. tocos
+1542. tal
+1543. súbito
+1544. de repente
+1545. verão
+1546. sol
+1547. domingo
+1548. certo
+1549. superfície
+1550. surgiu
+1551. superfícies
+1552. surgindo
+1553. sistema
+1554. sistemas
+1555. mesa
+1556. mesas
+1557. cauda
+1558. caudas
+1559. pegar
+1560. conto
+1561. contos
+1562. conversar
+1563. conversou
+1564. conversador
+1565. conversando
+1566. conversa
+1567. ensinou
+1568. chá
+1569. ensinar
+1570. professor
+1571. professores
+1572. ensina
+1573. ensinando
+1574. teddy
+1575. televisão
+1576. contar
+1577. contador
+1578. contando
+1579. conta
+1580. dez
+1581. décimo
+1582. terri
+1583. teste
+1584. testes
+1585. que
+1586. agradecer
+1587. agradece
+1588. aquilo
+1589. o
+1590. thea
+1591. deles
+1592. eles
+1593. então
+1594. theo
+1595. lá
+1596. theres
+1597. estes
+1598. eles
+1599. fino
+1600. coisa
+1601. coisas
+1602. pensar
+1603. pensador
+1604. pensando
+1605. terceiro
+1606. treze
+1607. décimo terceiro
+1608. trinta
+1609. isto
+1610. thomas
+1611. aqueles
+1612. embora
+1613. pensamento
+1614. pensamentos
+1615. mil
+1616. milhares
+1617. três
+1618. através
+1619. quinta
+1620. tempo
+1621. cronometrado
+1622. cronômetro
+1623. vezes
+1624. cronometrando
+1625. pneu
+1626. cansado
+1627. pneus
+1628. cansando
+1629. lenço
+1630. lenços
+1631. para
+1632. toby
+1633. hoje
+1634. dedo do pé
+1635. dedos do pé
+1636. juntos
+1637. disse
+1638. tommy
+1639. amanhã
+1640. também
+1641. pegou
+1642. topo
+1643. topos
+1644. tour
+1645. tours
+1646. em direção
+1647. toalha
+1648. toalhas
+1649. cidade
+1650. cidades
+1651. brinquedo
+1652. brinquedos
+1653. trem
+1654. trens
+1655. trapézio
+1656. trapézios
+1657. viajar
+1658. viaja
+1659. árvore
+1660. árvores
+1661. triângulo
+1662. triângulos
+1663. tentou
+1664. tenta
+1665. viagem
+1666. tropeçou
+1667. tropeçando
+1668. viagens
+1669. verdadeiro
+1670. confiar
+1671. confiou
+1672. confiando
+1673. confia
+1674. tentar
+1675. terça
+1676. virar
+1677. tv
+1678. décimo segundo
+1679. doze
+1680. vigésimo
+1681. vinte
+1682. gêmeo
+1683. cintilar
+1684. cintila
+1685. gêmeos
+1686. dois
+1687. tyler
+1688. sob
+1689. entender
+1690. entendendo
+1691. entende
+1692. entendeu
+1693. unidade
+1694. até
+1695. cima
+1696. sobre
+1697. nós
+1698. usar
+1699. usado
+1700. usuário
+1701. usuários
+1702. usa
+1703. usando
+1704. usual
+1705. geralmente
+1706. verbo
+1707. verbos
+1708. muito
+1709. violet
+1710. voz
+1711. vogal
+1712. vogais
+1713. esperar
+1714. espera
+1715. caminhar
+1716. querer
+1717. guerra
+1718. quente
+1719. mais quente
+1720. aquecedores
+1721. mais quente
+1722. aquece
+1723. guerras
+1724. era
+1725. lavar
+1726. lavou
+1727. lavadora
+1728. lava
+1729. assistir
+1730. assistiu
+1731. assiste
+1732. assistindo
+1733. água
+1734. águas
+1735. onda
+1736. acenou
+1737. hesitante
+1738. hesitantes
+1739. ondas
+1740. acenando
+1741. caminho
+1742. caminhos
+1743. nós
+1744. quarta
+1745. semana
+1746. semanas
+1747. bem
+1748. poços
+1749. foi
+1750. eram
+1751. oeste
+1752. que
+1753. roda
+1754. rodas
+1755. quando
+1756. onde
+1757. qual
+1758. branco
+1759. quem
+1760. todo
+1761. por que
+1762. vai
+1763. william
+1764. willow
+1765. vento
+1766. janela
+1767. janelas
+1768. ventos
+1769. desejo
+1770. desejou
+1771. desejos
+1772. desejando
+1773. com
+1774. mulher
+1775. mulheres
+1776. admirar
+1777. maravilhoso
+1778. admirando
+1779. admira
+1780. madeira
+1781. madeiras
+1782. palavra
+1783. palavras
+1784. minhoca
+1785. minhocas
+1786. trabalho
+1787. trabalhou
+1788. trabalhador
+1789. trabalhadores
+1790. trabalhando
+1791. trabalha
+1792. mundo
+1793. mundos
+1794. faria
+1795. escrever
+1796. escreve
+1797. escrevendo
+1798. escritos
+1799. escreveu
+1800. ano
+1801. anos
+1802. amarelo
+1803. sim
+1804. ontem
+1805. ainda
+1806. você
+1807. jovem
+1808. seu
+1809. zachary
+1810. zara
+1811. zebra
+1812. zebras
+1813. zoe
