@@ -217,17 +217,12 @@ extension SparkleController: SPUUpdaterDelegate {
     nonisolated func updater(_ updater: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
         // Clean up kiosk mode BEFORE Sparkle tries to quit/install.
         // This is critical - without this, the app may not be able to terminate.
-        // Use async to avoid potential deadlock if already on main thread
-        if Thread.isMainThread {
+        // Use async to avoid deadlock - never use sync on main queue
+        DispatchQueue.main.async {
             SystemKeyBlocker.shared.stopBlocking()
             NSApp.presentationOptions = []
-        } else {
-            DispatchQueue.main.sync {
-                SystemKeyBlocker.shared.stopBlocking()
-                NSApp.presentationOptions = []
-            }
+            print("[SparkleController] Cleaned up kiosk mode for update installation")
         }
-        print("[SparkleController] Cleaned up kiosk mode for update installation")
     }
 
     nonisolated func updaterShouldRelaunchApplication(_ updater: SPUUpdater) -> Bool {
@@ -236,17 +231,12 @@ extension SparkleController: SPUUpdaterDelegate {
 
     nonisolated func updaterWillRelaunchApplication(_ updater: SPUUpdater) {
         // Extra safety: ensure kiosk restrictions are cleared before relaunch
-        // Use async to avoid potential deadlock if already on main thread
-        if Thread.isMainThread {
+        // Use async to avoid deadlock - never use sync on main queue
+        DispatchQueue.main.async {
             SystemKeyBlocker.shared.stopBlocking()
             NSApp.presentationOptions = []
-        } else {
-            DispatchQueue.main.sync {
-                SystemKeyBlocker.shared.stopBlocking()
-                NSApp.presentationOptions = []
-            }
+            print("[SparkleController] Preparing for relaunch")
         }
-        print("[SparkleController] Preparing for relaunch")
     }
 }
 #endif
