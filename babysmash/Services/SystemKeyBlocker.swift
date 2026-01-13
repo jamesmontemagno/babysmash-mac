@@ -175,7 +175,9 @@ class SystemKeyBlocker: ObservableObject {
             }
             
             eventTap = tap
-            runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
+            // Create run loop source - per Core Foundation ownership rules, this returns +1 retained
+            let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
+            runLoopSource = source
             
             if let source = runLoopSource {
                 CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
@@ -198,6 +200,9 @@ class SystemKeyBlocker: ObservableObject {
     /// Registers Carbon hot keys to intercept shortcuts that may bypass CGEvent taps.
     /// This is particularly effective for Cmd+Space (Spotlight).
     private func registerCarbonHotKeys() {
+        var registeredKeys: [String] = []
+        var failedKeys: [String] = []
+        
         // Set up the event handler for hot key events
         var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
         
@@ -213,6 +218,7 @@ class SystemKeyBlocker: ObservableObject {
         
         if status != noErr {
             print("SystemKeyBlocker: Failed to install hot key handler, status: \(status)")
+            return
         }
         
         // Register Cmd+Space (Spotlight) - ID 1
@@ -227,14 +233,14 @@ class SystemKeyBlocker: ObservableObject {
         )
         
         if spotlightStatus != noErr {
-            print("SystemKeyBlocker: Failed to register Spotlight hot key, status: \(spotlightStatus)")
+            failedKeys.append("Cmd+Space (Spotlight)")
         } else {
-            print("SystemKeyBlocker: Registered Cmd+Space hot key")
+            registeredKeys.append("Cmd+Space")
         }
         
         // Also register Cmd+Option+Space (alternative Spotlight shortcut)
         var altSpotlightHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 3)
-        RegisterEventHotKey(
+        let altSpotlightStatus = RegisterEventHotKey(
             UInt32(kVK_Space),
             UInt32(cmdKey | optionKey),
             altSpotlightHotKeyID,
@@ -243,9 +249,13 @@ class SystemKeyBlocker: ObservableObject {
             &altSpotlightHotKeyRef
         )
         
+        if altSpotlightStatus == noErr {
+            registeredKeys.append("Cmd+Opt+Space")
+        }
+        
         // Register Ctrl+Up (Mission Control) - ID 2
         var missionControlHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 2)
-        RegisterEventHotKey(
+        let missionControlStatus = RegisterEventHotKey(
             UInt32(kVK_UpArrow),
             UInt32(controlKey),
             missionControlHotKeyID,
@@ -254,9 +264,13 @@ class SystemKeyBlocker: ObservableObject {
             &missionControlHotKeyRef
         )
         
+        if missionControlStatus == noErr {
+            registeredKeys.append("Ctrl+Up")
+        }
+        
         // Register Ctrl+Down (App Exposé)
         var appExposeHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 4)
-        RegisterEventHotKey(
+        let appExposeStatus = RegisterEventHotKey(
             UInt32(kVK_DownArrow),
             UInt32(controlKey),
             appExposeHotKeyID,
@@ -265,7 +279,17 @@ class SystemKeyBlocker: ObservableObject {
             &appExposeHotKeyRef
         )
         
-        print("SystemKeyBlocker: Registered Carbon hot keys for Spotlight and Mission Control")
+        if appExposeStatus == noErr {
+            registeredKeys.append("Ctrl+Down")
+        }
+        
+        // Log summary
+        if !registeredKeys.isEmpty {
+            print("SystemKeyBlocker: Registered Carbon hot keys: \(registeredKeys.joined(separator: ", "))")
+        }
+        if !failedKeys.isEmpty {
+            print("SystemKeyBlocker: WARNING - Failed to register: \(failedKeys.joined(separator: ", "))")
+        }
     }
     
     /// Unregisters Carbon hot keys.

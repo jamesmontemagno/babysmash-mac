@@ -60,6 +60,10 @@ final class SparkleController: NSObject, ObservableObject {
     /// Whether an update is ready to install
     @Published private(set) var isUpdateReady: Bool = false
     
+    /// Sequence counter for ordering state updates
+    private var updateStateSequence: Int = 0
+    private let stateQueue = DispatchQueue(label: "com.babysmash.sparkle.state")
+    
     /// Whether updates can be checked (i.e., running a signed release build)
     var canCheckForUpdates: Bool {
         updater.isAvailable
@@ -163,19 +167,38 @@ final class SparkleController: NSObject, ObservableObject {
 #if canImport(Sparkle)
 extension SparkleController: SPUUpdaterDelegate {
     nonisolated func updater(_ updater: SPUUpdater, didDownloadUpdate item: SUAppcastItem) {
+        let sequence = self.stateQueue.sync { () -> Int in
+            self.updateStateSequence += 1
+            return self.updateStateSequence
+        }
         Task { @MainActor in
+            // Only apply if this is the latest state update
+            let currentSequence = self.stateQueue.sync { self.updateStateSequence }
+            guard sequence == currentSequence else { return }
             self.isUpdateReady = true
         }
     }
     
     nonisolated func updater(_ updater: SPUUpdater, failedToDownloadUpdate item: SUAppcastItem, error: Error) {
+        let sequence = self.stateQueue.sync { () -> Int in
+            self.updateStateSequence += 1
+            return self.updateStateSequence
+        }
         Task { @MainActor in
+            let currentSequence = self.stateQueue.sync { self.updateStateSequence }
+            guard sequence == currentSequence else { return }
             self.isUpdateReady = false
         }
     }
     
     nonisolated func userDidCancelDownload(_ updater: SPUUpdater) {
+        let sequence = self.stateQueue.sync { () -> Int in
+            self.updateStateSequence += 1
+            return self.updateStateSequence
+        }
         Task { @MainActor in
+            let currentSequence = self.stateQueue.sync { self.updateStateSequence }
+            guard sequence == currentSequence else { return }
             self.isUpdateReady = false
         }
     }
@@ -187,7 +210,13 @@ extension SparkleController: SPUUpdaterDelegate {
         state: SPUUserUpdateState
     ) {
         let downloaded = state.stage == .downloaded
+        let sequence = self.stateQueue.sync { () -> Int in
+            self.updateStateSequence += 1
+            return self.updateStateSequence
+        }
         Task { @MainActor in
+            let currentSequence = self.stateQueue.sync { self.updateStateSequence }
+            guard sequence == currentSequence else { return }
             switch choice {
             case .install, .skip:
                 self.isUpdateReady = false
