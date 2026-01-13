@@ -4,6 +4,12 @@
 //
 //  Created by James Montemagno on 1/5/26.
 //
+//  THREADING MODEL:
+//  - All public methods (startBlocking, stopBlocking) are thread-safe
+//  - Uses serial DispatchQueue for synchronized access to state
+//  - CGEvent callbacks access state through the same queue
+//  - isBlocking flag is atomic via queue synchronization
+//
 
 import Cocoa
 import Combine

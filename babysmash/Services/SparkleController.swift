@@ -5,6 +5,12 @@
 //  Sparkle auto-update integration following RepoBar pattern.
 //  Disables itself for unsigned/development builds.
 //
+//  THREADING MODEL:
+//  - Class is @MainActor for UI state (isUpdateReady)
+//  - Delegate methods are nonisolated (called by Sparkle on its queue)
+//  - State updates use sequence numbers to prevent races
+//  - Kiosk cleanup uses DispatchQueue.main.async (never sync to avoid deadlock)
+//
 
 import Foundation
 import Security
@@ -144,19 +150,35 @@ final class SparkleController: NSObject, ObservableObject {
         var staticCode: SecStaticCode?
         guard SecStaticCodeCreateWithPath(bundleURL as CFURL, SecCSFlags(), &staticCode) == errSecSuccess,
               let code = staticCode else {
+            print("[SparkleController] Failed to create static code for signature check at: \(bundleURL.path)")
             return false
         }
         
         var infoCF: CFDictionary?
-        guard SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &infoCF) == errSecSuccess,
-              let info = infoCF as? [String: Any],
-              let certs = info[kSecCodeInfoCertificates as String] as? [SecCertificate],
-              let leaf = certs.first else {
+        guard SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &infoCF) == errSecSuccess else {
+            print("[SparkleController] Failed to copy signing information")
+            return false
+        }
+        
+        guard let info = infoCF as? [String: Any] else {
+            print("[SparkleController] Failed to cast signing info to dictionary")
+            return false
+        }
+        
+        guard let certs = info[kSecCodeInfoCertificates as String] as? [SecCertificate] else {
+            print("[SparkleController] No certificates found in signing info, keys: \(info.keys)")
+            return false
+        }
+        
+        guard let leaf = certs.first else {
+            print("[SparkleController] No leaf certificate found")
             return false
         }
         
         if let summary = SecCertificateCopySubjectSummary(leaf) as String? {
-            return summary.hasPrefix("Developer ID Application:")
+            let isDeveloperID = summary.hasPrefix("Developer ID Application:")
+            print("[SparkleController] Certificate: \(summary), is Developer ID: \(isDeveloperID)")
+            return isDeveloperID
         }
         return false
     }
