@@ -67,7 +67,7 @@ final class SparkleController: NSObject, ObservableObject {
     @Published private(set) var isUpdateReady: Bool = false
     
     /// Sequence counter for ordering state updates
-    private var updateStateSequence: Int = 0
+    nonisolated(unsafe) private var updateStateSequence: Int = 0
     private let stateQueue = DispatchQueue(label: "com.babysmash.sparkle.state")
     
     /// Whether updates can be checked (i.e., running a signed release build)
