@@ -5,6 +5,12 @@
 //  Sparkle auto-update integration following RepoBar pattern.
 //  Disables itself for unsigned/development builds.
 //
+//  THREADING MODEL:
+//  - Class is @MainActor for UI state (isUpdateReady)
+//  - Delegate methods are nonisolated (called by Sparkle on its queue)
+//  - State updates use sequence numbers to prevent races
+//  - Kiosk cleanup uses DispatchQueue.main.async (never sync to avoid deadlock)
+//
 
 import Foundation
 import Security
@@ -59,6 +65,10 @@ final class SparkleController: NSObject, ObservableObject {
     
     /// Whether an update is ready to install
     @Published private(set) var isUpdateReady: Bool = false
+    
+    /// Sequence counter for ordering state updates
+    nonisolated(unsafe) private var updateStateSequence: Int = 0
+    private let stateQueue = DispatchQueue(label: "com.babysmash.sparkle.state")
     
     /// Whether updates can be checked (i.e., running a signed release build)
     var canCheckForUpdates: Bool {
@@ -140,19 +150,35 @@ final class SparkleController: NSObject, ObservableObject {
         var staticCode: SecStaticCode?
         guard SecStaticCodeCreateWithPath(bundleURL as CFURL, SecCSFlags(), &staticCode) == errSecSuccess,
               let code = staticCode else {
+            print("[SparkleController] Failed to create static code for signature check at: \(bundleURL.path)")
             return false
         }
         
         var infoCF: CFDictionary?
-        guard SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &infoCF) == errSecSuccess,
-              let info = infoCF as? [String: Any],
-              let certs = info[kSecCodeInfoCertificates as String] as? [SecCertificate],
-              let leaf = certs.first else {
+        guard SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &infoCF) == errSecSuccess else {
+            print("[SparkleController] Failed to copy signing information")
+            return false
+        }
+        
+        guard let info = infoCF as? [String: Any] else {
+            print("[SparkleController] Failed to cast signing info to dictionary")
+            return false
+        }
+        
+        guard let certs = info[kSecCodeInfoCertificates as String] as? [SecCertificate] else {
+            print("[SparkleController] No certificates found in signing info, keys: \(info.keys)")
+            return false
+        }
+        
+        guard let leaf = certs.first else {
+            print("[SparkleController] No leaf certificate found")
             return false
         }
         
         if let summary = SecCertificateCopySubjectSummary(leaf) as String? {
-            return summary.hasPrefix("Developer ID Application:")
+            let isDeveloperID = summary.hasPrefix("Developer ID Application:")
+            print("[SparkleController] Certificate: \(summary), is Developer ID: \(isDeveloperID)")
+            return isDeveloperID
         }
         return false
     }
@@ -163,19 +189,38 @@ final class SparkleController: NSObject, ObservableObject {
 #if canImport(Sparkle)
 extension SparkleController: SPUUpdaterDelegate {
     nonisolated func updater(_ updater: SPUUpdater, didDownloadUpdate item: SUAppcastItem) {
+        let sequence = self.stateQueue.sync { () -> Int in
+            self.updateStateSequence += 1
+            return self.updateStateSequence
+        }
         Task { @MainActor in
+            // Only apply if this is the latest state update
+            let currentSequence = self.stateQueue.sync { self.updateStateSequence }
+            guard sequence == currentSequence else { return }
             self.isUpdateReady = true
         }
     }
     
     nonisolated func updater(_ updater: SPUUpdater, failedToDownloadUpdate item: SUAppcastItem, error: Error) {
+        let sequence = self.stateQueue.sync { () -> Int in
+            self.updateStateSequence += 1
+            return self.updateStateSequence
+        }
         Task { @MainActor in
+            let currentSequence = self.stateQueue.sync { self.updateStateSequence }
+            guard sequence == currentSequence else { return }
             self.isUpdateReady = false
         }
     }
     
     nonisolated func userDidCancelDownload(_ updater: SPUUpdater) {
+        let sequence = self.stateQueue.sync { () -> Int in
+            self.updateStateSequence += 1
+            return self.updateStateSequence
+        }
         Task { @MainActor in
+            let currentSequence = self.stateQueue.sync { self.updateStateSequence }
+            guard sequence == currentSequence else { return }
             self.isUpdateReady = false
         }
     }
@@ -187,7 +232,13 @@ extension SparkleController: SPUUpdaterDelegate {
         state: SPUUserUpdateState
     ) {
         let downloaded = state.stage == .downloaded
+        let sequence = self.stateQueue.sync { () -> Int in
+            self.updateStateSequence += 1
+            return self.updateStateSequence
+        }
         Task { @MainActor in
+            let currentSequence = self.stateQueue.sync { self.updateStateSequence }
+            guard sequence == currentSequence else { return }
             switch choice {
             case .install, .skip:
                 self.isUpdateReady = false
@@ -217,17 +268,12 @@ extension SparkleController: SPUUpdaterDelegate {
     nonisolated func updater(_ updater: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
         // Clean up kiosk mode BEFORE Sparkle tries to quit/install.
         // This is critical - without this, the app may not be able to terminate.
-        // Use async to avoid potential deadlock if already on main thread
-        if Thread.isMainThread {
+        // Use async to avoid deadlock - never use sync on main queue
+        DispatchQueue.main.async {
             SystemKeyBlocker.shared.stopBlocking()
             NSApp.presentationOptions = []
-        } else {
-            DispatchQueue.main.sync {
-                SystemKeyBlocker.shared.stopBlocking()
-                NSApp.presentationOptions = []
-            }
+            print("[SparkleController] Cleaned up kiosk mode for update installation")
         }
-        print("[SparkleController] Cleaned up kiosk mode for update installation")
     }
 
     nonisolated func updaterShouldRelaunchApplication(_ updater: SPUUpdater) -> Bool {
@@ -236,17 +282,12 @@ extension SparkleController: SPUUpdaterDelegate {
 
     nonisolated func updaterWillRelaunchApplication(_ updater: SPUUpdater) {
         // Extra safety: ensure kiosk restrictions are cleared before relaunch
-        // Use async to avoid potential deadlock if already on main thread
-        if Thread.isMainThread {
+        // Use async to avoid deadlock - never use sync on main queue
+        DispatchQueue.main.async {
             SystemKeyBlocker.shared.stopBlocking()
             NSApp.presentationOptions = []
-        } else {
-            DispatchQueue.main.sync {
-                SystemKeyBlocker.shared.stopBlocking()
-                NSApp.presentationOptions = []
-            }
+            print("[SparkleController] Preparing for relaunch")
         }
-        print("[SparkleController] Preparing for relaunch")
     }
 }
 #endif

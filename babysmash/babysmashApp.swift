@@ -66,6 +66,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationWillTerminate(_ notification: Notification) {
+        // Explicitly stop key blocking before termination
+        SystemKeyBlocker.shared.stopBlocking()
         sharedViewModel.stopKeyboardMonitoring()
         closeAllGameWindows()
     }

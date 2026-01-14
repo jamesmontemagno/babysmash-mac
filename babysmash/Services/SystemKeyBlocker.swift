@@ -4,6 +4,12 @@
 //
 //  Created by James Montemagno on 1/5/26.
 //
+//  THREADING MODEL:
+//  - All public methods (startBlocking, stopBlocking) are thread-safe
+//  - Uses serial DispatchQueue for synchronized access to state
+//  - CGEvent callbacks access state through the same queue
+//  - isBlocking flag is atomic via queue synchronization
+//
 
 import Cocoa
 import Combine
@@ -19,6 +25,9 @@ class SystemKeyBlocker: ObservableObject {
     
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
+    
+    // Serial queue for thread-safe access to instance properties
+    private let queue = DispatchQueue(label: "com.babysmash.systemkeyblocker", qos: .userInitiated)
     
     // Hot key references for Carbon-based blocking (more reliable for some shortcuts)
     private var spotlightHotKeyRef: EventHotKeyRef?
@@ -142,50 +151,54 @@ class SystemKeyBlocker: ObservableObject {
     /// - Returns: `true` if blocking started successfully, `false` if permissions are missing.
     @discardableResult
     func startBlocking() -> Bool {
-        guard !isBlocking else { return true }
-        
-        // Check accessibility permission first
-        guard AccessibilityManager.isAccessibilityEnabled() else {
-            print("SystemKeyBlocker: Accessibility permission not granted")
+        return queue.sync {
+            guard !isBlocking else { return true }
+            
+            // Check accessibility permission first
+            guard AccessibilityManager.isAccessibilityEnabled() else {
+                print("SystemKeyBlocker: Accessibility permission not granted")
+                return false
+            }
+            
+            // Listen for key events and special system-defined events (media keys)
+            let eventMask = (1 << CGEventType.keyDown.rawValue) |
+                            (1 << CGEventType.keyUp.rawValue) |
+                            (1 << NX_SYSDEFINED)
+            
+            // Create the event tap
+            guard let tap = CGEvent.tapCreate(
+                tap: .cgSessionEventTap,
+                place: .headInsertEventTap,
+                options: .defaultTap,
+                eventsOfInterest: CGEventMask(eventMask),
+                callback: { proxy, type, event, refcon in
+                    return SystemKeyBlocker.handleEvent(proxy: proxy, type: type, event: event, refcon: refcon)
+                },
+                userInfo: Unmanaged.passUnretained(self).toOpaque()
+            ) else {
+                print("SystemKeyBlocker: Failed to create event tap - accessibility permissions required")
+                return false
+            }
+            
+            eventTap = tap
+            // Create run loop source - per Core Foundation ownership rules, this returns +1 retained
+            let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
+            runLoopSource = source
+            
+            if let source = runLoopSource {
+                CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
+                CGEvent.tapEnable(tap: tap, enable: true)
+                isBlocking = true
+                print("SystemKeyBlocker: Started blocking system keys")
+                
+                // Register Carbon hot keys for Spotlight and other shortcuts that bypass event taps
+                registerCarbonHotKeys()
+                
+                return true
+            }
+            
             return false
         }
-        
-        // Listen for key events and special system-defined events (media keys)
-        let eventMask = (1 << CGEventType.keyDown.rawValue) |
-                        (1 << CGEventType.keyUp.rawValue) |
-                        (1 << NX_SYSDEFINED)
-        
-        // Create the event tap
-        guard let tap = CGEvent.tapCreate(
-            tap: .cgSessionEventTap,
-            place: .headInsertEventTap,
-            options: .defaultTap,
-            eventsOfInterest: CGEventMask(eventMask),
-            callback: { proxy, type, event, refcon in
-                return SystemKeyBlocker.handleEvent(proxy: proxy, type: type, event: event, refcon: refcon)
-            },
-            userInfo: Unmanaged.passUnretained(self).toOpaque()
-        ) else {
-            print("SystemKeyBlocker: Failed to create event tap - accessibility permissions required")
-            return false
-        }
-        
-        eventTap = tap
-        runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
-        
-        if let source = runLoopSource {
-            CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
-            CGEvent.tapEnable(tap: tap, enable: true)
-            isBlocking = true
-            print("SystemKeyBlocker: Started blocking system keys")
-            
-            // Register Carbon hot keys for Spotlight and other shortcuts that bypass event taps
-            registerCarbonHotKeys()
-            
-            return true
-        }
-        
-        return false
     }
     
     // MARK: - Carbon Hot Keys (More reliable for Spotlight)
@@ -193,6 +206,9 @@ class SystemKeyBlocker: ObservableObject {
     /// Registers Carbon hot keys to intercept shortcuts that may bypass CGEvent taps.
     /// This is particularly effective for Cmd+Space (Spotlight).
     private func registerCarbonHotKeys() {
+        var registeredKeys: [String] = []
+        var failedKeys: [String] = []
+        
         // Set up the event handler for hot key events
         var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
         
@@ -208,6 +224,7 @@ class SystemKeyBlocker: ObservableObject {
         
         if status != noErr {
             print("SystemKeyBlocker: Failed to install hot key handler, status: \(status)")
+            return
         }
         
         // Register Cmd+Space (Spotlight) - ID 1
@@ -222,14 +239,14 @@ class SystemKeyBlocker: ObservableObject {
         )
         
         if spotlightStatus != noErr {
-            print("SystemKeyBlocker: Failed to register Spotlight hot key, status: \(spotlightStatus)")
+            failedKeys.append("Cmd+Space (Spotlight)")
         } else {
-            print("SystemKeyBlocker: Registered Cmd+Space hot key")
+            registeredKeys.append("Cmd+Space")
         }
         
         // Also register Cmd+Option+Space (alternative Spotlight shortcut)
         var altSpotlightHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 3)
-        RegisterEventHotKey(
+        let altSpotlightStatus = RegisterEventHotKey(
             UInt32(kVK_Space),
             UInt32(cmdKey | optionKey),
             altSpotlightHotKeyID,
@@ -238,9 +255,13 @@ class SystemKeyBlocker: ObservableObject {
             &altSpotlightHotKeyRef
         )
         
+        if altSpotlightStatus == noErr {
+            registeredKeys.append("Cmd+Opt+Space")
+        }
+        
         // Register Ctrl+Up (Mission Control) - ID 2
         var missionControlHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 2)
-        RegisterEventHotKey(
+        let missionControlStatus = RegisterEventHotKey(
             UInt32(kVK_UpArrow),
             UInt32(controlKey),
             missionControlHotKeyID,
@@ -249,9 +270,13 @@ class SystemKeyBlocker: ObservableObject {
             &missionControlHotKeyRef
         )
         
+        if missionControlStatus == noErr {
+            registeredKeys.append("Ctrl+Up")
+        }
+        
         // Register Ctrl+Down (App Exposé)
         var appExposeHotKeyID = EventHotKeyID(signature: OSType(0x42534D48), id: 4)
-        RegisterEventHotKey(
+        let appExposeStatus = RegisterEventHotKey(
             UInt32(kVK_DownArrow),
             UInt32(controlKey),
             appExposeHotKeyID,
@@ -260,7 +285,17 @@ class SystemKeyBlocker: ObservableObject {
             &appExposeHotKeyRef
         )
         
-        print("SystemKeyBlocker: Registered Carbon hot keys for Spotlight and Mission Control")
+        if appExposeStatus == noErr {
+            registeredKeys.append("Ctrl+Down")
+        }
+        
+        // Log summary
+        if !registeredKeys.isEmpty {
+            print("SystemKeyBlocker: Registered Carbon hot keys: \(registeredKeys.joined(separator: ", "))")
+        }
+        if !failedKeys.isEmpty {
+            print("SystemKeyBlocker: WARNING - Failed to register: \(failedKeys.joined(separator: ", "))")
+        }
     }
     
     /// Unregisters Carbon hot keys.
@@ -290,21 +325,23 @@ class SystemKeyBlocker: ObservableObject {
     
     /// Stops blocking system keyboard shortcuts.
     func stopBlocking() {
-        guard isBlocking else { return }
-        
-        // Unregister Carbon hot keys first
-        unregisterCarbonHotKeys()
-        
-        if let tap = eventTap {
-            CGEvent.tapEnable(tap: tap, enable: false)
+        queue.sync {
+            guard isBlocking else { return }
+            
+            // Unregister Carbon hot keys first
+            unregisterCarbonHotKeys()
+            
+            if let tap = eventTap {
+                CGEvent.tapEnable(tap: tap, enable: false)
+            }
+            if let source = runLoopSource {
+                CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
+            }
+            eventTap = nil
+            runLoopSource = nil
+            isBlocking = false
+            print("SystemKeyBlocker: Stopped blocking system keys")
         }
-        if let source = runLoopSource {
-            CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
-        }
-        eventTap = nil
-        runLoopSource = nil
-        isBlocking = false
-        print("SystemKeyBlocker: Stopped blocking system keys")
     }
     
     /// Event callback that filters keyboard events.
@@ -319,8 +356,11 @@ class SystemKeyBlocker: ObservableObject {
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
             if let refcon = refcon {
                 let blocker = Unmanaged<SystemKeyBlocker>.fromOpaque(refcon).takeUnretainedValue()
-                if let tap = blocker.eventTap {
-                    CGEvent.tapEnable(tap: tap, enable: true)
+                // Use queue to safely access eventTap
+                blocker.queue.sync {
+                    if let tap = blocker.eventTap {
+                        CGEvent.tapEnable(tap: tap, enable: true)
+                    }
                 }
             }
             return Unmanaged.passRetained(event)
