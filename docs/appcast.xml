@@ -3,12 +3,12 @@
     <channel>
         <title>babysmash</title>
         <item>
-            <title>0.0.5</title>
-            <pubDate>Sat, 10 Jan 2026 16:21:42 +0000</pubDate>
-            <sparkle:version>16</sparkle:version>
-            <sparkle:shortVersionString>0.0.5</sparkle:shortVersionString>
+            <title>0.0.6</title>
+            <pubDate>Wed, 14 Jan 2026 04:07:57 +0000</pubDate>
+            <sparkle:version>17</sparkle:version>
+            <sparkle:shortVersionString>0.0.6</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/jamesmontemagno/babysmash-mac/releases/download/v0.0.5/BabySmash-v0.0.5.zip" length="6309622" type="application/octet-stream" sparkle:edSignature="J645SmaujwwXBA9mgigPHNgemUzJAWG6IUp4BFBZoYZtvEbfpSMIEqAlVdEZOtO4C8vOocPgfKgSRJZHyklPDQ=="/>
+            <enclosure url="https://github.com/jamesmontemagno/babysmash-mac/releases/download/v0.0.6/BabySmash-v0.0.6.zip" length="6365017" type="application/octet-stream" sparkle:edSignature="SIjzrHEBERjI7VGpmO0Cq33R945zUTuKXZ3E0T1b1C/X5OvRN6PQrQ+N1uxVedIl9el/OjpWdX4BHdIEtMS0DQ=="/>
         </item>
     </channel>
 </rss>
