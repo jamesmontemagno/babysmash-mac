@@ -11,6 +11,85 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     
     @AppStorage("soundMode") private var soundMode: GameViewModel.SoundMode = .laughter
+    @AppStorage("showFaces") private var showFaces: Bool = true
+    @AppStorage("forceUppercase") private var forceUppercase: Bool = true
+    @AppStorage("cursorType") private var cursorType: GameViewModel.CursorType = .hand
+    
+    @State private var showAdvancedSettings = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Text(L10n.Settings.title)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                Spacer()
+                Button(L10n.Common.done) {
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
+            .background(.ultraThinMaterial)
+            
+            Form {
+                Section(L10n.Settings.Sound.sectionTitle) {
+                    Picker(L10n.Settings.Sound.soundMode, selection: $soundMode) {
+                        ForEach(GameViewModel.SoundMode.allCases, id: \.self) { mode in
+                            Text(mode.localizedName).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    
+                    Text(L10n.Settings.Sound.description)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Section(L10n.Settings.Appearance.sectionTitle) {
+                    Picker(L10n.Settings.Appearance.cursor, selection: $cursorType) {
+                        ForEach(GameViewModel.CursorType.allCases, id: \.self) { cursor in
+                            Text(cursor.localizedName).tag(cursor)
+                        }
+                    }
+                    
+                    Toggle(L10n.Settings.Appearance.showFacesOnShapes, isOn: $showFaces)
+                    Toggle(L10n.Settings.Appearance.forceUppercaseLetters, isOn: $forceUppercase)
+                }
+                
+                Section(L10n.Settings.Advanced.sectionTitle) {
+                    Button {
+                        showAdvancedSettings = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "gearshape.2")
+                            Text(L10n.Settings.Advanced.open)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Text(L10n.Settings.Advanced.description)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .formStyle(.grouped)
+        }
+        .frame(minWidth: 500, minHeight: 700)
+        .sheet(isPresented: $showAdvancedSettings) {
+            AdvancedSettingsView()
+        }
+    }
+}
+
+struct AdvancedSettingsView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    @AppStorage("soundMode") private var soundMode: GameViewModel.SoundMode = .laughter
     @AppStorage("fadeEnabled") private var fadeEnabled: Bool = true
     @AppStorage("fadeAfter") private var fadeAfter: Double = 10.0
     @AppStorage("showFaces") private var showFaces: Bool = true
@@ -60,7 +139,7 @@ struct SettingsView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text(L10n.Settings.title)
+                Text(L10n.Settings.Advanced.title)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 Spacer()
@@ -101,35 +180,11 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
                 
-                Section(L10n.Settings.Sound.sectionTitle) {
-                    Picker(L10n.Settings.Sound.soundMode, selection: $soundMode) {
-                        ForEach(GameViewModel.SoundMode.allCases, id: \.self) { mode in
-                            Text(mode.localizedName).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    
-                    Text(L10n.Settings.Sound.description)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                
                 languageSection
                 
                 themeSection
                 
                 performanceSection
-                
-                Section(L10n.Settings.Appearance.sectionTitle) {
-                    Picker(L10n.Settings.Appearance.cursor, selection: $cursorType) {
-                        ForEach(GameViewModel.CursorType.allCases, id: \.self) { cursor in
-                            Text(cursor.localizedName).tag(cursor)
-                        }
-                    }
-                    
-                    Toggle(L10n.Settings.Appearance.showFacesOnShapes, isOn: $showFaces)
-                    Toggle(L10n.Settings.Appearance.forceUppercaseLetters, isOn: $forceUppercase)
-                }
                 
                 Section(L10n.Settings.MouseDrawing.sectionTitle) {
                     Toggle(L10n.Settings.MouseDrawing.enableMouseDrawing, isOn: $mouseDrawEnabled)
