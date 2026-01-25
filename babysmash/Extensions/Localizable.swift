@@ -92,6 +92,26 @@ enum L10n {
             "settings.title",
             defaultValue: "Settings"
         )
+
+        // Advanced Section
+        enum Advanced {
+            static let title = LocalizedStringResource(
+                "settings.advanced.title",
+                defaultValue: "Advanced Settings"
+            )
+            static let sectionTitle = LocalizedStringResource(
+                "settings.advanced.sectionTitle",
+                defaultValue: "Advanced"
+            )
+            static let open = LocalizedStringResource(
+                "settings.advanced.open",
+                defaultValue: "Advanced Settings..."
+            )
+            static let description = LocalizedStringResource(
+                "settings.advanced.description",
+                defaultValue: "Display, language, themes, accessibility, and safety options."
+            )
+        }
         
         // Display Section
         enum Display {
